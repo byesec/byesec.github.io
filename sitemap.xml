@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://example.com/2022/04/12/week1/</loc>
+    <loc>http://example.com/2022/04/12/1/</loc>
     
     <lastmod>2022-04-12</lastmod>
     
@@ -14,69 +14,6 @@
     <loc>http://example.com/2022/04/12/hello-world/</loc>
     
     <lastmod>2022-04-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/02/08/week9/</loc>
-    
-    <lastmod>2022-03-04</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/02/08/week8/</loc>
-    
-    <lastmod>2022-02-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/11/30/week7/</loc>
-    
-    <lastmod>2022-02-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/11/30/week5/</loc>
-    
-    <lastmod>2022-01-28</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/11/30/week6/</loc>
-    
-    <lastmod>2022-01-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/11/30/week4/</loc>
-    
-    <lastmod>2022-01-05</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2021/11/30/week2/</loc>
-    
-    <lastmod>2022-01-04</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
