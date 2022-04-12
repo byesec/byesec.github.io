@@ -10,6 +10,15 @@
     <priority>0.6</priority>
   </url>
   
+  <url>
+    <loc>http://example.com/2021/11/30/VulnHub-1-BoredHackerBlog_Social%20Network/</loc>
+    
+    <lastmod>2022-02-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
 
   <url>
     <loc>http://example.com/</loc>
