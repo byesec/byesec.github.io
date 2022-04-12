@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Multipass安装与使用 · Patrik's Blog</title><meta name="description" content="Multipass安装与使用 - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
-</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Multipass安装与使用</h1><div class="post-info">2022年1月2日</div><div class="post-content"><span id="more"></span>
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Multipass安装与使用</h1><div class="post-info">2022年1月2日</div><div class="post-content"><span id="more"></span>
 <h2 id="一、Multipass介绍"><a href="#一、Multipass介绍" class="headerlink" title="一、Multipass介绍"></a>一、Multipass介绍</h2><p><strong>Multipass</strong> 是您工作站上的迷你云，使用所有受支持平台（Windows、macOS 和 Linux）的本机管理程序，只需单击（“打开 shell”）或简单<code>multipass shell</code>命令，它就会为您提供 Ubuntu 命令行，甚至键盘快捷键。</p>
 <p><strong>Multipass</strong> 是一个轻量虚拟机管理器，是由 <strong>Ubuntu</strong> 运营公司 <strong>Canonical</strong> 所推出的开源项目。运行环境支持 <strong>Linux</strong>、<strong>Windows</strong>、<strong>macOS</strong>。在不同的操作系统上，使用的是不同的虚拟化技术。在 <strong>Linux</strong> 上使用的是 <strong>KVM</strong>、<strong>Window</strong> 上使用 <strong>Hyper-V</strong>、<strong>macOS</strong> 中使用 <strong>HyperKit</strong> 以最小开销运行VM，支持在笔记本模拟小型云。</p>
 <p>同时，<strong>Multipass</strong> 提供了一个命令行界面来启动和管理 <strong>Linux</strong> 实例。下载一个全新的镜像需要几秒钟的时间，并且在几分钟内就可以启动并运行 <strong>VM</strong>。</p>
@@ -7,122 +7,70 @@
 <h2 id="二、安装Multipass"><a href="#二、安装Multipass" class="headerlink" title="二、安装Multipass"></a>二、安装Multipass</h2><p>要在 <strong>macOS</strong> 上安装 Multipass，您有两个选择：安装程序包或<a target="_blank" rel="noopener" href="https://brew.sh/"><code>brew</code></a></p>
 <h3 id="安装程序包"><a href="#安装程序包" class="headerlink" title="安装程序包"></a>安装程序包</h3><p>下载程序<a target="_blank" rel="noopener" href="https://github.com/CanonicalLtd/multipass/releases/">https://github.com/CanonicalLtd/multipass/releases/</a></p>
 <p>卸载脚本：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">sh</span> <span class="token string">"/Library/Application Support/com.canonical.multipass/uninstall.sh"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo sh <span class="string">&quot;/Library/Application Support/com.canonical.multipass/uninstall.sh&quot;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="通过brew安装"><a href="#通过brew安装" class="headerlink" title="通过brew安装"></a>通过brew安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ brew <span class="token function">install</span> --cask multipass<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="通过brew安装"><a href="#通过brew安装" class="headerlink" title="通过brew安装"></a>通过brew安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ brew install --cask multipass</span><br></pre></td></tr></table></figure>
 
 <p>卸载：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ brew uninstall multipass
-<span class="token comment"># or</span>
-$ brew uninstall --zap multipass <span class="token comment"># to destroy all data, too</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ brew uninstall multipass</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">$ brew uninstall --zap multipass <span class="comment"># to destroy all data, too</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="三、使用方式"><a href="#三、使用方式" class="headerlink" title="三、使用方式"></a>三、使用方式</h2><h3 id="帮助指南"><a href="#帮助指南" class="headerlink" title="帮助指南"></a>帮助指南</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass <span class="token builtin class-name">help</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="三、使用方式"><a href="#三、使用方式" class="headerlink" title="三、使用方式"></a>三、使用方式</h2><h3 id="帮助指南"><a href="#帮助指南" class="headerlink" title="帮助指南"></a>帮助指南</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass <span class="built_in">help</span></span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">Usage: multipass [options] &lt;command&gt;
-Create, control and connect to Ubuntu instances.
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">Usage: multipass [options] &lt;command&gt;</span><br><span class="line">Create, control and connect to Ubuntu instances.</span><br><span class="line"></span><br><span class="line">This is a command line utility for multipass, a</span><br><span class="line">service that manages Ubuntu instances.</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  -h, --help     Displays help on commandline options.</span><br><span class="line">  --help-all     Displays help including Qt specific options.</span><br><span class="line">  -v, --verbose  Increase logging verbosity. Repeat the &#x27;v&#x27; in the short option</span><br><span class="line">                 for more detail. Maximum verbosity is obtained with 4 (or more)</span><br><span class="line">                 v&#x27;s, i.e. -vvvv.</span><br><span class="line"></span><br><span class="line">Available commands:</span><br><span class="line">  alias     Create an alias</span><br><span class="line">  aliases   List available aliases</span><br><span class="line">  delete    Delete instances</span><br><span class="line">  exec      Run a command on an instance</span><br><span class="line">  find      Display available images to create instances from</span><br><span class="line">  get       Get a configuration setting</span><br><span class="line">  help      Display help about a command</span><br><span class="line">  info      Display information about instances</span><br><span class="line">  launch    Create and start an Ubuntu instance</span><br><span class="line">  list      List all available instances</span><br><span class="line">  mount     Mount a local directory in the instance</span><br><span class="line">  networks  List available network interfaces</span><br><span class="line">  purge     Purge all deleted instances permanently</span><br><span class="line">  recover   Recover deleted instances</span><br><span class="line">  restart   Restart instances</span><br><span class="line">  set       Set a configuration setting</span><br><span class="line">  shell     Open a shell on a running instance</span><br><span class="line">  start     Start instances</span><br><span class="line">  stop      Stop running instances</span><br><span class="line">  suspend   Suspend running instances</span><br><span class="line">  transfer  Transfer files between the host and instances</span><br><span class="line">  umount    Unmount a directory from an instance</span><br><span class="line">  unalias   Remove an alias</span><br><span class="line">  version   Show version details</span><br></pre></td></tr></table></figure>
 
-This is a command line utility for multipass, a
-service that manages Ubuntu instances.
+<h3 id="查看正在运行的Multipass版本"><a href="#查看正在运行的Multipass版本" class="headerlink" title="查看正在运行的Multipass版本"></a>查看正在运行的<strong>Multipass</strong>版本</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass version</span><br></pre></td></tr></table></figure>
 
-Options:
-  -h, --help     Displays help on commandline options.
-  --help-all     Displays help including Qt specific options.
-  -v, --verbose  Increase logging verbosity. Repeat the &#39;v&#39; in the short option
-                 for more detail. Maximum verbosity is obtained with 4 (or more)
-                 v&#39;s, i.e. -vvvv.
-
-Available commands:
-  alias     Create an alias
-  aliases   List available aliases
-  delete    Delete instances
-  exec      Run a command on an instance
-  find      Display available images to create instances from
-  get       Get a configuration setting
-  help      Display help about a command
-  info      Display information about instances
-  launch    Create and start an Ubuntu instance
-  list      List all available instances
-  mount     Mount a local directory in the instance
-  networks  List available network interfaces
-  purge     Purge all deleted instances permanently
-  recover   Recover deleted instances
-  restart   Restart instances
-  set       Set a configuration setting
-  shell     Open a shell on a running instance
-  start     Start instances
-  stop      Stop running instances
-  suspend   Suspend running instances
-  transfer  Transfer files between the host and instances
-  umount    Unmount a directory from an instance
-  unalias   Remove an alias
-  version   Show version details<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="查看正在运行的Multipass版本"><a href="#查看正在运行的Multipass版本" class="headerlink" title="查看正在运行的Multipass版本"></a>查看正在运行的<strong>Multipass</strong>版本</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass version<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<pre class="line-numbers language-none"><code class="language-none">multipass   1.8.1+mac
-multipassd  1.8.1+mac<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">multipass   1.8.1+mac</span><br><span class="line">multipassd  1.8.1+mac</span><br></pre></td></tr></table></figure>
 
 <h3 id="快速创建运行"><a href="#快速创建运行" class="headerlink" title="快速创建运行"></a>快速创建运行</h3><p>打开<strong>Multipass</strong>–打开<strong>状态栏图标</strong>–<strong>Open Shell</strong></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220124102731263.png" alt="image-20220124102731263"></p>
-<h3 id="查看可下载安装的Ubuntu镜像"><a href="#查看可下载安装的Ubuntu镜像" class="headerlink" title="查看可下载安装的Ubuntu镜像"></a>查看可下载安装的Ubuntu镜像</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass <span class="token function">find</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="查看可下载安装的Ubuntu镜像"><a href="#查看可下载安装的Ubuntu镜像" class="headerlink" title="查看可下载安装的Ubuntu镜像"></a>查看可下载安装的Ubuntu镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass find</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">Image                       Aliases           Version          Description
-18.04                       bionic            20220104         Ubuntu 18.04 LTS
-20.04                       focal,lts         20220118         Ubuntu 20.04 LTS
-21.10                       impish            20220118         Ubuntu 21.10
-anbox-cloud-appliance                         latest           Anbox Cloud Appliance
-charm-dev                                     latest           A development and testing environment for charmers
-minikube                                      latest           minikube is local Kubernetes<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Image                       Aliases           Version          Description</span><br><span class="line">18.04                       bionic            20220104         Ubuntu 18.04 LTS</span><br><span class="line">20.04                       focal,lts         20220118         Ubuntu 20.04 LTS</span><br><span class="line">21.10                       impish            20220118         Ubuntu 21.10</span><br><span class="line">anbox-cloud-appliance                         latest           Anbox Cloud Appliance</span><br><span class="line">charm-dev                                     latest           A development and testing environment for charmers</span><br><span class="line">minikube                                      latest           minikube is local Kubernetes</span><br></pre></td></tr></table></figure>
 
-<h3 id="下载镜像配置并运行"><a href="#下载镜像配置并运行" class="headerlink" title="下载镜像配置并运行"></a>下载镜像配置并运行</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass launch -n vm01 -c <span class="token number">1</span> -m 1G -d 10G<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="下载镜像配置并运行"><a href="#下载镜像配置并运行" class="headerlink" title="下载镜像配置并运行"></a>下载镜像配置并运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass launch -n vm01 -c 1 -m 1G -d 10G</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">-n, --name: 名称
--c, --cpus: cpu核心数, 默认: 1
--m, --mem: 内存大小, 默认: 1G
--d, --disk: 硬盘大小, 默认: 5G<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-n, --name: 名称</span><br><span class="line">-c, --cpus: cpu核心数, 默认: 1</span><br><span class="line">-m, --mem: 内存大小, 默认: 1G</span><br><span class="line">-d, --disk: 硬盘大小, 默认: 5G</span><br></pre></td></tr></table></figure>
 
-<h3 id="查看虚拟机列表"><a href="#查看虚拟机列表" class="headerlink" title="查看虚拟机列表"></a>查看虚拟机列表</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="查看虚拟机列表"><a href="#查看虚拟机列表" class="headerlink" title="查看虚拟机列表"></a>查看虚拟机列表</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass list</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">Name                    State             IPv4             Image
-primary                 Running           192.168.64.2     Ubuntu 20.04 LTS
-vm01                    Running           192.168.64.3     Ubuntu 20.04 LTS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Name                    State             IPv4             Image</span><br><span class="line">primary                 Running           192.168.64.2     Ubuntu 20.04 LTS</span><br><span class="line">vm01                    Running           192.168.64.3     Ubuntu 20.04 LTS</span><br></pre></td></tr></table></figure>
 
-<h3 id="查看虚拟机信息"><a href="#查看虚拟机信息" class="headerlink" title="查看虚拟机信息"></a>查看虚拟机信息</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass info vm01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="查看虚拟机信息"><a href="#查看虚拟机信息" class="headerlink" title="查看虚拟机信息"></a>查看虚拟机信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass info vm01</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">Name:           vm01
-State:          Running
-IPv4:           192.168.64.3
-Release:        Ubuntu 20.04.3 LTS
-Image hash:     6fbeb622aace (Ubuntu 20.04 LTS)
-Load:           0.41 0.14 0.05
-Disk usage:     1.2G out of 9.5G
-Memory usage:   135.0M out of 970.0M
-Mounts:         --<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Name:           vm01</span><br><span class="line">State:          Running</span><br><span class="line">IPv4:           192.168.64.3</span><br><span class="line">Release:        Ubuntu 20.04.3 LTS</span><br><span class="line">Image hash:     6fbeb622aace (Ubuntu 20.04 LTS)</span><br><span class="line">Load:           0.41 0.14 0.05</span><br><span class="line">Disk usage:     1.2G out of 9.5G</span><br><span class="line">Memory usage:   135.0M out of 970.0M</span><br><span class="line">Mounts:         --</span><br></pre></td></tr></table></figure>
 
-<h3 id="在虚拟机外部执行命令"><a href="#在虚拟机外部执行命令" class="headerlink" title="在虚拟机外部执行命令"></a>在虚拟机外部执行命令</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass <span class="token builtin class-name">exec</span> vm01 <span class="token builtin class-name">pwd</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="在虚拟机外部执行命令"><a href="#在虚拟机外部执行命令" class="headerlink" title="在虚拟机外部执行命令"></a>在虚拟机外部执行命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass <span class="built_in">exec</span> vm01 <span class="built_in">pwd</span></span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">&#x2F;home&#x2F;ubuntu<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu</span><br></pre></td></tr></table></figure>
 
-<h3 id="进入虚拟机"><a href="#进入虚拟机" class="headerlink" title="进入虚拟机"></a>进入虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass shell vm01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="进入虚拟机"><a href="#进入虚拟机" class="headerlink" title="进入虚拟机"></a>进入虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass shell vm01</span><br></pre></td></tr></table></figure>
 
 <p>成功进入终端</p>
-<pre class="line-numbers language-none"><code class="language-none">ubuntu@vm01:~$<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@vm01:~$</span><br></pre></td></tr></table></figure>
 
-<h3 id="宿主机挂载虚拟机"><a href="#宿主机挂载虚拟机" class="headerlink" title="宿主机挂载虚拟机"></a>宿主机挂载虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass <span class="token function">mount</span> /mnt vm01:/mnt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="宿主机挂载虚拟机"><a href="#宿主机挂载虚拟机" class="headerlink" title="宿主机挂载虚拟机"></a>宿主机挂载虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass mount /mnt vm01:/mnt</span><br></pre></td></tr></table></figure>
 
-<h3 id="宿主机卸载虚拟机挂载"><a href="#宿主机卸载虚拟机挂载" class="headerlink" title="宿主机卸载虚拟机挂载"></a>宿主机卸载虚拟机挂载</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass unmount vm01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="宿主机卸载虚拟机挂载"><a href="#宿主机卸载虚拟机挂载" class="headerlink" title="宿主机卸载虚拟机挂载"></a>宿主机卸载虚拟机挂载</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass unmount vm01</span><br></pre></td></tr></table></figure>
 
-<h3 id="重启虚拟机"><a href="#重启虚拟机" class="headerlink" title="重启虚拟机"></a>重启虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass restart vm01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="重启虚拟机"><a href="#重启虚拟机" class="headerlink" title="重启虚拟机"></a>重启虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass restart vm01</span><br></pre></td></tr></table></figure>
 
-<h3 id="删除虚拟机"><a href="#删除虚拟机" class="headerlink" title="删除虚拟机"></a>删除虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$multipass</span> delete vm01
-<span class="token variable">$multipass</span> delete --purge vm01 彻底删除<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="删除虚拟机"><a href="#删除虚拟机" class="headerlink" title="删除虚拟机"></a>删除虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$multipass</span> delete vm01</span><br><span class="line"><span class="variable">$multipass</span> delete --purge vm01 彻底删除</span><br></pre></td></tr></table></figure>
 
-<h3 id="恢复删除虚拟机"><a href="#恢复删除虚拟机" class="headerlink" title="恢复删除虚拟机"></a>恢复删除虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass recover vm01 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="恢复删除虚拟机"><a href="#恢复删除虚拟机" class="headerlink" title="恢复删除虚拟机"></a>恢复删除虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass recover vm01 </span><br></pre></td></tr></table></figure>
 
-<h3 id="暂停虚拟机"><a href="#暂停虚拟机" class="headerlink" title="暂停虚拟机"></a>暂停虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass stop ubuntu-lts<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="暂停虚拟机"><a href="#暂停虚拟机" class="headerlink" title="暂停虚拟机"></a>暂停虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass stop ubuntu-lts</span><br></pre></td></tr></table></figure>
 
-<h3 id="启动虚拟机"><a href="#启动虚拟机" class="headerlink" title="启动虚拟机"></a>启动虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass start vm01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="启动虚拟机"><a href="#启动虚拟机" class="headerlink" title="启动虚拟机"></a>启动虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass start vm01</span><br></pre></td></tr></table></figure>
 
-<h3 id="挂起虚拟机"><a href="#挂起虚拟机" class="headerlink" title="挂起虚拟机"></a>挂起虚拟机</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ multipass <span class="token function">suspend</span> vm01 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="挂起虚拟机"><a href="#挂起虚拟机" class="headerlink" title="挂起虚拟机"></a>挂起虚拟机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ multipass <span class="built_in">suspend</span> vm01 </span><br></pre></td></tr></table></figure>
 
-</div></article></div></main><footer><div class="paginator"><a href="/2022/01/03/week2/" class="prev">上一篇</a><a href="/2022/01/02/week1/" class="next">下一篇</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/01/03/week2/" class="prev">上一篇</a><a href="/2022/01/02/week1/" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'seansun';
+var disqus_identifier = '2022/01/02/Multipass/';
+var disqus_title = 'Multipass安装与使用';
+var disqus_url = 'http://example.com/2022/01/02/Multipass/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//seansun.disqus.com/count.js" async></script><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

