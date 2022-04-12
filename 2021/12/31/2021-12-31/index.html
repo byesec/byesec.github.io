@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 拖延下的仓促开始 · Patrik's Blog</title><meta name="description" content="拖延下的仓促开始 - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">主页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">拖延下的仓促开始</h1><div class="post-info">2021年12月31日</div><div class="post-content"><span id="more"></span>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><pre><code>现在是2021年12月31日22点31分,从几天前的butterfly主题配置到今天还是决定使用Next,原因有二,一是在配置butterfly中图片的清晰程度和加载速度二者矛盾让我难以平衡,二是看了许多hexo博客后,发现还是Next的简洁更舒服些。
+耗时一天,参考了不少文章后,下一步备案绑定域名吧,这大概是一个能拿得出来的样式了吧哈哈。
+上面提到了时间,再过一个小时就要2022年了,将至的这一年还是不立flag了,也许开始写博客就意味着新的开始吧,下面的配置还没时间去整理格式了，这样挺有意思哈哈.
+</code></pre>
+<h2 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install git -y</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/software     #创建/software</span><br><span class="line"></span><br><span class="line"># 下载</span><br><span class="line"></span><br><span class="line">wget https://npmmirror.com/mirrors/node/v16.10.0/node-v16.10.0-linux-x64.tar.xz</span><br><span class="line"></span><br><span class="line"># 解压</span><br><span class="line"></span><br><span class="line">tar -xvf node-v16.10.0-linux-x64.tar.xz</span><br><span class="line"></span><br><span class="line"># 更改目录名</span><br><span class="line"></span><br><span class="line">mv node-v16.10.0-linux-x64 nodejs</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/software/nodejs/bin/node /usr/local/bin/ </span><br><span class="line"> </span><br><span class="line">ln -s /opt/software/nodejs/bin/npm /usr/local/bin/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node -v &amp;&amp; npm -v</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm config set registry http://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+<p>安装hexo</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br><span class="line"></span><br><span class="line">mkdir /blog</span><br><span class="line"></span><br><span class="line">cd /blog</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/software/nodejs/lib/node_modules/hexo-cli/bin/hexo /usr/local/bin/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init name</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new test</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/next-theme/hexo-theme-next themes/next</span><br><span class="line">#若不通则可SFTP上传</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改hexo的_config.yml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+
+<p>修改themes&#x2F;next&#x2F;_config.yml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scheme: Gemini</span><br></pre></td></tr></table></figure>
+
+<p>npm install hexo-generator-search –save</p>
+<p>npm install hexo-generator-search  –save<br>npm install hexo-generator-searchdb –save</p>
+<p>yum install -y nginx<br>chmod 775 -R &#x2F;home&#x2F;blog&#x2F;<br>vim &#x2F;etc&#x2F;nginx&#x2F;nginx.conf<br>server_name xxxx; &#x2F;&#x2F;这里换成你自己的域名 </p>
+<p>root &#x2F;home&#x2F;blog&#x2F;bysec&#x2F;public&#x2F;; &#x2F;&#x2F;这里换成你刚才创建的目录<br>systemctl start nginx.service</p>
+<p>systemctl restart nginx.service</p>
+<p>cp themes&#x2F;next&#x2F;_config.yml _config.next.yml</p>
+<p>在 themes&#x2F;next&#x2F;_vendors.yml 中添加 darkmode的 cdn：</p>
+<p>darkmode_js:<br>  name: darkmode-js<br>  version: 1.5.7<br>  file: lib&#x2F;darkmode-js.min.js</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/01/02/week1/" class="prev">PREV</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'seansun';
+var disqus_identifier = '2021/12/31/2021-12-31/';
+var disqus_title = '拖延下的仓促开始';
+var disqus_url = 'http://example.com/2021/12/31/2021-12-31/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//seansun.disqus.com/count.js" async></script><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

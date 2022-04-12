@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Apache服务攻防 · Patrik's Blog</title><meta name="description" content="Apache服务攻防 - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">主页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Apache服务攻防</h1><div class="post-info">2022年2月15日</div><div class="post-content"><span id="more"></span>
+<h1 id="Apache服务攻防"><a href="#Apache服务攻防" class="headerlink" title="Apache服务攻防"></a>Apache服务攻防</h1><h2 id="一、Apache底层解析"><a href="#一、Apache底层解析" class="headerlink" title="一、Apache底层解析"></a>一、Apache底层解析</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Apache(音译为<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%98%BF%E5%B8%95%E5%A5%87/374191">阿帕奇</a>)是世界使用排名第一的Web服务器软件。它可以运行在几乎所有广泛使用的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%B9%B3%E5%8F%B0/2606037">计算机平台</a>上，由于其<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%B7%A8%E5%B9%B3%E5%8F%B0/8558902">跨平台</a>和安全性被广泛使用，是最流行的Web服务器端软件之一。它快速、可靠并且可通过简单的API扩充，将<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Perl">Perl</a>&#x2F;<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Python">Python</a>等<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%A7%A3%E9%87%8A%E5%99%A8/10418965">解释器</a>编译到服务器中。</p>
+<p>简而言之，好用！并且能支持基础的HTML、PHP、Perl、Python等语言。</p>
+<h3 id="请求流程"><a href="#请求流程" class="headerlink" title="请求流程"></a>请求流程</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220207144236732.png" alt="image-20220207144236732"></p>
+<p>浏览器向web服务器发送一个请求，如果请求的是静态资源，那么Apache直接返回给浏览器；如果请求的是动态资源，那么Apache会调用脚本程序php去处理(可能会与数据库交互)，然后在返回给Apache封装成静态资源后返回给浏览器，浏览器将其展示出来。</p>
+<h3 id="PHP架构"><a href="#PHP架构" class="headerlink" title="PHP架构"></a>PHP架构</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220207154607370.png" alt="image-20220207154607370"></p>
+<blockquote>
+<p>深入理解Zend SAPIs(Zend SAPI Internals)</p>
+<p>参考连接：<a target="_blank" rel="noopener" href="https://www.laruence.com/2008/08/12/180.html">https://www.laruence.com/2008/08/12/180.html</a></p>
+</blockquote>
+<p>众所周知，<strong>Apache本身不支持PHP解析的</strong>，结合PHP架构图可知是如何通过SAPI进行通信的：</p>
+<blockquote>
+<p>#加载php5_module模块</p>
+<p>LoadModule php5_module php5apache2_2.dll的路径</p>
+</blockquote>
+<blockquote>
+<p>#添加可以执行php的文件类型，让.php文件类型解析为PHP</p>
+<p>AddType application&#x2F;x-httpd-php .php</p>
+</blockquote>
+<blockquote>
+<p>#或者以另一种方式（在Apache 2.4.0~2.4.29中默认使用了该方式）</p>
+<p>&lt;FilesMatch .php$&gt;<br>SetHandler application&#x2F;x-httpd-php<br></FilesMatch><br>以及<br><IfModule dir_module><br>DirectoryIndex index.html index.htm index.php index.phtml<br></Ifmodule></p>
+</blockquote>
+<p>总结<strong>Apache调用php的流程</strong>为：</p>
+<p><strong>HTTP –&gt; Apache –&gt; php5_module –&gt; sapi –&gt; php</strong></p>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><p>常见目录：</p>
+<p>bin ————- 存放常用的命令工具。例如httpd</p>
+<p>cgi-bin ——— 存放Linux下常用的命令，例如xxx.sh</p>
+<p>conf ———– Linux的配置相关文件，例如httpd.conf</p>
+<p>error ———– 错误记录</p>
+<p>htdocs ———– 放网站源码</p>
+<p>icons ————- 网站图标</p>
+<p>logs ———————- 日志</p>
+<p>manual ——————– 手册</p>
+<p>modules ——————– 扩展模块</p>
+<h2 id="二、Apache攻防解析"><a href="#二、Apache攻防解析" class="headerlink" title="二、Apache攻防解析"></a>二、Apache攻防解析</h2><h3 id="未知扩展名解析漏洞"><a href="#未知扩展名解析漏洞" class="headerlink" title="未知扩展名解析漏洞"></a>未知扩展名解析漏洞</h3><h4 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h4><p>apache的解析漏洞依赖于一个特性： <strong>Apache默认一个文件可以有多个以点分割的后缀，当最右边的后缀无法识别（不在mime.types文件内），则继续向左遍历识别，直到识别到合法后缀才进行解析。</strong></p>
+<p>apache认识哪些<strong>扩展名</strong>？–在**&#x2F;conf&#x2F;mime.types文件**中有详细的扩展名列表。</p>
+<p>而这个特性源于apache的配置。</p>
+<p>也就是说如果分别访问存在漏洞的环境下的<code>a.php.jpg</code>和<code>a.php.xxx</code>。那么<code>a.php.jpg</code>会被识别为按照jpg图片进行解析，而<code>a.php.xxx</code>才会被当成php脚本进行解析。</p>
+<h4 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h4><h5 id="复现1-Windows"><a href="#复现1-Windows" class="headerlink" title="复现1:Windows"></a>复现1:Windows</h5><p>1.windows下开启phpstudy环境</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208154418760.png" alt="image-20220208154418760"></p>
+<p>查看phpstudy探针</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208154523903.png" alt="image-20220208154523903"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Apache/2.4.23 (Win32) OpenSSL/1.0.2j PHP/5.4.45</span><br></pre></td></tr></table></figure>
+
+<p>打开配置文件conf&#x2F;mime.types查看配置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208154814792.png" alt="image-20220208154814792"></p>
+<p>建立test.jpg和test.jpg.aa</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208155301915.png" alt="image-20220208155301915"></p>
+<p>结果显示，当apache从右至左判断后缀时，aa不能被正常解析，向左顺延，被解析为test.jpg</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208160608528.png" alt="image-20220208160608528"></p>
+<p>访问phpinfo.php.aa</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208160507613.png" alt="image-20220208160507613"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208160525506.png" alt="image-20220208160525506"></p>
+<p>无法识别后缀aa，被解析为phpinfo.php</p>
+<p>PHP结合<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=Apache&spm=1001.2101.3001.7020">Apache</a>的方式有三种：</p>
+<ol>
+<li>作为模块：PHP作为Apache的模块，当有php页面的请求时，Apache加载php模块，加载资源并执行php程序，将执行结果返还给客户端。</li>
+<li>CGI方式(注：CGI是一个协议，可以实现web服务程序和解释器通信)：PHP作为一个独立的功能程序，当有php页面的请求时，Apache通过CGI方式启动一个PHP进程，PHP进程获取资源并执行后，将执行结果返回给Apache，Apache返回给客户端，之后Apache销毁该进程。</li>
+<li>FastCGI(注：FastCGI是CGI协议的一个扩展，可以实现将PHP作为一个独立进程，由PHP自身实现进程的创建和销毁)：PHP作为一个独立程序，根据配置文件事前启动N个作业进程用来等待处理用户请求(类似于Apache的Prefork模型，规定默认启动进程数、最大启动进程数、最小启动进程数等等)，当有php页面的请求时，Apache通过代理方式使用FastCGI协议将请求发送给PHP进程，并指定php网页文件所在位置(URL)，PHP进程接收后为其分配一个作业进程并执行脚本。FastCGI好处在于可以使PHP服务作为一个独立服务器，通过Socket与httpd通信，可以使服务分离，可扩展性更强，并且无需像CGI一样需要Apache来控制PHP的启动，提高了Apache的工作效率。</li>
+</ol>
+<blockquote>
+<p>Windows下图文详解PHP三种运行方式（php_mod、cgi、fastcgi）</p>
+<p>参考链接：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/52php/p/5668823.html">https://www.cnblogs.com/52php/p/5668823.html</a></p>
+</blockquote>
+<p>切换至php5版本</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208163300529.png" alt="image-20220208163300529"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220208163329261.png" alt="image-20220208163329261"></p>
+<h5 id="复现2-Kali"><a href="#复现2-Kali" class="headerlink" title="复现2:Kali"></a>复现2:Kali</h5><h6 id="安装apache"><a href="#安装apache" class="headerlink" title="安装apache"></a>安装apache</h6><p>Kali内默认安装了apache</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160121069.png" alt="image-20220209160121069"></p>
+<h6 id="开启apache"><a href="#开启apache" class="headerlink" title="开启apache"></a>开启apache</h6><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160244713.png" alt="image-20220209160244713"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160340565.png" alt="image-20220209160340565"></p>
+<h6 id="安装php"><a href="#安装php" class="headerlink" title="安装php"></a>安装php</h6><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160442518.png" alt="image-20220209160442518"></p>
+<h6 id="测试apache-php运行是否正常"><a href="#测试apache-php运行是否正常" class="headerlink" title="测试apache+php运行是否正常"></a>测试apache+php运行是否正常</h6><p>在&#x2F;var&#x2F;www&#x2F;html目录下创建index.php和index.php.xxx</p>
+<p>内容都如下</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160710465.png" alt="image-20220209160710465"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209164225076.png" alt="image-20220209164225076"></p>
+<h6 id="访问该文件验证"><a href="#访问该文件验证" class="headerlink" title="访问该文件验证"></a>访问该文件验证</h6><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209160759614.png" alt="image-20220209160759614"></p>
+<p>搭建完毕（mod方式）</p>
+<h6 id="分析apache解析漏洞"><a href="#分析apache解析漏洞" class="headerlink" title="分析apache解析漏洞"></a>分析apache解析漏洞</h6><p>基于debian的kali linux，起apache配置文件在&#x2F;etc&#x2F;apache2&#x2F;目录下，apache2.conf说apache核心配置文件，鉴于是以模块模式（module）运行的，故要在&#x2F;etc&#x2F;apache2&#x2F;mods-enabled&#x2F;目录下查找配置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209161756087.png" alt="image-20220209161756087"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209161950631.png" alt="image-20220209161950631"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;.+\.ph(ar|p|tml)$&quot;&gt;</span><br><span class="line">    SetHandler application/x-httpd-php</span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+<p>由配置文件内的信息可知：</p>
+<p>以phar、php、phtml结尾的文件会被apache当作php文件解析</p>
+<p>apache的解析漏洞的根本原因在**$**</p>
+<p>**$**在正则表达式中，用于匹配字符串结尾位置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209162528727.png" alt="image-20220209162528727"></p>
+<p>如果设置了 RegExp 对象的 Multiline 属性，则 <strong>$</strong> 也匹配 ‘\n’ 或 ‘\r’。–&gt;<strong>换行符</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">尝试将php7.4.conf中的$换成\.</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209163156692.png" alt="image-20220209163156692"></p>
+<p>修改完成后重启apache</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209163227649.png" alt="image-20220209163227649"></p>
+<p>访问index.php.xxx</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209163911080.png" alt="image-20220209163911080"></p>
+<p>结果显示index.php.xxx被当作php文件执行了</p>
+<p><strong>总结利用的条件为</strong>：</p>
+<p>1.apache+php的<strong>运行模式为module模式</strong>，且<strong>正则符合条件</strong>（设置了 RegExp 对象的 Multiline 属性，则$会匹配到字符串结尾的换行符）</p>
+<p>2.文件扩展名中<strong>包含至少一个.php</strong></p>
+<h4 id="3-修复建议"><a href="#3-修复建议" class="headerlink" title="3.修复建议"></a>3.修复建议</h4><p>解决方案一</p>
+<p>在httpd.conf或httpd-vhosts.conf中加入以下语句，从而禁止文件名格式为*.php.*的访问权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;.(php.|php3.|php4.|php5.)&quot;&gt; </span><br><span class="line"></span><br><span class="line">Order Deny,Allow </span><br><span class="line"></span><br><span class="line">Deny from all </span><br><span class="line"></span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+<p>解决方案二</p>
+<p>如果需要保留文件名，可以修改程序源代码，替换上传文件名中的“.”为“_”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$filename = str_replace(&#x27;.&#x27;, &#x27;_&#x27;, $filename);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="AddHandler导致的解析漏洞"><a href="#AddHandler导致的解析漏洞" class="headerlink" title="AddHandler导致的解析漏洞"></a>AddHandler导致的解析漏洞</h3><h4 id="1-漏洞描述-1"><a href="#1-漏洞描述-1" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h4><p>(1)apache在解析文件时有一个原则：当碰到不认识的扩展名时，将会从后往前解析，直到遇到认识的扩</p>
+<p>展名为止</p>
+<p>(2)如果都不认识将会暴露源码。</p>
+<p>在apache配置不当的时候就会造成apache解析漏洞。</p>
+<p>补充</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AddType</span><br><span class="line">将给定的文件扩展名映射到指定的内容类型</span><br><span class="line">AddHandler</span><br><span class="line">将文件扩展名映射到指定的处理程序</span><br><span class="line">参考链接：</span><br><span class="line">http://httpd.apache.org/docs/2.0/mod/mod_mime.html#addtype</span><br><span class="line">http://httpd.apache.org/docs/2.0/mod/mod_mime.html#addhandler</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-漏洞复现-1"><a href="#2-漏洞复现-1" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h4><p>（在此之前还原上一步的php7.4.conf中的修改，并重启apache服务使配置生效）</p>
+<p>在&#x2F;var&#x2F;www&#x2F;html&#x2F;根目录下新建index.php.jpg</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209165542919.png" alt="image-20220209165542919"></p>
+<p>默认配置下直接访问，无法正常解析</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209165738188.png" alt="image-20220209165738188"></p>
+<p>现在修改配置</p>
+<p>进入&#x2F;etc&#x2F;apache2&#x2F;sites-enabled&#x2F;目录，</p>
+<p>新建test.conf添加AddHandler（指定扩展名为 .php 的文件应被application&#x2F;x-httpd-php来处理。）</p>
+<p>并重启apache服务</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209170636001.png" alt="image-20220209170636001"></p>
+<p>访问后结果显示成功被解析为php文件执行</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220209170729429.png" alt="image-20220209170729429"></p>
+<p><strong>注：只要文件名中出现.php，即使最右边的扩展名（后缀名）是在mime.types文件内，就直接能被解析为php文件</strong></p>
+<p><strong>罕见的后缀总结</strong></p>
+<p>不仅有php外，还有php3,php4,php5,pht,phtml</p>
+<p>例如在php7.4.conf中还有phar</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;.+\.ph(ar|p|tml)$&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置问题总结</strong></p>
+<p>&#x2F;etc&#x2F;apache2&#x2F;apache2.conf</p>
+<p>1.如果在内有如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;test.jpg&quot;&gt;</span><br><span class="line">    SetHandler application/x-httpd-php</span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+<p>则只要访问的文件名为test.jpg，便会以php来解析</p>
+<p>2.如果在内有如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddHandler php5-script .php</span><br></pre></td></tr></table></figure>
+
+<p>则只要文件名内包含.php，即使文件名为其他后缀（如test.php.jpg）也会以php文件解析</p>
+<p>3.如果在内有如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .jpg</span><br></pre></td></tr></table></figure>
+
+<p>即使扩展名为.jpg，也会按照php文件解析</p>
+<h4 id="3-修复建议-1"><a href="#3-修复建议-1" class="headerlink" title="3.修复建议"></a>3.修复建议</h4><h5 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h5><p>在httpd.conf或httpd-vhosts.conf中加入以下语句，从而禁止文件名格式为.php.的访问权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;.(php.|php3.|php4.|php5.)&quot;&gt; </span><br><span class="line">Order Deny,Allow</span><br><span class="line">Deny from all </span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h5><p>把配置不当的文件进行修改。</p>
+<h3 id="Apache-HTTPD-换行解析漏洞（CVE-2017-15715）"><a href="#Apache-HTTPD-换行解析漏洞（CVE-2017-15715）" class="headerlink" title="Apache HTTPD 换行解析漏洞（CVE-2017-15715）"></a>Apache HTTPD 换行解析漏洞（CVE-2017-15715）</h3><p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ahtoh/p/13219590.html#autoid-3-0-0">https://www.cnblogs.com/ahtoh/p/13219590.html#autoid-3-0-0</a></p>
+<h4 id="1-漏洞描述-2"><a href="#1-漏洞描述-2" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h4><p>Apache HTTPD是一款HTTP服务器，它可以通过mod_php来运行PHP网页。其2.4.0~2.4.29版本中存在<br>一个解析漏洞，在解析PHP时，1.php\x0a将被按照PHP后缀进行解析，导致绕过一些服务器的安全策<br>略。<br>可以看到这里获取文件名是需要单独post一个name的，因为如果通过如下方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$_FILES[&#x27;file&#x27;][&#x27;name&#x27;] </span><br></pre></td></tr></table></figure>
+
+<p>获取文件名的话，会把\x0a自动去除，所以这种方式获取文件名就不会造成这个漏洞</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$_FILES[&#x27;file&#x27;][&#x27;name&#x27;] </span><br></pre></td></tr></table></figure>
+
+<p>上传一个<strong>后缀末尾包含换行符</strong>的文件，来绕过FilesMatch。<strong>绕过FilesMatch不一定能被PHP解析</strong>。</p>
+<p>但可以利用这个漏洞<strong>绕过文件上传黑名单限制</strong></p>
+<p>P牛博客文章：</p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/apache-cve-2017-15715-vulnerability.html">https://www.leavesongs.com/PENETRATION/apache-cve-2017-15715-vulnerability.html</a></p>
+<p>Apache HTTPD 多后缀解析漏洞</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub/tree/master/httpd/apache_parsing_vulnerability">https://github.com/vulhub/vulhub/tree/master/httpd/apache_parsing_vulnerability</a></p>
+<h4 id="2-影响范围"><a href="#2-影响范围" class="headerlink" title="2.影响范围"></a>2.影响范围</h4><p><strong>apache2.4.0~2.4.29版本</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.php\x0a =&gt; 1.php</span><br><span class="line">apache通过mod_php来运行脚本，其2.4.0-2.4.29中存在apache换行解析漏洞，在解析php时xxx.php\x0a将被按照php后缀进行解析，导致绕过一些服务器的安全策略。该漏洞属于用户配置不当产生的漏洞，与具体中间件版本无关。</span><br></pre></td></tr></table></figure>
+
+<p>此漏洞形成的根本原因在于**.php$<strong>中的 <strong>$</strong> 符号，正则表达式中</strong>$<strong>不仅匹配字符串结尾的位置，也可以匹配</strong>\n<strong>或</strong>\r**</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/vulhub/vulhub.git</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220211110012242.png" alt="image-20220211110012242"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220211110056422.png" alt="image-20220211110056422"></p>
+<p>访问8080端口</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220211113529488.png" alt="image-20220211113529488"></p>
+<p>index.php内使用了黑名单<img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214101031217.png" alt="image-20220214101031217"></p>
+<p>上传抓包</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214101859863.png" alt="image-20220214101859863"></p>
+<p>直接上传显示失败</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214101950849.png" alt="image-20220214101950849"></p>
+<p>加入**.<strong>使用</strong>2e**判断位置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214112010410.png" alt="image-20220214112010410"></p>
+<p>将<strong>2e</strong>处的值替换为<strong>0a</strong></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214112321483.png" alt="image-20220214112321483"></p>
+<p>上传成功</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214112306769.png" alt="image-20220214112306769"></p>
+<p>访问后发现被解析</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214112408245.png" alt="image-20220214112408245"></p>
+<p>分析源码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214112949395.png" alt="image-20220214112949395"></p>
+<p>使用黑名单过滤php后缀的文件，结尾为.php的文件都是php文件，在正则表达式中匹配输入字符串的结尾的位置。若设置了RegExp对象的Multiline属性，则会匹配<strong>\n</strong>与<strong>\r</strong></p>
+<p>复现过程中在文件尾部添加了<strong>0a</strong>–&gt;0x0a–&gt;<strong>\n</strong>，所以匹配成功了。</p>
+<p>补充：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.0x0d \r CR这三者代表是回车，是同一个东西，回车的作用只是移动光标至该行的起始位置 </span><br><span class="line"></span><br><span class="line">2.0x0a \n CL这三者代表换行，是同一个东西，换行至下一行行首起始位置</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-修复建议"><a href="#4-修复建议" class="headerlink" title="4.修复建议"></a>4.修复建议</h4><p>1.升级到最新版本</p>
+<p>2.或将上传的文件重命名为为时间戳+随机数+.jpg的格式并禁用上传文件目录执行</p>
+<h3 id="Apache目录遍历漏洞"><a href="#Apache目录遍历漏洞" class="headerlink" title="Apache目录遍历漏洞"></a>Apache目录遍历漏洞</h3><h4 id="1-漏洞描述-3"><a href="#1-漏洞描述-3" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h4><p>当客户端访问某一个目录时，Apache服务器默认会寻找index list中的文件，若文件不存在，则页面返回403状态吗及<strong>当前目录下的所有文件</strong>。此行为称为目录遍历。</p>
+<h4 id="2-漏洞复现-2"><a href="#2-漏洞复现-2" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h4><p>C:\phpStudy\Apache\conf\httpd.conf文件内的默认配置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220214165015911.png" alt="image-20220214165015911"></p>
+<p>访问某目录</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215103209455.png" alt="image-20220215103209455"></p>
+<h4 id="3-漏洞防御"><a href="#3-漏洞防御" class="headerlink" title="3.漏洞防御"></a>3.漏洞防御</h4><p>在C:\phpStudy\Apache\conf\httpd.conf文件中将</p>
+<p>Options <strong>+Indexes</strong> +FollowSymLinks +ExecCGI</p>
+<p>改为</p>
+<p>Options <strong>-Indexes</strong> +FollowSymLinks +ExecCGI</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+Indexes 允许目录浏览</span><br><span class="line">-Indexes 禁止目录浏览</span><br></pre></td></tr></table></figure>
+
+<p>修改后再次重启apache后尝试访问</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215103116822.png" alt="image-20220215103116822"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215103005114.png" alt="image-20220215103005114"></p>
+<h3 id="Apache-SSI远程命令执行漏洞"><a href="#Apache-SSI远程命令执行漏洞" class="headerlink" title="Apache SSI远程命令执行漏洞"></a>Apache SSI远程命令执行漏洞</h3><p>参考链接：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ploto_cs/article/details/108526605">https://blog.csdn.net/ploto_cs/article/details/108526605</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.wangan.com/docs/287">https://www.wangan.com/docs/287</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ahtoh/p/13219590.html#autoid-4-0-0">https://www.cnblogs.com/ahtoh/p/13219590.html#autoid-4-0-0</a></li>
+</ul>
+<h4 id="1-漏洞描述-4"><a href="#1-漏洞描述-4" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h4><p>SSI（Server Side Include），通常称为“服务端嵌入”和“服务端包含”，是一种类似于asp的基于服务器的网页制作技术。默认扩展名是<code>.stm、.shtm和.shtml</code>。</p>
+<p>在测试文件上传漏洞的时候，目标服务器不允许上传<code>php</code>后缀文件，如果目标服务器开启了<code>SSI</code>与<code>CGI</code>的支持，则可以尝试上传一个<code>shtml</code>文件，并利用<code>&lt;!--#exec cmd=&quot;id&quot; --&gt;</code> 语法执行任意命令。</p>
+<h4 id="2-影响范围-1"><a href="#2-影响范围-1" class="headerlink" title="2.影响范围"></a>2.影响范围</h4><p>Apache全版本（支持SSI与CGI）</p>
+<p>该漏洞与apache版本和PHP版本无关，属于用户配置不当造成的解析漏洞。</p>
+<h4 id="3-漏洞复现-1"><a href="#3-漏洞复现-1" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215104417116.png" alt="image-20220215104417116"></p>
+<p>SSI是放置在HTML页面中的指令，它可以将动态生成的内容添加到现有的HTML页面，而不必通过CGl程序或其他动态技术来提供整个页面。以上是定义采用在Apache官网对SSI的定义，说白了就是可以在HTML中加入特定的指令，也可以引入其他的页面。开启SSI需要单独配置Apache,可以参考SSI配置。</p>
+<p>SSI定义和配置深入了解：<br><a target="_blank" rel="noopener" href="https://httpd.apache.org/docs/2.4/howto/ssi.html">https://httpd.apache.org/docs/2.4/howto/ssi.html</a></p>
+<p>SSI可以完成查看时间、文件修改时间、CGl程序执行结果、执行系统命令、连接数据库等操<br>作，功能非常强大。<br>我们要利用的就是SS!执行系统命令的功能，正常的一个包含SS指令的文件，此处文件的后缀取决于Apache的配置，默认为shtml，可以如下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;pre&gt;</span><br><span class="line">&lt;!--#exec cmd=&quot;id&quot; --&gt;</span><br><span class="line">&lt;/pre&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215104942864.png" alt="image-20220215104942864"></p>
+<p>上传test.shtml</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215105142729.png" alt="image-20220215105142729"></p>
+<p>访问后成功执行</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220215105203906.png" alt="image-20220215105203906"></p>
+<p>访问test.shtml</p>
+<h4 id="4-漏洞防御"><a href="#4-漏洞防御" class="headerlink" title="4.漏洞防御"></a>4.漏洞防御</h4><p>可以从上传功能的视角进行漏洞修复；也可以放弃使用SSI</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/02/16/week8/" class="prev">PREV</a><a href="/2022/02/14/week7/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'seansun';
+var disqus_identifier = '2022/02/15/Apache/';
+var disqus_title = 'Apache服务攻防';
+var disqus_url = 'http://example.com/2022/02/15/Apache/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//seansun.disqus.com/count.js" async></script><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

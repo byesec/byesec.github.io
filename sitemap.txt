@@ -1,3 +1,6 @@
+http://example.com/2022/01/20/moon4/
+http://example.com/2021/12/31/2021-12-31/
+http://example.com/2022/02/15/Apache/
 http://example.com/2022/01/03/week2/
 http://example.com/2022/03/04/week9/
 http://example.com/2022/02/16/week8/
