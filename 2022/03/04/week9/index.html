@@ -5,13 +5,13 @@
 <p><strong>难度等级：</strong>低（中）</p>
 <p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
 </blockquote>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><pre class="line-numbers language-none"><code class="language-none">sudo arp-scan -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092702262.png" alt="image-20220217092702262"></p>
-<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.137.123</span><br></pre></td></tr></table></figure>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p- 192.168.137.123<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092741148.png" alt="image-20220217092741148"></p>
-<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80 -sV -sC 192.168.137.123</span><br></pre></td></tr></table></figure>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p22,80 -sV -sC 192.168.137.123<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092915869.png" alt="image-20220217092915869"></p>
 <h3 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092948159.png" alt="image-20220217092948159"></p>
@@ -23,11 +23,11 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217093454464.png" alt="image-20220217093454464"></p>
 <p>发现页面加载过程中请求了一些js脚本（所以加载较慢），但未发现可利用的信息</p>
 <h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>对网站根目录进行目录扫描</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.137.123/ -x txt,html,php -w /usr/share/wordlists/dirb/common.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gobuster dir -u http:&#x2F;&#x2F;192.168.137.123&#x2F; -x txt,html,php -w &#x2F;usr&#x2F;share&#x2F;wordlists&#x2F;dirb&#x2F;common.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112350381.png" alt="image-20220222112350381"></p>
 <p>对&#x2F;site进行目录扫描</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.137.123/site/ -x txt,html,php -w /usr/share/wordlists/dirb/common.txt</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">gobuster dir -u http:&#x2F;&#x2F;192.168.137.123&#x2F;site&#x2F; -x txt,html,php -w &#x2F;usr&#x2F;share&#x2F;wordlists&#x2F;dirb&#x2F;common.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112536698.png" alt="image-20220222112536698"></p>
 <p>发现war.txt，尝试访问</p>
@@ -58,15 +58,15 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223154437101.png" alt="image-20220223154437101"></p>
 <p>发现需要输入密码 初步尝试使用弱口令 未能试出密码</p>
 <p>可以尝试使用简单的脚本进行密码爆破</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for i in $(cat &quot;rockyou.txt&quot;); do steghide extract king -p $i; done</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">for i in $(cat &quot;rockyou.txt&quot;); do steghide extract king -p $i; done<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <h3 id="二进制文件分析提取"><a href="#二进制文件分析提取" class="headerlink" title="二进制文件分析提取"></a>二进制文件分析提取</h3><p>这里使用binwalk二进制分析</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -B king</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">binwalk -B king<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223155430641.png" alt="image-20220223155430641"></p>
 <p>分析结果中发现 确实存在压缩文件 有压缩前后大小的信息 且名为user</p>
 <p>使用binwalk进行提取</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -e king</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">binwalk -e king<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223155710305.png" alt="image-20220223155710305"></p>
 <p>提取后的zip文件解压后为user文件</p>
@@ -79,11 +79,11 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223161707403.png" alt="image-20220223161707403"></p>
 <p>发现ragnar用户 之前在web页面的文字信息内有提到过ragnar（维京人的领袖）</p>
 <p>尝试切换到ragnar用户 失败</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su ragnar</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">su ragnar<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162049251.png" alt="image-20220223162049251"></p>
 <p>尝试自身有无sudo权限 尝试提权为root 结果显示并非sudo组成员 无法提权</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo -s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162131315.png" alt="image-20220223162131315"></p>
 <h3 id="素数查找-x2F-科拉茨猜想"><a href="#素数查找-x2F-科拉茨猜想" class="headerlink" title="素数查找&#x2F;科拉茨猜想"></a>素数查找&#x2F;科拉茨猜想</h3><p>再回到当前目录下的文件readme.txt</p>
@@ -120,7 +120,7 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104541477.png" alt="image-20220303104541477"></p>
 <p>查看&#x2F;etc&#x2F;passwd文件</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104737747.png" alt="image-20220303104737747">顺便优化一下shell</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -i</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;bin&#x2F;bash -i<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104824167.png" alt="image-20220303104824167"></p>
 <p>重新思考之前ssh登陆ragnar账号时，登陆成功后仍需再输入密码，怀疑是存在登陆即运行的程序或进程</p>
@@ -147,7 +147,7 @@
 </blockquote>
 <p>查看Rpyc文档内提到的默认服务端口18812是否在本机开启</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303154936087.png" alt="image-20220303154936087"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ss -pantu | grep 18812</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ss -pantu | grep 18812<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303155200284.png" alt="image-20220303155200284"></p>
 <p>结果显示服务端口18812的状态是开启，也就说明服务端是在运行的</p>

