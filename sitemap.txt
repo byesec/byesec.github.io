@@ -1,3 +1,0 @@
-http://example.com/2022/04/12/hello-world/
-http://example.com/2021/11/30/VulnHub-1-BoredHackerBlog_Social%20Network/
-http://example.com/
