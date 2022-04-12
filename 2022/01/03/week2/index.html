@@ -61,9 +61,9 @@
 <p>对页面进行测试后，<strong>通过长度判断</strong>，发现输入双引号(“)可能产生了闭合，改变原语句执行语义，导致报错，报错页面如下图，<strong>判断存在注入漏洞</strong></p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105012567.png" alt="image-20211009105012567"></p>
 <p>发现报错页面存在<strong>疑似查询语句</strong></p>
-<p>‘select * from code where password&#x3D;”‘ + password + ‘“‘</p>
+<p><code>&#39;select * from code where password=&quot;&#39; + password + &#39;&quot;&#39;</code></p>
 <p>省去单引号</p>
-<p>select * from code where password&#x3D;” + password + “</p>
+<p><code>select * from code where password=&quot; + password + &quot;</code></p>
 <p>尝试通过此语句构造payload</p>
 <p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105106411.png" alt="image-20211009105106411"></p>
 <p>输入**1” or 1&#x3D;1–+**提交后成功利用注入漏洞跨过了“invite code”验证，进入“云防病毒平台”页面</p>
