@@ -1,2 +1,96 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Patrik's Blog</title><meta name="description" content="向自己催更"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
-</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link active">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/1/" class="post-title-link">Test article</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><p>hi just test</div><a href="/2022/04/12/1/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/hello-world/" class="post-title-link">Hello World</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"></div><a href="/2022/04/12/hello-world/" class="read-more">...阅读全文</a></article></li></ul></main><footer><div class="paginator"></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link active">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week6/" class="post-title-link">VulnHub-6-EvilBox-one</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p>靶机：<a target="_blank" rel="noopener" href="https://download.vulnhub.com/evilbox/EvilBox---One.ova">https://download.vulnhub.com/evilbox/EvilBox---One.ova</a><br>  难度：低→中<br>  目标：取得 root 权限 + 2 Flag</p>
+</blockquote></div><a href="/2022/04/12/week6/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week1/" class="post-title-link">VulnHub-1-BoredHackerBlog:Social Network</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>Name:</strong> BoredHackerBlog: Social Network</p>
+<p><strong>Date release:</strong> 29 Mar 2020</p>
+<p><strong>Author</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/author/boredhackerblog,683/">BoredHackerBlog</a></p>
+<p><strong>Series</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/series/boredhackerblog,295/">BoredHackerBlog</a></p>
+<p><strong>Download：</strong><a target="_blank" rel="noopener" href="https://www.notion.so/01-1369b9060f3143efa7d241a715127a8c">https://www.vulnhub.com/entry/boredhackerblog-social-network,454/</a></p>
+<p><strong>Description:</strong></p>
+<p>Leave a message is a new anonymous social networking site where users can post messages for each other. They’ve assigned you to test their set up. They do utilize docker containers. You can conduct attacks against those too. Try to see if you can get root on the host though.</p>
+<p><strong>Difficulty:</strong> Med</p>
+<p><strong>Tasks involved:</strong></p>
+<ul>
+<li>port scanning</li>
+<li>webapp attacks</li>
+<li>code injection</li>
+<li>pivoting</li>
+<li>exploitation</li>
+<li>password cracking</li>
+<li>brute forcing</li>
+</ul>
+<p><strong>Virtual Machine:</strong></p>
+<ul>
+<li>Format: Virtual Machine (Virtualbox OVA)</li>
+<li>Operating System: Linux</li>
+</ul>
+<p><strong>Networking:</strong></p>
+<ul>
+<li>DHCP Service: Enabled</li>
+<li>IP Address Automatically assign</li>
+</ul>
+<p>This works better with VirtualBox rather than VMware.</p>
+</blockquote></div><a href="/2022/04/12/week1/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/Multipass/" class="post-title-link">Multipass安装与使用</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><h2 id="一、Multipass介绍"><a href="#一、Multipass介绍" class="headerlink" title="一、Multipass介绍"></a>一、Multipass介绍</h2><p><strong>Multipass</strong> 是您工作站上的迷你云，使用所有受支持平台（Windows、macOS 和 Linux）的本机管理程序，只需单击（“打开 shell”）或简单<code>multipass shell</code>命令，它就会为您提供 Ubuntu 命令行，甚至键盘快捷键。</p>
+<p><strong>Multipass</strong> 是一个轻量虚拟机管理器，是由 <strong>Ubuntu</strong> 运营公司 <strong>Canonical</strong> 所推出的开源项目。运行环境支持 <strong>Linux</strong>、<strong>Windows</strong>、<strong>macOS</strong>。在不同的操作系统上，使用的是不同的虚拟化技术。在 <strong>Linux</strong> 上使用的是 <strong>KVM</strong>、<strong>Window</strong> 上使用 <strong>Hyper-V</strong>、<strong>macOS</strong> 中使用 <strong>HyperKit</strong> 以最小开销运行VM，支持在笔记本模拟小型云。</p>
+<p>同时，<strong>Multipass</strong> 提供了一个命令行界面来启动和管理 <strong>Linux</strong> 实例。下载一个全新的镜像需要几秒钟的时间，并且在几分钟内就可以启动并运行 <strong>VM</strong>。</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220124102540386.png" alt="image-20220124102540386"></p></div><a href="/2022/04/12/Multipass/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week2/" class="post-title-link">VulnHub-2-BoredHackerBlog:Cloud AV</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>Name:</strong> BoredHackerBlog: Cloud AV</p>
+<p><strong>Date release:</strong> 29 Mar 2020</p>
+<p><strong>Author</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/author/boredhackerblog,683/">BoredHackerBlog</a></p>
+<p><strong>Series</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/series/boredhackerblog,295/">BoredHackerBlog</a></p>
+<p><strong>Download：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova">https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova</a></p>
+<p><strong>Description:</strong></p>
+<p>Cloud Anti-Virus Scanner! is a cloud-based antivirus scanning service.</p>
+<p>Currently, it’s in beta mode. You’ve been asked to test the setup and find vulnerabilities and escalate privs.</p>
+<p><strong>Difficulty:</strong> Easy</p>
+<p><strong>Tasks involved:</strong></p>
+<ul>
+<li>port scanning</li>
+<li>webapp attacks</li>
+<li>sql injection</li>
+<li>command injection</li>
+<li>brute forcing</li>
+<li>code analysis</li>
+</ul>
+<p><strong>Virtual Machine:</strong></p>
+<ul>
+<li>Format: Virtual Machine (Virtualbox OVA)</li>
+<li>Operating System: Linux</li>
+</ul>
+<p><strong>Networking:</strong></p>
+<ul>
+<li>DHCP Service: Enabled</li>
+<li>IP Address Automatically assign</li>
+</ul>
+<p>This works better with VirtualBox rather than VMware.</p>
+</blockquote></div><a href="/2022/04/12/week2/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week3/" class="post-title-link">VulnHub-3-Chronos:1</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>Name</strong>: Chronos: 1</p>
+<p><strong>Date release</strong>: 9 Aug 2021</p>
+<p><strong>Author</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/author/al1enum,745/">AL1ENUM</a></p>
+<p><strong>Series</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/series/chronos,495/">Chronos</a></p>
+<p><strong>Download</strong>:<a target="_blank" rel="noopener" href="https://download.vulnhub.com/chronos/Chronos.ova">https://download.vulnhub.com/chronos/Chronos.ova</a></p>
+<p><strong>Description</strong></p>
+<p><strong>Difficulty</strong> : medium</p>
+<p>This works better with VirtualBox rather than VMware.</p>
+</blockquote></div><a href="/2022/04/12/week3/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week4/" class="post-title-link">VulnHub-4-AdmX_new</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p>靶机地址: <a target="_blank" rel="noopener" href="https://download.vulnhub.com/admx/AdmX_new.7z">https://download.vulnhub.com/admx/AdmX_new.7z</a><br>难度等级: 中<br>打靶目标: 取得 2 个 flag + root 权限</p>
+</blockquote></div><a href="/2022/04/12/week4/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week5/" class="post-title-link">VulnHub-5-hard_socnet2</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>靶机地址:</strong> <a target="_blank" rel="noopener" href="https://download.vulnhub.com/boredhackerblog/hard_socnet2.ova">https://download.vulnhub.com/boredhackerblog/hard_socnet2.ova</a></p>
+<p><strong>难度等级: 高</strong></p>
+<p><strong>打靶目标:</strong> 取得 root 权限</p>
+<p><strong>参考链接:</strong> </p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/xmlrpc.html">https://docs.python.org/zh-cn/3/library/xmlrpc.html</a></li>
+</ol>
+</blockquote></div><a href="/2022/04/12/week5/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week7/" class="post-title-link">VulnHub-7-Hacker_kid</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p>靶机：<a target="_blank" rel="noopener" href="https://download.vulnhub.com/hackerkid/Hacker_Kid-v1.0.1.ova">https://download.vulnhub.com/hackerkid/Hacker_Kid-v1.0.1.ova</a><br>  难度：中<br>  目标：取得root权限</p>
+</blockquote></div><a href="/2022/04/12/week7/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week8/" class="post-title-link">VulnHub-8-y0usef</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>靶机地址：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/y0usef/y0usef.ova">https://download.vulnhub.com/y0usef/y0usef.ova</a></p>
+<p><strong>难度等级：</strong>低</p>
+<p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
+</blockquote></div><a href="/2022/04/12/week8/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/week9/" class="post-title-link">VulnHub-9-Vikings</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>靶机地址：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/vikings/Vikings.ova">https://download.vulnhub.com/vikings/Vikings.ova</a></p>
+<p><strong>难度等级：</strong>低（中）</p>
+<p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
+</blockquote></div><a href="/2022/04/12/week9/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2022/04/12/hello-world/" class="post-title-link">Hello World</a></h2><div class="post-info">2022年4月12日</div><div class="post-content"></div><a href="/2022/04/12/hello-world/" class="read-more">...more</a></article></li></ul></main><footer><div class="paginator"></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

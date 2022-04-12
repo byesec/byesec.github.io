@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> VulnHub-9-Vikings · Patrik's Blog</title><meta name="description" content="VulnHub-9-Vikings - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-9-Vikings</h1><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p><strong>靶机地址：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/vikings/Vikings.ova">https://download.vulnhub.com/vikings/Vikings.ova</a></p>
+<p><strong>难度等级：</strong>低（中）</p>
+<p><strong>打靶目标：</strong>取得 root 权限 + 2 Flag</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092702262.png" alt="image-20220217092702262"></p>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.137.123</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092741148.png" alt="image-20220217092741148"></p>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80 -sV -sC 192.168.137.123</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092915869.png" alt="image-20220217092915869"></p>
+<h3 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217092948159.png" alt="image-20220217092948159"></p>
+<p>点击进入site&#x2F;</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217093037864.png" alt="image-20220217093037864"></p>
+<p>将页面上的信息进行翻译</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222111544143.png" alt="image-20220222111544143"></p>
+<p>查看源码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220217093454464.png" alt="image-20220217093454464"></p>
+<p>发现页面加载过程中请求了一些js脚本（所以加载较慢），但未发现可利用的信息</p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>对网站根目录进行目录扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.137.123/ -x txt,html,php -w /usr/share/wordlists/dirb/common.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112350381.png" alt="image-20220222112350381"></p>
+<p>对&#x2F;site进行目录扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.137.123/site/ -x txt,html,php -w /usr/share/wordlists/dirb/common.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112536698.png" alt="image-20220222112536698"></p>
+<p>发现war.txt，尝试访问</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112823666.png" alt="image-20220222112823666"></p>
+<p>发现该文件内写了类似的路径，继续访问该路径</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222112919502.png" alt="image-20220222112919502"></p>
+<h3 id="编码转化"><a href="#编码转化" class="headerlink" title="编码转化"></a>编码转化</h3><p>发现了大量编码，尝试解码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222113016678.png" alt="image-20220222113016678"></p>
+<p>解码后依然很混乱，但是发现开头PK像是文件头，使用熵辅助验证（Entropy模块）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222113409855.png" alt="image-20220222113409855"></p>
+<p> 熵值大于7.5则大概率是人为创建的，使用Detect File Type模块判断类型</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220222113620160.png" alt="image-20220222113620160"></p>
+<p>该文件应该为一个压缩格式的文件</p>
+<p>将其以压缩文件格式保存在本地</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223152117585.png" alt="image-20220223152117585"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223152138688.png" alt="image-20220223152138688"></p>
+<p>打开时发现需要密码解压</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223152314142.png" alt="image-20220223152314142"></p>
+<h3 id="离线破解zip密码"><a href="#离线破解zip密码" class="headerlink" title="离线破解zip密码"></a>离线破解zip密码</h3><p>使用zip2john将a.zip转换为hash</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223152747104.png" alt="image-20220223152747104"></p>
+<p>复制字典 使用john破解</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223153101010.png" alt="image-20220223153101010"></p>
+<h3 id="隐写图片信息提取"><a href="#隐写图片信息提取" class="headerlink" title="隐写图片信息提取"></a>隐写图片信息提取</h3><p>解压出一张图片 平平无奇</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223153714291.png" alt="image-20220223153714291"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223153736524.png" alt="image-20220223153736524"></p>
+<p>猜测有没有可能和图片隐写相关</p>
+<p>使用steghide查看是否存在隐藏信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223154437101.png" alt="image-20220223154437101"></p>
+<p>发现需要输入密码 初步尝试使用弱口令 未能试出密码</p>
+<p>可以尝试使用简单的脚本进行密码爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for i in $(cat &quot;rockyou.txt&quot;); do steghide extract king -p $i; done</span><br></pre></td></tr></table></figure>
+
+<h3 id="二进制文件分析提取"><a href="#二进制文件分析提取" class="headerlink" title="二进制文件分析提取"></a>二进制文件分析提取</h3><p>这里使用binwalk二进制分析</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -B king</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223155430641.png" alt="image-20220223155430641"></p>
+<p>分析结果中发现 确实存在压缩文件 有压缩前后大小的信息 且名为user</p>
+<p>使用binwalk进行提取</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -e king</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223155710305.png" alt="image-20220223155710305"></p>
+<p>提取后的zip文件解压后为user文件</p>
+<p>查看user文件的类型 发现为txt文件 则尝试查看文件内容</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223155926469.png" alt="image-20220223155926469"></p>
+<p>看到这样的格式不免想到ssh连接 （结合之前端口扫描的22端口） 尝试连接</p>
+<h3 id="ssh登陆floki用户"><a href="#ssh登陆floki用户" class="headerlink" title="ssh登陆floki用户"></a>ssh登陆floki用户</h3><p>经过多次尝试最终使用用户名floki和密码f@m0usboatbuilde7成功登陆</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223161401992.png" alt="image-20220223161401992"></p>
+<h2 id="二、提权"><a href="#二、提权" class="headerlink" title="二、提权"></a>二、提权</h2><h3 id="sudo提权"><a href="#sudo提权" class="headerlink" title="sudo提权"></a>sudo提权</h3><p>简单查看一下当前权限下系统的文件信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223161707403.png" alt="image-20220223161707403"></p>
+<p>发现ragnar用户 之前在web页面的文字信息内有提到过ragnar（维京人的领袖）</p>
+<p>尝试切换到ragnar用户 失败</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su ragnar</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162049251.png" alt="image-20220223162049251"></p>
+<p>尝试自身有无sudo权限 尝试提权为root 结果显示并非sudo组成员 无法提权</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162131315.png" alt="image-20220223162131315"></p>
+<h3 id="素数查找-x2F-科拉茨猜想"><a href="#素数查找-x2F-科拉茨猜想" class="headerlink" title="素数查找&#x2F;科拉茨猜想"></a>素数查找&#x2F;科拉茨猜想</h3><p>再回到当前目录下的文件readme.txt</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162328006.png" alt="image-20220223162328006"></p>
+<p>根据文本内的线索 查看目录下的boat文件的类型</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162504160.png" alt="image-20220223162504160"></p>
+<p>查看目录下的boat文件的内容</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220223162525657.png" alt="image-20220223162525657"></p>
+<p>发现伪代码（开发人员方便理解的代码）</p>
+<p>大致意为：</p>
+<blockquote>
+<p>可打印的字符是你的盟友</p>
+<p>将参数num赋值为第29位素数</p>
+<p>对参数num进行科拉茨猜想</p>
+</blockquote>
+<p>用python写一个计算素数的脚本寻找第29个素数为109</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303094526569.png" alt="image-20220303094526569"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303094900556.png" alt="image-20220303094900556"></p>
+<p>用python写一个对109进行科拉茨猜想的脚本，提示中有可打印的字符，ascii编码最大为255故&lt;256</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303100126604.png" alt="image-20220303100126604"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303100152569.png" alt="image-20220303100152569"></p>
+<p>将打印出来的字符放入CyberChef中</p>
+<p>使用From Decimal模块并设置间隔为逗号，再使用Strings模块并选择长度为1的可打印字符</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303100735715.png" alt="image-20220303100735715"></p>
+<p>最终再使用Find&#x2F;Replace模块 将换行符替换为空</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303100824928.png" alt="image-20220303100824928"></p>
+<p>得到最终的字符串<code>mR)|&gt;^/Gky[gz=\.F#j5P(</code></p>
+<h3 id="ssh登陆ragnar用户"><a href="#ssh登陆ragnar用户" class="headerlink" title="ssh登陆ragnar用户"></a>ssh登陆ragnar用户</h3><p>尝试使用该字符串作为密码登陆ragnar账号</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104008438.png" alt="image-20220303104008438"></p>
+<p>再次将<code>mR)|&gt;^/Gky[gz=\.F#j5P(</code>粘贴输入</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104318996.png" alt="image-20220303104318996"></p>
+<p>成功登入，提示信息显示ragnar用户也不是root用户，没有sudo权限</p>
+<h3 id="Flag1"><a href="#Flag1" class="headerlink" title="Flag1"></a>Flag1</h3><p>查看当前目录信息，user.txt内应为第一个flag</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104541477.png" alt="image-20220303104541477"></p>
+<p>查看&#x2F;etc&#x2F;passwd文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104737747.png" alt="image-20220303104737747">顺便优化一下shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -i</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303104824167.png" alt="image-20220303104824167"></p>
+<p>重新思考之前ssh登陆ragnar账号时，登陆成功后仍需再输入密码，怀疑是存在登陆即运行的程序或进程</p>
+<p>查看当前目录下有无隐藏文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303105052770.png" alt="image-20220303105052770"></p>
+<h3 id="Rpc漏洞提权"><a href="#Rpc漏洞提权" class="headerlink" title="Rpc漏洞提权"></a>Rpc漏洞提权</h3><p>查看环境变量文件 最终发现在.profile文件内可能存在可利用信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303105227689.png" alt="image-20220303105227689"></p>
+<p>发现在ssh登陆后，会安装和配置libpam-umask包，并直接使用<strong>sudo</strong>权限运行了python脚本**&#x2F;usr&#x2F;local&#x2F;bin&#x2F;rpyc_classic.py**</p>
+<p>查看**&#x2F;usr&#x2F;local&#x2F;bin&#x2F;rpyc_classic.py**</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303111707601.png" alt="image-20220303111707601"></p>
+<p>了解一下rpc（服务端、客户端连接方式等）</p>
+<p><a target="_blank" rel="noopener" href="https://rpyc.readthedocs.io/en/latest/tutorial/tut1.html">https://rpyc.readthedocs.io/en/latest/tutorial/tut1.html</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303112050194.png" alt="image-20220303112050194"></p>
+<p>发现可由客户端将函数传输到服务端并执行</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303112630757.png" alt="image-20220303112630757"></p>
+<p>查看该文件是否有写权限</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303112323137.png" alt="image-20220303112323137"></p>
+<p>普通用户无法写入&#x2F;更改</p>
+<p>整理大致思路：利用客户端可以向服务端传输数据的特性，向服务端传输数据，服务端默认以root权限执行，利用此特性，将ragnar用户添加到sudo组</p>
+<p>编写exp</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303161022685.png" alt="image-20220303161022685"></p>
+<blockquote>
+<p>import rpyc<br>def shell():<br>   import os<br>   os.system(“sudo usermod -a -G sudo ragnar”)<br>conn &#x3D; rpyc.classic.connect(“localhost”)<br>fn &#x3D; conn.teleport(shell)<br>fn()</p>
+</blockquote>
+<p>查看Rpyc文档内提到的默认服务端口18812是否在本机开启</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303154936087.png" alt="image-20220303154936087"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ss -pantu | grep 18812</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303155200284.png" alt="image-20220303155200284"></p>
+<p>结果显示服务端口18812的状态是开启，也就说明服务端是在运行的</p>
+<p>执行exp，并重新使用ssh登陆ragnar账号，验证是否成功</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303160356664.png" alt="image-20220303160356664"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303161344973.png" alt="image-20220303161344973"></p>
+<p>页面提示要以管理员身份运行命令，使用sudo执行命令，这里使用<code>sudo -s</code> 执行环境变数中的 SHELL</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303161509841.png" alt="image-20220303161509841"></p>
+<h3 id="Flag2"><a href="#Flag2" class="headerlink" title="Flag2"></a>Flag2</h3><p>最终成功提权至root权限并获取第二个flag</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20220303161726600.png" alt="image-20220303161726600"></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/04/12/week8/" class="prev">PREV</a><a href="/2022/04/12/hello-world/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

