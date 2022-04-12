@@ -1,3 +1,4 @@
+http://example.com/2022/04/12/week1/
 http://example.com/2022/04/12/hello-world/
 http://example.com/2021/02/08/week9/
 http://example.com/2021/02/08/week8/
@@ -6,5 +7,4 @@ http://example.com/2021/11/30/week5/
 http://example.com/2021/11/30/week6/
 http://example.com/2021/11/30/week4/
 http://example.com/2021/11/30/week2/
-http://example.com/2021/11/30/week1/
 http://example.com/
