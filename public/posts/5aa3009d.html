@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="0、前言​        今年4月份参加某某杯线下赛的时候，尝试去做pwn的基础题目结果环境报错落败而逃😂，在M1&#x2F;M2芯片的MacBook上因为arm架构的原因，搭建pwn环境并不是那么顺利，于是回来以后就尝试搞了下相关环境。 ​        结合在B站看到的UP主:Retr0的寄存器的视频「零基础向」有趣的Pwn博主的Mac x86虚拟机Pwn环境搭建教程，成功使用UTM虚拟机搭">
+<meta property="og:type" content="article">
+<meta property="og:title" content="M1&#x2F;M2 Pwn环境配置">
+<meta property="og:url" content="http://byesec.com/posts/5aa3009d.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="0、前言​        今年4月份参加某某杯线下赛的时候，尝试去做pwn的基础题目结果环境报错落败而逃😂，在M1&#x2F;M2芯片的MacBook上因为arm架构的原因，搭建pwn环境并不是那么顺利，于是回来以后就尝试搞了下相关环境。 ​        结合在B站看到的UP主:Retr0的寄存器的视频「零基础向」有趣的Pwn博主的Mac x86虚拟机Pwn环境搭建教程，成功使用UTM虚拟机搭">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682042561933-c06a9e8a-ed7d-4327-85a8-73a4220f6d9e.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043196502-8a22a597-df9a-4c25-a64b-5474d27c45f9.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043232929-dc0d518a-a4b8-408b-bec6-8f479394092d.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043278430-99a390d9-9d4c-4ff8-9554-c47021cffd57.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043321995-ddb43524-3bc9-4338-8980-c6f060b6741c.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043330634-696e4307-5ece-4c65-a170-5c6c5da76c26.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043351668-4f574da4-cf34-44cb-9d42-4dda9f080db0.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043389948-27ad093a-983d-4a93-afdf-ff5b8147989c.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682044801960-8dc25c23-a19e-42ec-9db1-8a8ab3ce2176.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682044860724-f19163bc-c151-4179-97f2-583486fbaff2.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682045963758-015141ee-41bd-4a84-b55f-a0383c376258.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046039369-c48d75bd-6b97-45cc-b452-885caa3d0db3.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046096252-33981745-a9a0-4327-81ed-1e253e8aa0a2.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046236421-aff6e9b7-15a2-4ae8-916c-8d21aac47691.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046458028-9f212271-cbd1-4d59-a9ca-cacf3c654b02.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682051165486-1c201820-0400-4e87-b67b-d8b51aa37635.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682051417321-9fe39a62-c761-4068-9fc0-12f429aaa3c8.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052030688-44d40e26-7a30-4ab9-9b71-241b8279dd0f.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052138023-802cfe29-8b43-4ec2-9cad-06b03e222a27.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052256828-66983d05-6a4b-446a-a0db-f7dbc80417ba.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052599681-b85e96da-8457-4d71-90de-cd195560e2b6.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052616845-0d309c66-5b52-43ec-9c0c-624646652b24.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052626978-48efac06-438b-489e-bcd1-4cabf1ec5088.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052669051-5091049c-1280-46ad-80ed-2e47586f0a36.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052768311-a600a948-0343-40a1-be74-6c4d5bc4b1b2.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052781076-fc88d190-9c32-4ff8-a399-b95d984e4005.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052798162-664d3096-78dd-4b33-b8a8-3aeb64aef8a3.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682053536504-34735c98-4576-4560-90c9-fb0c3194dd12.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682053870855-76194fc3-87b8-4f36-b5e2-bf0b03a02064.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682054147118-9ebecac1-2d1a-456b-a843-c21b3e4fc90e.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682054469623-fccfa77d-2dd2-43c8-bdd6-7cbd5c3f9a32.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058433274-bb897502-bb8f-4c4a-af78-5337a57ae2ab.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058745514-87cc3177-7da2-4657-9955-3b1f606a7f8d.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058910451-75ebee19-4642-4132-95a3-3d4cd7490b66.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059611678-3b03a502-2cb5-4704-b249-6d3d6b7f485f.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059734346-0392d32e-ccf3-4c78-8ad7-6b52032dff02.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059818658-6cd0d06b-4257-4ac1-8c51-d757708323a4.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682062620207-a77a8f73-3a52-4fd0-9fa7-3115e5c10314.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682063217297-d0460f57-0407-46d7-b20d-e54cec1e595e.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682063254332-f62f7a45-29f7-4fe7-bdcb-6f6077026a78.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682064017924-6a7d7211-bbfc-4e03-a287-b9ea4c3b6cef.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/22799436/1682064971239-2f0f2a77-c588-4de9-8b8a-a1675577b20c.png#averageHue=%23353534&clientId=u7ee99dc7-54f3-4&from=paste&height=154&id=u25a6211d&originHeight=308&originWidth=2468&originalType=binary&ratio=2&rotation=0&showTitle=false&size=94799&status=done&style=none&taskId=u4defa55c-6283-482d-b7f6-6652a23a6b3&title=&width=1234">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682064535988-be2e72db-bf73-4b27-b647-1ad901e52b99.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065329497-3404fa56-bfbc-4206-88f7-3c4925cdec6a.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065414434-10b29106-7e68-423d-b7a5-c62c34c682e1.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065492151-de520ab0-959e-4785-a067-490300b8edce.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065977569-21824a53-4684-4242-bbc8-45aeb9e7ee64.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066482566-295e64ea-c065-4359-8c76-6c007bc6f53d.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066502035-4226af2a-8f5e-449e-b703-4598d673d151.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067704125-a6c04d9e-51de-46ce-add1-c951d51d2690.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067746018-ea8e6da0-9e4a-4efa-a05c-e40b70c7fb80.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066962932-179fb4b1-cd96-4fd7-8f2e-f0779aa8dd08.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067126959-c0c042e2-926b-4495-a1b9-e1b1298cc6e5.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682068412615-fe598f59-4a34-41e2-97a1-f08df0a93d47.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682068479943-643b620a-99bf-4fec-971c-1e52927c885e.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070582511-13a7b0e9-f2a6-4b6c-9d79-2514c87cc5b1.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070312113-cbf7816d-2f15-4e2a-a899-71a5e6d6beb1.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070966680-9984bec2-1339-4036-b488-d6084576e562.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682071283971-1d0060af-00ce-4225-b7b8-2029ebd97161.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682071293835-883fc95b-cbf7-4b73-ae7e-c864d4008d75.png">
+<meta property="article:published_time" content="2023-07-10T09:00:00.000Z">
+<meta property="article:modified_time" content="2023-07-10T08:39:23.773Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="UTM">
+<meta property="article:tag" content="Pwntools">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682042561933-c06a9e8a-ed7d-4327-85a8-73a4220f6d9e.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>M1/M2 Pwn环境配置</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/950ba293.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/fd146a69.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/5aa3009d.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/5aa3009d.html&text=M1/M2 Pwn环境配置"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/5aa3009d.html&is_video=false&description=M1/M2 Pwn环境配置"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=M1/M2 Pwn环境配置&body=Check out this article: http://byesec.com/posts/5aa3009d.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/5aa3009d.html&name=M1/M2 Pwn环境配置&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/5aa3009d.html&t=M1/M2 Pwn环境配置"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%80%89%E6%8B%A9%EF%BC%9AUTM"><span class="toc-number">2.</span> <span class="toc-text">1、虚拟机选择：UTM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="toc-number">3.</span> <span class="toc-text">2、镜像选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%AF%BC%E5%85%A5UTM"><span class="toc-number">4.</span> <span class="toc-text">3、导入UTM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%B7%A5%E5%85%B7%E5%AE%89%E8%A3%85"><span class="toc-number">5.</span> <span class="toc-text">4、工具安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#pip"><span class="toc-number">5.1.</span> <span class="toc-text">pip</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pwntools"><span class="toc-number">5.2.</span> <span class="toc-text">pwntools</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gdb"><span class="toc-number">5.3.</span> <span class="toc-text">gdb</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDpeda"><span class="toc-number">5.3.1.</span> <span class="toc-text">下载peda</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDPwngdb"><span class="toc-number">5.3.2.</span> <span class="toc-text">下载Pwngdb</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDpwndbg"><span class="toc-number">5.3.3.</span> <span class="toc-text">下载pwndbg</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85pwndbg"><span class="toc-number">5.3.4.</span> <span class="toc-text">安装pwndbg</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#seccomp-tools-%E6%9F%A5%E6%B2%99%E7%9B%92"><span class="toc-number">5.4.</span> <span class="toc-text">seccomp-tools(查沙盒)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ropper"><span class="toc-number">5.5.</span> <span class="toc-text">ropper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#qemu-%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E9%A2%98"><span class="toc-number">5.6.</span> <span class="toc-text">qemu(系统内核题)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#glibc-all-in-one"><span class="toc-number">5.7.</span> <span class="toc-text">glibc-all-in-one</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patchelf-%E4%BF%AE%E6%94%B9%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E7%9A%84libc%E7%89%88%E6%9C%AC"><span class="toc-number">5.8.</span> <span class="toc-text">patchelf(修改可执行程序的libc版本)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zstd"><span class="toc-number">5.9.</span> <span class="toc-text">zstd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">5.10.</span> <span class="toc-text"></span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        M1/M2 Pwn环境配置
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">patrik</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-07-10T09:00:00.000Z" class="dt-published" itemprop="datePublished">2023-07-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a> › <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/Mac%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB/">Mac👨‍💻</a> › <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/Mac%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB/CTF%F0%9F%9A%A9/">CTF🚩</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Pwntools/" rel="tag">Pwntools</a>, <a class="p-category" href="/tags/UTM/" rel="tag">UTM</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="0、前言"><a href="#0、前言" class="headerlink" title="0、前言"></a>0、前言</h2><p>​        今年4月份参加某某杯线下赛的时候，尝试去做pwn的基础题目结果环境报错落败而逃😂，在M1&#x2F;M2芯片的MacBook上因为arm架构的原因，搭建pwn环境并不是那么顺利，于是回来以后就尝试搞了下相关环境。</p>
+<p>​        结合在B站看到的UP主:<a target="_blank" rel="noopener" href="https://space.bilibili.com/442050814">Retr0的寄存器</a>的视频<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1HM4y1X7Fy/">「零基础向」有趣的Pwn博主的Mac x86虚拟机Pwn环境搭建教程</a>，成功使用UTM虚拟机搭建了x86架构下的Pwn环境；然后再结合UP主<a target="_blank" rel="noopener" href="https://space.bilibili.com/2064831648">BOYcc1</a>的视频<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Se411g79e/">pwn环境安装</a>成功安装了相关工具。</p>
+<p>​		在搭建、安装的过程中，顺便截图记录了一下，4月写的，今天整理文件的时候翻到了，顺便传上来，希望能对有需要的师傅提供些帮助。</p>
+<h2 id="1、虚拟机选择：UTM"><a href="#1、虚拟机选择：UTM" class="headerlink" title="1、虚拟机选择：UTM"></a>1、虚拟机选择：UTM</h2><p><a target="_blank" rel="noopener" href="https://mac.getutm.app/">UTM</a><br><a target="_blank" rel="noopener" href="https://github.com/utmapp/UTM">https://github.com/utmapp/UTM</a></p>
+<h2 id="2、镜像选择"><a href="#2、镜像选择" class="headerlink" title="2、镜像选择"></a>2、镜像选择</h2><p>阿里云镜像站下载utuntu 20.04.5</p>
+<p>(这里用的是桌面版的，然后删除了桌面环境。也可以尝试直接取下载服务器版的，能更方便些👀)</p>
+<p><a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/ubuntu-releases/20.04/ubuntu-200.04.5-desktop-amd64.iso">About us</a><br><a target="_blank" rel="noopener" href="http://mirrors.aliyun.com/ubuntu-releases/">ubuntu-releases安装包下载_开源镜像站-阿里云</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682042561933-c06a9e8a-ed7d-4327-85a8-73a4220f6d9e.png" alt="image.png"></p>
+<h2 id="3、导入UTM"><a href="#3、导入UTM" class="headerlink" title="3、导入UTM"></a>3、导入UTM</h2><p>选择模拟CPU<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043196502-8a22a597-df9a-4c25-a64b-5474d27c45f9.png" alt="image.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043232929-dc0d518a-a4b8-408b-bec6-8f479394092d.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043278430-99a390d9-9d4c-4ff8-9554-c47021cffd57.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043321995-ddb43524-3bc9-4338-8980-c6f060b6741c.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043330634-696e4307-5ece-4c65-a170-5c6c5da76c26.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043351668-4f574da4-cf34-44cb-9d42-4dda9f080db0.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682043389948-27ad093a-983d-4a93-afdf-ff5b8147989c.png" alt="image.png"><br>打开刚创建的虚拟机 等待加载至桌面后选择install Ubuntu<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682044801960-8dc25c23-a19e-42ec-9db1-8a8ab3ce2176.png" alt="image.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682044860724-f19163bc-c151-4179-97f2-583486fbaff2.png" alt="image.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682045963758-015141ee-41bd-4a84-b55f-a0383c376258.png" alt="image.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046039369-c48d75bd-6b97-45cc-b452-885caa3d0db3.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046096252-33981745-a9a0-4327-81ed-1e253e8aa0a2.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046236421-aff6e9b7-15a2-4ae8-916c-8d21aac47691.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682046458028-9f212271-cbd1-4d59-a9ca-cacf3c654b02.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682051165486-1c201820-0400-4e87-b67b-d8b51aa37635.png" alt="image.png"><br>安装完成后点击重启<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682051417321-9fe39a62-c761-4068-9fc0-12f429aaa3c8.png" alt="image.png"><br>按提示删除刚才的iso文件后 输入ENTER键 等待进度条读取加载完成后看到图形界面然后关机<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052030688-44d40e26-7a30-4ab9-9b71-241b8279dd0f.png" alt="image.png"><br>关机完成后 清除iso路径后再打开虚拟机 等待<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052138023-802cfe29-8b43-4ec2-9cad-06b03e222a27.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052256828-66983d05-6a4b-446a-a0db-f7dbc80417ba.png" alt="image.png"><br>更新的都不更新 一律跳过&#x2F;下一步<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052599681-b85e96da-8457-4d71-90de-cd195560e2b6.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052616845-0d309c66-5b52-43ec-9c0c-624646652b24.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052626978-48efac06-438b-489e-bcd1-4cabf1ec5088.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052669051-5091049c-1280-46ad-80ed-2e47586f0a36.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052768311-a600a948-0343-40a1-be74-6c4d5bc4b1b2.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052781076-fc88d190-9c32-4ff8-a399-b95d984e4005.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682052798162-664d3096-78dd-4b33-b8a8-3aeb64aef8a3.png" alt="image.png"><br>移除桌面环境<br>打开终端<br>安装git</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install git</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682053536504-34735c98-4576-4560-90c9-fb0c3194dd12.png" alt="image.png"><br>下载Retr0做好的脚本<br>脚本链接<a target="_blank" rel="noopener" href="https://github.com/DDizzzy79/Reg-Retr0.git">https://github.com/DDizzzy79/Reg-Retr0.git</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/DDizzzy79/Reg-Retr0.git</span><br><span class="line"><span class="built_in">cd</span> Reg-Retr0/</span><br><span class="line"><span class="built_in">cd</span> Mac_x86_Pwn_Build_Up/</span><br><span class="line"><span class="comment">#换源</span></span><br><span class="line">sudo ./execute_to_change_apt_source.sh</span><br><span class="line"><span class="comment">#更新源</span></span><br><span class="line">sudo apt update</span><br><span class="line"><span class="comment">#为移除GNOME桌面环境做重启前准备</span></span><br><span class="line">sudo ./execute_to_prepare_for_gnome_remove.sh</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682053870855-76194fc3-87b8-4f36-b5e2-bf0b03a02064.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682054147118-9ebecac1-2d1a-456b-a843-c21b3e4fc90e.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682054469623-fccfa77d-2dd2-43c8-bdd6-7cbd5c3f9a32.png" alt="image.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#输入用户名密码后 进入之前的目录</span></span><br><span class="line"><span class="built_in">cd</span> /Desktop/Reg-Retr0/Mac_x86_Pwn_Build_Up/</span><br><span class="line"><span class="comment">#需要注意删除前需要修改/etc/default/grub</span></span><br><span class="line">可以先安装vim 方便使用</span><br><span class="line">sudo apt install vim</span><br><span class="line">需要修改 /etc/default/grub 中的 </span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=<span class="string">&quot;quiet splash&quot;</span> </span><br><span class="line">成 </span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=<span class="string">&quot;text&quot;</span></span><br><span class="line">vim /etc/default/grub</span><br><span class="line"><span class="comment">#删除和GNOME桌面环境有关的依赖项</span></span><br><span class="line">sudo ./execute_to_remove_gnome.sh</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058433274-bb897502-bb8f-4c4a-af78-5337a57ae2ab.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058745514-87cc3177-7da2-4657-9955-3b1f606a7f8d.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682058910451-75ebee19-4642-4132-95a3-3d4cd7490b66.png" alt="image.png"><br>安装ssh 方便连接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">sudo systemctl status ssh</span><br><span class="line">sudo apt instlal net-tools</span><br><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059611678-3b03a502-2cb5-4704-b249-6d3d6b7f485f.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059734346-0392d32e-ccf3-4c78-8ad7-6b52032dff02.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682059818658-6cd0d06b-4257-4ac1-8c51-d757708323a4.png" alt="image.png"></p>
+<h2 id="4、工具安装"><a href="#4、工具安装" class="headerlink" title="4、工具安装"></a>4、工具安装</h2><p>ubuntu20自带python版本为3.8.10<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682062620207-a77a8f73-3a52-4fd0-9fa7-3115e5c10314.png" alt="image.png"></p>
+<h3 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python3-pip</span><br></pre></td></tr></table></figure>
+<h3 id="pwntools"><a href="#pwntools" class="headerlink" title="pwntools"></a>pwntools</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install pwntools -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682063217297-d0460f57-0407-46d7-b20d-e54cec1e595e.png" alt="image.png"><br>安装好后终端内输入python3 然后输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br></pre></td></tr></table></figure>
+<p> 如果没有报错就证明安装成功了<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682063254332-f62f7a45-29f7-4fe7-bdcb-6f6077026a78.png" alt="image.png"><br>并且会得到俩个工具 checksec 和 ROPgedget<br>添加环境变量后即可运行checksec</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#安装pwntools后checksec在~/.local/bin下</span></span><br><span class="line"><span class="comment">#查看当前环境变量</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span></span><br><span class="line"><span class="comment">#在~/.bashrc内添加</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/home/patrik/.local/bin</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682064017924-6a7d7211-bbfc-4e03-a287-b9ea4c3b6cef.png" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2023/png/22799436/1682064971239-2f0f2a77-c588-4de9-8b8a-a1675577b20c.png#averageHue=%23353534&clientId=u7ee99dc7-54f3-4&from=paste&height=154&id=u25a6211d&originHeight=308&originWidth=2468&originalType=binary&ratio=2&rotation=0&showTitle=false&size=94799&status=done&style=none&taskId=u4defa55c-6283-482d-b7f6-6652a23a6b3&title=&width=1234" alt="image.png"></p>
+<h3 id="gdb"><a href="#gdb" class="headerlink" title="gdb"></a>gdb</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> tools</span><br><span class="line"><span class="built_in">cd</span> tools</span><br></pre></td></tr></table></figure>
+<h4 id="下载peda"><a href="#下载peda" class="headerlink" title="下载peda"></a>下载peda</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/longld/peda.git</span><br></pre></td></tr></table></figure>
+<h4 id="下载Pwngdb"><a href="#下载Pwngdb" class="headerlink" title="下载Pwngdb"></a>下载Pwngdb</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/scwuaptx/Pwngdb.git </span><br></pre></td></tr></table></figure>
+<h4 id="下载pwndbg"><a href="#下载pwndbg" class="headerlink" title="下载pwndbg"></a>下载pwndbg</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/pwndbg/pwndbg</span><br><span class="line"><span class="comment">#若网络存在问题可直接本机下载上传至虚拟机内解压</span></span><br><span class="line"><span class="comment">#sudo apt install unzip</span></span><br><span class="line"><span class="comment">#unzip xxx.zip</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682064535988-be2e72db-bf73-4b27-b647-1ad901e52b99.png" alt="image.png"></p>
+<h4 id="安装pwndbg"><a href="#安装pwndbg" class="headerlink" title="安装pwndbg"></a>安装pwndbg</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim pwndbg/setup.sh</span><br><span class="line">修改源为国内源 添加</span><br><span class="line">-i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065329497-3404fa56-bfbc-4206-88f7-3c4925cdec6a.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065414434-10b29106-7e68-423d-b7a5-c62c34c682e1.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065492151-de520ab0-959e-4785-a067-490300b8edce.png" alt="image.png"><br>最后报错 pip重新安装指定的包和版本即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple launchpadlib</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682065977569-21824a53-4684-4242-bbc8-45aeb9e7ee64.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066482566-295e64ea-c065-4359-8c76-6c007bc6f53d.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066502035-4226af2a-8f5e-449e-b703-4598d673d151.png" alt="image.png"><br>配置Pwngdb</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"><span class="comment">#tools目录下</span></span><br><span class="line"><span class="built_in">cp</span> Pwngdb/.gdbinit ~</span><br><span class="line">vim ~/.gdbinit</span><br><span class="line"><span class="comment">#打开文件后文件内容修改如下，这里要注意source ～/pwndgb/gdbinit.py </span></span><br><span class="line"><span class="comment">#一定要在source ~/Pwngdb/angelheap/gdbinit.py前面，要不然会使用默认配置。</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067704125-a6c04d9e-51de-46ce-add1-c951d51d2690.png" alt="image.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#source ~/tools/peda/peda.py</span></span><br><span class="line"><span class="built_in">source</span> ~/tools/pwndbg/gdbinit.py</span><br><span class="line"><span class="built_in">source</span> ~/tools/Pwngdb/pwngdb.py</span><br><span class="line"><span class="built_in">source</span> ~/tools/Pwngdb/angelheap/gdbinit.py</span><br><span class="line"></span><br><span class="line">define hook-run</span><br><span class="line">python</span><br><span class="line">import angelheap</span><br><span class="line">angelheap.init_angelheap()</span><br><span class="line">end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067746018-ea8e6da0-9e4a-4efa-a05c-e40b70c7fb80.png" alt="image.png"></p>
+<h3 id="seccomp-tools-查沙盒"><a href="#seccomp-tools-查沙盒" class="headerlink" title="seccomp-tools(查沙盒)"></a>seccomp-tools(查沙盒)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gcc ruby-dev</span><br><span class="line">sudo gem install seccomp-tools</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682066962932-179fb4b1-cd96-4fd7-8f2e-f0779aa8dd08.png" alt="image.png"></p>
+<h3 id="ropper"><a href="#ropper" class="headerlink" title="ropper"></a>ropper</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install ropper</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682067126959-c0c042e2-926b-4495-a1b9-e1b1298cc6e5.png" alt="image.png"></p>
+<h3 id="qemu-系统内核题"><a href="#qemu-系统内核题" class="headerlink" title="qemu(系统内核题)"></a>qemu(系统内核题)</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install qemu-user qemu-system</span><br></pre></td></tr></table></figure>
+<h3 id="glibc-all-in-one"><a href="#glibc-all-in-one" class="headerlink" title="glibc-all-in-one"></a>glibc-all-in-one</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/matrix1001/glibc-all-in-one.git</span><br><span class="line"><span class="built_in">cd</span> glibc-all-in-one</span><br><span class="line">vim update_list</span><br><span class="line">改为<span class="comment">#!/usr/bin/python3</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682068412615-fe598f59-4a34-41e2-97a1-f08df0a93d47.png" alt="image.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#更新最新版本的glibc</span></span><br><span class="line">./update_list</span><br><span class="line"><span class="comment">#查看可下载的glibc</span></span><br><span class="line"><span class="built_in">cat</span> list</span><br><span class="line"><span class="comment">#根据题目所给的libc,找对应版本的连接器,并下载该连接器</span></span><br><span class="line">./download 2.23-0ubuntu11.3_amd64</span><br><span class="line"><span class="comment">#下载好的libc就在libs目录下</span></span><br><span class="line"><span class="built_in">ls</span> libs/2.23-0ubuntu11.3_amd64/</span><br><span class="line"><span class="comment">#把ld文件和libc复制到pwn题目录下</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#一般来说使用时把标记的ld-2.23.so和libd-2.23.so拷贝在程序目录下即可</span></span><br><span class="line"><span class="comment">#.debug文件用于gdb调试</span></span><br><span class="line"><span class="comment">#在gdb设置setdebugf</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682068479943-643b620a-99bf-4fec-971c-1e52927c885e.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070582511-13a7b0e9-f2a6-4b6c-9d79-2514c87cc5b1.png" alt="image.png"></p>
+<h3 id="patchelf-修改可执行程序的libc版本"><a href="#patchelf-修改可执行程序的libc版本" class="headerlink" title="patchelf(修改可执行程序的libc版本)"></a>patchelf(修改可执行程序的libc版本)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/NixOS/patchelf.git</span><br><span class="line"><span class="built_in">cd</span> patchelf</span><br><span class="line">./bootstrap.sh</span><br><span class="line"><span class="comment">#autoreconf是需要最小化安装的 直接apt是get不下来的</span></span><br><span class="line">sudo apt install -y dh-autoreconf</span><br><span class="line">./bootstrap.sh</span><br><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make check</span><br><span class="line">sudo make install</span><br><span class="line"><span class="comment">#使用</span></span><br><span class="line"><span class="comment">#查看题目原来的libc和ld “easyheap”为可执行程序 此处为例子</span></span><br><span class="line">ldd easyheap</span><br><span class="line"><span class="comment">#替换libc</span></span><br><span class="line">patchelf --replace-needed libc.so.6 ./libc-2.23.so ./easyheap</span><br><span class="line"><span class="comment">#设置ld文件</span></span><br><span class="line">patchelf --set-interpreter ./ld-2.23.so ./easyheap</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070312113-cbf7816d-2f15-4e2a-a899-71a5e6d6beb1.png" alt="image.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682070966680-9984bec2-1339-4036-b488-d6084576e562.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682071283971-1d0060af-00ce-4225-b7b8-2029ebd97161.png" alt="image.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2023/07/10/1682071293835-883fc95b-cbf7-4b73-ae7e-c864d4008d75.png" alt="image.png"></p>
+<h3 id="zstd"><a href="#zstd" class="headerlink" title="zstd"></a>zstd</h3><p>预防报错（extract脚本在解压的时候用到了zstd解压命令）提前安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install zstd</span><br></pre></td></tr></table></figure>
+
+<p>LibcSearcher用来泄露libc库中函数的偏移的库，<br>one_gadget用来寻找libc库中的execve(‘&#x2F;bin&#x2F;sh’, NULL, NULL)可以一个gadget就可以getshell</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%80%89%E6%8B%A9%EF%BC%9AUTM"><span class="toc-number">2.</span> <span class="toc-text">1、虚拟机选择：UTM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="toc-number">3.</span> <span class="toc-text">2、镜像选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%AF%BC%E5%85%A5UTM"><span class="toc-number">4.</span> <span class="toc-text">3、导入UTM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%B7%A5%E5%85%B7%E5%AE%89%E8%A3%85"><span class="toc-number">5.</span> <span class="toc-text">4、工具安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#pip"><span class="toc-number">5.1.</span> <span class="toc-text">pip</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pwntools"><span class="toc-number">5.2.</span> <span class="toc-text">pwntools</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gdb"><span class="toc-number">5.3.</span> <span class="toc-text">gdb</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDpeda"><span class="toc-number">5.3.1.</span> <span class="toc-text">下载peda</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDPwngdb"><span class="toc-number">5.3.2.</span> <span class="toc-text">下载Pwngdb</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDpwndbg"><span class="toc-number">5.3.3.</span> <span class="toc-text">下载pwndbg</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85pwndbg"><span class="toc-number">5.3.4.</span> <span class="toc-text">安装pwndbg</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#seccomp-tools-%E6%9F%A5%E6%B2%99%E7%9B%92"><span class="toc-number">5.4.</span> <span class="toc-text">seccomp-tools(查沙盒)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ropper"><span class="toc-number">5.5.</span> <span class="toc-text">ropper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#qemu-%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E9%A2%98"><span class="toc-number">5.6.</span> <span class="toc-text">qemu(系统内核题)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#glibc-all-in-one"><span class="toc-number">5.7.</span> <span class="toc-text">glibc-all-in-one</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patchelf-%E4%BF%AE%E6%94%B9%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E7%9A%84libc%E7%89%88%E6%9C%AC"><span class="toc-number">5.8.</span> <span class="toc-text">patchelf(修改可执行程序的libc版本)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zstd"><span class="toc-number">5.9.</span> <span class="toc-text">zstd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">5.10.</span> <span class="toc-text"></span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/5aa3009d.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/5aa3009d.html&text=M1/M2 Pwn环境配置"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/5aa3009d.html&is_video=false&description=M1/M2 Pwn环境配置"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=M1/M2 Pwn环境配置&body=Check out this article: http://byesec.com/posts/5aa3009d.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/5aa3009d.html&title=M1/M2 Pwn环境配置"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/5aa3009d.html&name=M1/M2 Pwn环境配置&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/5aa3009d.html&t=M1/M2 Pwn环境配置"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

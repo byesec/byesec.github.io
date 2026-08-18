@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前情提要​	重新过一遍Java安全，按P牛的《Java安全漫谈》的PDF和源码从头走了一遍（P牛🐮👍），从把PDF里的知识点和Poc测试的过程重新整理了一下。 ​	附： ​	P牛的代码审计星球 ​	https:&#x2F;&#x2F;wx.zsxq.com&#x2F;dweb2&#x2F;index&#x2F;group&#x2F;2212251881 ​	配套源码：JavaThings ​	https:&#x2F;&#x2F;github.com&#x2F;phith0n&#x2F;Jav">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java安全之反射">
+<meta property="og:url" content="http://byesec.com/posts/a820ff44.html">
+<meta property="og:site_name" content="patrik&#39;s blog">
+<meta property="og:description" content="前情提要​	重新过一遍Java安全，按P牛的《Java安全漫谈》的PDF和源码从头走了一遍（P牛🐮👍），从把PDF里的知识点和Poc测试的过程重新整理了一下。 ​	附： ​	P牛的代码审计星球 ​	https:&#x2F;&#x2F;wx.zsxq.com&#x2F;dweb2&#x2F;index&#x2F;group&#x2F;2212251881 ​	配套源码：JavaThings ​	https:&#x2F;&#x2F;github.com&#x2F;phith0n&#x2F;Jav">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227104507403.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227110030603.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227110910469.png">
+<meta property="og:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227112002750.png">
+<meta property="article:published_time" content="2024-02-27T09:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-11T01:01:12.448Z">
+<meta property="article:author" content="patrik">
+<meta property="article:tag" content="Java安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227104507403.png">
+    
+    
+      
+        
+          
+            <link rel="shortcut icon" href="https://www.gravatar.com/avatar/1c0ccb80f18de6871d3fd37b97cd3594?s=48">
+          
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo-1.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-1.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java安全之反射</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="patrik&#39;s blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/posts/cd0a9e83.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/posts/6645322e.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/a820ff44.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/a820ff44.html&text=Java安全之反射"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/a820ff44.html&is_video=false&description=Java安全之反射"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java安全之反射&body=Check out this article: http://byesec.com/posts/a820ff44.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/a820ff44.html&name=Java安全之反射&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/a820ff44.html&t=Java安全之反射"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%8F%8D%E5%B0%84%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">一、反射篇</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java安全之反射
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">patrik</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-02-27T09:00:00.000Z" class="dt-published" itemprop="datePublished">2024-02-27</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%AE%89%E5%85%A8%F0%9F%94%90/">安全🔐</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java%E5%AE%89%E5%85%A8/" rel="tag">Java安全</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h1><p>​	重新过一遍Java安全，按P牛的《Java安全漫谈》的PDF和源码从头走了一遍（P牛🐮👍），从把PDF里的知识点和Poc测试的过程重新整理了一下。</p>
+<p>​	附：</p>
+<p>​	P牛的代码审计星球</p>
+<p>​	<a target="_blank" rel="noopener" href="https://wx.zsxq.com/dweb2/index/group/2212251881">https://wx.zsxq.com/dweb2/index/group/2212251881</a></p>
+<p>​	配套源码：JavaThings</p>
+<p>​	<a target="_blank" rel="noopener" href="https://github.com/phith0n/JavaThings">https://github.com/phith0n/JavaThings</a></p>
+<h1 id="一、反射篇"><a href="#一、反射篇" class="headerlink" title="一、反射篇"></a>一、反射篇</h1><p><code>Java安全</code>可以从<code>反序列化漏洞</code>开始说起，<code>反序列化漏洞</code>⼜可以从<code>反射</code>开始说起。</p>
+<p><code>反射</code>是⼤多数语⾔⾥都必不可少的组成部分：</p>
+<ul>
+<li><code>对象</code>可以<code>通过反射获取他的类</code>，</li>
+<li><code>类</code>可以<code>通过反射拿到所有 ⽅法（包括私有）</code>，拿到的⽅法<code>可以调⽤</code>，<br>总之通过“反射”，我们可以将Java这种静态语⾔附加上<code>动态特性</code>。</li>
+</ul>
+<p><code>动态特性</code>：“⼀段代码，改变其中的变量，将会导致这段代码产⽣功能性的变化，我称之为动态特性”<br>PHP本身拥有很多动态特性，所以可以通过“⼀句话⽊⻢马”来执⾏各种功能；<code>Java虽不像PHP那么灵活，但其提供的“反射”功能，也是可以提供⼀些动态特性</code>。⽐如，这样⼀段代码，在你不知道传⼊的参数值 的时候，你是不知道他的作⽤是什么的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(String className, String methodName)</span> <span class="keyword">throws</span> Exception &#123; </span><br><span class="line">	<span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(className);</span><br><span class="line">	clazz.getMethod(methodName).invoke(clazz.newInstance()); </span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>上述例子中，演示了几个反射里极为重要的方法：</p>
+<ul>
+<li>获取类的⽅法： <code>forName</code></li>
+<li>实例化类对象的⽅法： <code>newInstance</code> </li>
+<li>获取函数的⽅法： <code>getMethod</code> </li>
+<li>执⾏函数的⽅法： <code>invoke</code><br>基本上，这⼏个⽅法包揽了Java安全⾥各种和反射有关的Payload。</li>
+</ul>
+<p><code>forName</code>不是获取“类”的唯⼀途径，通常来说我们有如下三种⽅式获取⼀个“类”，也就是<code>java.lang.Class</code> 对象：</p>
+<ul>
+<li>obj.getClass()<br>  如果上下⽂中存在某个类的实例<code>obj</code>，那么我们可以直接通过<code>obj.getClass()</code>来获取它的类 </li>
+<li>Test.class<br>  如果你已经加载了某个类，只是想获取到它的 <code>java.lang.Class</code> 对象，那么就直接 拿它的 <code>class</code> 属性即可。这个⽅法其实不属于反射。 </li>
+<li>Class.forName<br>  如果你知道某个类的名字，想获取到这个类，就可以使⽤ <code>forName</code> 来获取</li>
+</ul>
+<p>在安全研究中，我们使⽤<code>反射</code>的⼀⼤<code>⽬的</code>，就是<code>绕过某些沙盒</code>。<br>⽐如，上下⽂中如果只有Integer类型的数字，我们如何获取到可以执⾏命令的Runtime类呢？<br>也许可以这样（伪代码）：<br><code>1.getClass().forName(&quot;java.lang.Runtime&quot;)</code><br>SpEL题目WP：<a target="_blank" rel="noopener" href="http://rui0.cn/archives/1015">http://rui0.cn/archives/1015</a></p>
+<p><code>forName</code>有两个函数重载：</p>
+<ul>
+<li><code>Class&lt;?&gt; forName(String name)</code></li>
+<li><code>Class&lt;?&gt; forName(String name, **boolean** initialize, ClassLoader loader)</code><br>第⼀个就是我们最常⻅见的获取class的⽅式，其实可以理解为第⼆种⽅式的⼀个封装：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class.forName(className) </span><br><span class="line"><span class="comment">// 等于 </span></span><br><span class="line">Class.forName(className, <span class="literal">true</span>, currentLoader)</span><br></pre></td></tr></table></figure>
+默认情况下，<code>forName</code>的第⼀个参数是类名；第⼆个参数表示是否初始化；第三个参数就是 <code>ClassLoader</code>。<br><code>ClassLoader</code>是什么呢？它就是⼀个“加载器”，告诉Java虚拟机如何加载这个类。关于这个点，后⾯还有很多有趣的漏洞利⽤⽅法，这⾥先不展开说了。Java默认的<code>ClassLoader</code>就是根据类名来加载类，这个类名是类完整路径，如<code>java.lang.Runtime</code>。<br>第二个参数<code>initialize</code>（是否初始化）常常被人误解,勾陈安全实验室有篇讲反射机制的⽂章(<a target="_blank" rel="noopener" href="http://www.polaris-lab.com/index.php/archives/450/">http://www.polaris-lab.com/index.php/archives/450/</a>)<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227104507403.png"><br>图中有说“构造函数，初始化时执⾏”，其实在<code>forName</code>的时候构造函数并不会执⾏，即使我们设置 <code>initialize=true</code> 。</li>
+</ul>
+<p>那么这个初始化究竟指什么呢？<br>可以将这个“初始化”理解为类的初始化。我们先来看看如下这个类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainPrint</span> &#123;</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Empty block initial %s\\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Static initial %s\\n&quot;</span>, TrainPrint.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">TrainPrint</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Initial %s\\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上述的三个“初始化”⽅法有什么区别，调⽤顺序是什么，在安全上有什么价值？<br>运行后，⾸先调⽤的是 <code>static &#123;&#125;</code> ，其次是 <code>&#123;&#125;</code> ，最后是<code>构造函数</code>。<br><code>static &#123;&#125;</code> 就是在“类初始化”的时候调⽤的，⽽ <code>&#123;&#125;</code> 中的代码会放在构造函数的 <code>super()</code> 后⾯，但在当前构造函数内容的前⾯。<br>所以说， <code>forName</code> 中的 <code>initialize=true</code> 其实就是告诉Java虚拟机是否执⾏”类初始化“。</p>
+<p>假设我们有如下函数，其中函数的参数name可控：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">ref</span><span class="params">(String name)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">	Class.forName(name); </span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们就可以编写⼀个恶意类，将恶意代码放置在<code>static&#123;&#125;</code>中，从⽽执⾏：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.Runtime; </span><br><span class="line"><span class="keyword">import</span> java.lang.Process;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TouchFile</span> &#123;</span><br><span class="line">	<span class="keyword">static</span> &#123; </span><br><span class="line">		<span class="keyword">try</span> &#123; </span><br><span class="line">			<span class="type">Runtime</span> <span class="variable">rt</span> <span class="operator">=</span> Runtime.getRuntime(); </span><br><span class="line">			String[] commands = &#123;<span class="string">&quot;touch&quot;</span>, <span class="string">&quot;/tmp/success&quot;</span>&#125;; </span><br><span class="line">			<span class="type">Process</span> <span class="variable">pc</span> <span class="operator">=</span> rt.exec(commands); </span><br><span class="line">			pc.waitFor(); </span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123; </span><br><span class="line">			<span class="comment">// do nothing &#125;</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，这个恶意类如何带⼊⽬标机器中，可能就涉及到ClassLoader的⼀些利⽤⽅法了。</p>
+<p>在正常情况下，除了系统类，如果我们想拿到一个类，需要先 <code>import</code> 才能使用。而使用forName就不需要，这样对于我们的攻击者来说就十分有利，我们可以加载任意类。</p>
+<p>另外，我们经常在一些源码里看到，类名的部分包含 <code>$</code> 符号，比如fastjson在 <code>checkAutoType</code> 时候就会先将<code>$</code>替换成<code>.</code>，<code>$</code>的作用是<strong>查找内部类</strong>。<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227110030603.png"></p>
+<p>Java的普通类<code>C1</code>中支持编写内部类<code>C2</code>，而在编译的时候，会生成两个文件：<code>C1.class</code>和<code>C1$C2.class</code>，我们可以把他们看作两个无关的类，通过<code>Class.forName(&quot;C1$C2&quot;)</code>即可加载这个内部类。获得类以后，我们可以继续使用反射来获取这个类中的属性、方法，也可以实例化这个类，并调用方法。</p>
+<p><code>class.newInstance()</code>的作用就是调用这个类的无参构造函数，这个比较好理解。不过，我们有时候 在写漏洞利用方法的时候，会发现使用<code>newInstance</code>总是不成功，这时候原因可能是：</p>
+<ol>
+<li>你使用的类没有无参构造函数</li>
+<li>你使用的类构造函数是私有的<br>最最最常见的情况就是<code>java.lang.Runtime</code>，这个类在我们构造命令执行Payload的时候很常见，但我们不能直接这样来执行命令：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>); </span><br><span class="line">clazz.getMethod(<span class="string">&quot;exec&quot;</span>, String.class).invoke(clazz.newInstance(), <span class="string">&quot;id&quot;</span>);</span><br></pre></td></tr></table></figure>
+运行会报错：因为<code>Runtime</code>类的构造方法是私有的。<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227110910469.png"><br>为什么会有类的构造方法是私有的，难道他不想让用户使用这个类吗？这其实涉及 到很常见的设计模式：“单例模式”。（有时候工厂模式也会写成类似）</li>
+</ol>
+<p>比如，对于Web应用来说，数据库连接只需要建立一次，而不是每次用到数据库的时候再新建立一个连接，此时作为开发者你就可以将数据库连接使用的类的构造函数设置为私有，然后编写一个静态方法来获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainDB</span> &#123; </span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="type">TrainDB</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TrainDB</span>();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> TrainDB <span class="title function_">getInstance</span><span class="params">()</span> &#123; </span><br><span class="line">		<span class="keyword">return</span> instance; </span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="title function_">TrainDB</span><span class="params">()</span> &#123; </span><br><span class="line">	<span class="comment">// 建立连接的代码... </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，只有类初始化的时候会执行一次构造函数，后面只能通过<code>getInstance</code>获取这个对象，避免建立多个数据库连接。</p>
+<p>回到正题，<code>Runtime</code>类就是单例模式，我们只能通过<code>Runtime.getRuntime()</code>来获取到<code>Runtime</code>对象。我们将上述Payload进行修改即可正常执行命令了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>); </span><br><span class="line">clazz.getMethod(<span class="string">&quot;exec&quot;</span>, String.class).invoke(clazz.getMethod(<span class="string">&quot;getRuntime&quot;</span>).invoke(clazz),</span><br><span class="line"><span class="string">&quot;calc.exe&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>这里用到了<code>getMethod</code>和<code>invoke</code>方法。</p>
+<p><code>getMethod</code>的作用是通过反射获取一个类的某个特定的公有方法。而学过Java的同学应该清楚，Java中支持类的重载，我们不能仅通过函数名来确定一个函数。所以，在调用<code>getMethod</code>的时候，我们需要传给他你需要获取的函数的参数类型列表。</p>
+<p>比如这里的<code>Runtime.exec</code>方法有6个重载：<br><img src="https://byesec-blog-img.oss-cn-beijing.aliyuncs.com/2024/03/07/image-20240227112002750.png"><br>我们使用最简单的，也就是第一个，它只有一个参数，类型是String，所以我们使用<code>getMethod(&quot;exec&quot;, String.class)</code>来获取 <code>Runtime.exec</code> 方法。</p>
+<p><code>invoke</code>的作用是执行方法，它的第一个参数是：</p>
+<ul>
+<li>如果这个方法是一个普通方法，那么第一个参数是类对象</li>
+<li>如果这个方法是一个静态方法，那么第一个参数是类<br>这也比较好理解了，我们正常执行方法是<code>[1].method([2], [3], [4]...)</code>,<br>其实在反射里就是<code>method.invoke([1], [2], [3], [4]...)</code>。</li>
+</ul>
+<p>所以我们将上述命令执行的Payload分解一下就比较好看懂了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>); </span><br><span class="line"><span class="type">Method</span> <span class="variable">execMethod</span> <span class="operator">=</span> clazz.getMethod(<span class="string">&quot;exec&quot;</span>, String.class); </span><br><span class="line"><span class="type">Method</span> <span class="variable">getRuntimeMethod</span> <span class="operator">=</span> clazz.getMethod(<span class="string">&quot;getRuntime&quot;</span>); </span><br><span class="line"><span class="type">Object</span> <span class="variable">runtime</span> <span class="operator">=</span> getRuntimeMethod.invoke(clazz); </span><br><span class="line">execMethod.invoke(runtime, <span class="string">&quot;calc.exe&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>疑问：<br>1、如果一个类没有无参构造方法，也没有类似单例模式里的静态方法，我们怎样通过反射实例化该类呢？<br>需要用到一个新的反射方法 <code>getConstructor</code></p>
+<p>和<code>getMethod</code>类似，<code>getConstructor</code>接收的参数是构造函数列表类型，因为构造函数也支持重载，所以必须用参数列表类型才能唯一确定一个构造函数。</p>
+<p>获取到构造函数后，我们使用 <code>newInstance</code> 来执行。</p>
+<p>比如，我们常用的另一种执行命令的方式ProcessBuilder，我们使用反射来获取其构造函数，然后调用 <code>start()</code> 来执行命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.ProcessBuilder&quot;</span>); </span><br><span class="line">((ProcessBuilder) clazz.getConstructor(List.class).newInstance(Arrays.asList(<span class="string">&quot;calc.exe&quot;</span>))).star <span class="title function_">t</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>ProcessBuilder</code>有两个构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ProcessBuilder</span><span class="params">(List&lt;String&gt; command)</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">ProcessBuilder</span><span class="params">(String... command)</span></span><br></pre></td></tr></table></figure>
+
+<p>上面用到了第一个形式的构造函数，所以<code>getConstructor</code>的时候传入的是<code>List.class</code>。</p>
+<p>但是，我们看到，前面这个Payload用到了Java里的强制类型转换，有时候我们利用漏洞的时候（在表 达式上下文中）是没有这种语法的。所以，我们仍需利用反射来完成这一步。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.ProcessBuilder&quot;</span>); clazz.getMethod(<span class="string">&quot;start&quot;</span>).invoke(clazz.getConstructor(List.class).newInstance( Arrays.asList(<span class="string">&quot;calc.exe&quot;</span>)));</span><br></pre></td></tr></table></figure>
+<p>通过<code>getMethod(&quot;start&quot;)</code>获取到<code>start</code>方法，然后<code>invoke</code>执行，<code>invoke</code>的第一个参数就是ProcessBuilder Object了。</p>
+<p>那么如果要使用<code>public ProcessBuilder(String... command)</code>这个构造函数，需要怎样反射执行呢<br>这又涉及到Java里的可变长参数（varargs）了。正如其他语言一样，Java也支持可变长参数，就是当你定义函数的时候不确定参数数量的时候，可以使用<code>...</code>这样的语法来表示“这个函数的参数个数是可变的”。<br>对于可变长参数，Java其实在编译的时候会编译成一个数组，也就是说，如下这两种写法在底层是等价的（也就不能重载）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">hello</span><span class="params">(String[] names)</span> &#123;&#125; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">hello</span><span class="params">(String...names)</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>也由此，如果我们有一个数组，想传给hello函数，只需直接传即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String[] names = &#123;<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>&#125;; </span><br><span class="line">hello(names);</span><br></pre></td></tr></table></figure>
+<p>那么对于反射来说，如果要获取的目标函数里包含可变长参数，其实我们认为它是数组就行了。<br>所以，我们将字符串数组的类<code>String[].class</code>传给<code>getConstructor</code>，获取<code>ProcessBuilder</code>的第二种构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.ProcessBuilder&quot;</span>); </span><br><span class="line">clazz.getConstructor(String[].class)</span><br></pre></td></tr></table></figure>
+<p>在调用<code>newInstance</code>的时候，因为这个函数本身接收的是一个可变长参数，我们传给<code>ProcessBuilder</code>的也是一个可变长参数，二者叠加为一个二维数组，所以整个Payload如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.ProcessBuilder&quot;</span>);</span><br><span class="line"> ((ProcessBuilder)clazz.getConstructor(String[].class).newInstance(<span class="keyword">new</span> <span class="title class_">String</span>[][]&#123;&#123;<span class="string">&quot;calc.exe&quot;</span>&#125;&#125;)).start();</span><br></pre></td></tr></table></figure>
+
+
+<p>2、如果一个方法或构造方法是私有方法，我们是否能执行它呢？<br>涉及到<code>getDeclared</code>系列的反射了，与普通的<code>getMethod</code>、<code>getConstructor</code>区别是：</p>
+<ul>
+<li><code>getMethod</code>系列方法获取的是当前类中所有公共方法，包括从父类继承的方法</li>
+<li><code>getDeclaredMethod</code>系列方法获取的是当前类中“声明”的方法，是实在写在这个类里的，包括私有的方法，但从父类里继承来的就不包含了</li>
+</ul>
+<p><code>getDeclaredMethod</code>的具体用法与<code>getMethod</code>类似<br><code>getDeclaredConstructor</code>的具体用法和<code>getConstructor</code>类似</p>
+<p>举个例子，前文我们说过Runtime这个类的构造函数是私有的，我们需要用<code>Runtime.getRuntime()</code>来获取对象。其实现在我们也可以直接用<code>getDeclaredConstructor</code>来获取这个私有的构造方法来实例化对象，进而执行命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>); </span><br><span class="line"><span class="type">Constructor</span> <span class="variable">m</span> <span class="operator">=</span> clazz.getDeclaredConstructor(); </span><br><span class="line">m.setAccessible(<span class="literal">true</span>); </span><br><span class="line">clazz.getMethod(<span class="string">&quot;exec&quot;</span>, String.class).invoke(m.newInstance(), <span class="string">&quot;calc.exe&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>可见，这里使用了一个方法 <code>setAccessible</code> ，这个是必须的。我们在获取到一个私有方法后，必须用 <code>setAccessible</code> 修改它的作用域，否则仍然不能调用。</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%8F%8D%E5%B0%84%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">一、反射篇</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://byesec.com/posts/a820ff44.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://byesec.com/posts/a820ff44.html&text=Java安全之反射"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://byesec.com/posts/a820ff44.html&is_video=false&description=Java安全之反射"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java安全之反射&body=Check out this article: http://byesec.com/posts/a820ff44.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://byesec.com/posts/a820ff44.html&title=Java安全之反射"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://byesec.com/posts/a820ff44.html&name=Java安全之反射&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://byesec.com/posts/a820ff44.html&t=Java安全之反射"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2024
+    patrik
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'byesec/blog_utteranc';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
